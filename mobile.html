@@ -22,8 +22,10 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    .mobile-tab-view { display: none; }
-    .mobile-tab-view.active { display: flex; animation: tabFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    /* !important để thắng class .flex của Tailwind CDN (nạp sau <style> này),
+       nếu không thì lúc mới mở app 4 màn hình sẽ hiển thị chồng lên nhau. */
+    .mobile-tab-view { display: none !important; }
+    .mobile-tab-view.active { display: flex !important; flex: 1 1 auto; animation: tabFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
     @keyframes tabFadeIn {
       from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
@@ -72,149 +74,12 @@
       }
     };
 
-    // =============================================================
-    // DASHBOARD SPECIFIC CONTROLLERS
-    // =============================================================
-    
-    // 1. Horizontal Snap Carousel Dots Tracking & Slide Navigation (100% full width per frame)
-    function updateCarouselDots() {
-      const container = document.getElementById('carouselContainer');
-      const dots = document.querySelectorAll('.carousel-dot');
-      if (!container || dots.length === 0) return;
-
-      const scrollLeft = container.scrollLeft;
-      const cardWidth = container.offsetWidth;
-      if (cardWidth <= 0) return;
-      const activeIndex = Math.min(Math.max(0, Math.round(scrollLeft / cardWidth)), dots.length - 1);
-
-      dots.forEach((dot, idx) => {
-        if (idx === activeIndex) {
-          dot.className = "carousel-dot w-5 h-1.5 rounded-full bg-[#0f3d64] transition-all focus:outline-none";
-        } else {
-          dot.className = "carousel-dot w-1.5 h-1.5 rounded-full bg-slate-300 transition-all focus:outline-none";
-        }
-      });
-    }
-
-    function goToCarouselSlide(index) {
-      const container = document.getElementById('carouselContainer');
-      if (!container) return;
-      container.scrollTo({ left: index * container.offsetWidth, behavior: 'smooth' });
-    }
-
-    function prevCarouselSlide(e) {
-      if (e) e.stopPropagation();
-      const container = document.getElementById('carouselContainer');
-      if (!container) return;
-      const curIdx = Math.round(container.scrollLeft / (container.offsetWidth || 1));
-      const newIdx = Math.max(0, curIdx - 1);
-      goToCarouselSlide(newIdx);
-    }
-
-    function nextCarouselSlide(e) {
-      if (e) e.stopPropagation();
-      const container = document.getElementById('carouselContainer');
-      if (!container) return;
-      const curIdx = Math.round(container.scrollLeft / (container.offsetWidth || 1));
-      const maxIdx = container.children.length - 1;
-      const newIdx = Math.min(maxIdx, curIdx + 1);
-      goToCarouselSlide(newIdx);
-    }
-
-    function openEventDetailModal(idx) {
-      const events = [
-        "Kickoff Ciputra Giai Đoạn 2 • Grand Park • 27/10",
-        "Thưởng nóng 50 Tr cho giao dịch căn 3PN Aqua",
-        "Chính sách vay ngân hàng 0% 24 tháng mới từ MB Bank",
-        "Mở bán 20 căn góc VIP Metropolis Riverside",
-        "Bảng vàng đua Top Sale Q4: Thưởng chuyến đi Châu Âu"
-      ];
-      showToast(`Chi tiết: ${events[idx]}`, 'campaign');
-    }
-
-    // 2. Events Hub Screen
-    function openEventsHubModal() { openScreen('events'); }
-    function closeEventsHubModal() { goBackScreen(); }
-
-    function filterEventList(type, btn) {
-      document.querySelectorAll('.ev-filter-btn').forEach(b => {
-        b.classList.remove('bg-[#0f3d64]', 'text-white', 'shadow-xs');
-        b.classList.add('bg-slate-100', 'text-slate-700');
-      });
-      btn.classList.remove('bg-slate-100', 'text-slate-700');
-      btn.classList.add('bg-[#0f3d64]', 'text-white', 'shadow-xs');
-
-      document.querySelectorAll('.ev-item-card').forEach(card => {
-        const cType = card.getAttribute('data-type');
-        card.classList.toggle('hidden', type !== 'all' && cType !== type);
-      });
-    }
-
-    // 3. Sales Kit Screen
-    function openSalesKitModal() { openScreen('saleskit'); }
-    function closeSalesKitModal() { goBackScreen(); }
-    function filterSalesKit(cat, btn) {
-      document.querySelectorAll('.sk-tab').forEach(b => {
-        b.classList.remove('bg-[#0f3d64]', 'text-white', 'shadow-xs');
-        b.classList.add('bg-slate-100', 'text-slate-700');
-      });
-      btn.classList.remove('bg-slate-100', 'text-slate-700');
-      btn.classList.add('bg-[#0f3d64]', 'text-white', 'shadow-xs');
-
-      document.querySelectorAll('.sk-item').forEach(card => {
-        const cCat = card.getAttribute('data-cat');
-        card.classList.toggle('hidden', cat !== 'all' && cCat !== cat);
-      });
-    }
-
-    // 4. Personal QR Code Screen
-    function openPersonalQrModal() { openScreen('personal-qr'); }
-    function closePersonalQrModal() { goBackScreen(); }
-
-    // 5. Leaderboard Period Switcher
-    function switchLeaderboardPeriod(period, btn) {
-      document.querySelectorAll('.period-btn').forEach(b => {
-        b.classList.remove('bg-white', 'text-[#0f3d64]', 'shadow-xs');
-        b.classList.add('text-slate-600');
-      });
-      btn.classList.remove('text-slate-600');
-      btn.classList.add('bg-white', 'text-[#0f3d64]', 'shadow-xs');
-
-      const data = {
-        'week': {
-          p1: { name: 'Lê Thị Thu Hương', sales: '8.5 Tỷ' },
-          p2: { name: 'Nguyễn Văn A', sales: '6.2 Tỷ' },
-          p3: { name: 'Nguyễn Quang Huy', sales: '5.4 Tỷ' }
-        },
-        'month': {
-          p1: { name: 'Nguyễn Văn A', sales: '36.2 Tỷ' },
-          p2: { name: 'Trần Thị B', sales: '25.7 Tỷ' },
-          p3: { name: 'Lê Văn C', sales: '22.4 Tỷ' }
-        },
-        'quarter': {
-          p1: { name: 'Trần Quốc Bảo', sales: '82.0 Tỷ' },
-          p2: { name: 'Nguyễn Văn A', sales: '74.5 Tỷ' },
-          p3: { name: 'Trần Thị B', sales: '68.2 Tỷ' }
-        }
-      };
-
-      const cur = data[period] || data['month'];
-      document.getElementById('podiumName1').textContent = cur.p1.name;
-      document.getElementById('podiumSales1').textContent = cur.p1.sales;
-      document.getElementById('podiumName2').textContent = cur.p2.name;
-      document.getElementById('podiumSales2').textContent = cur.p2.sales;
-      document.getElementById('podiumName3').textContent = cur.p3.name;
-      document.getElementById('podiumSales3').textContent = cur.p3.sales;
-
-      showToast(`Đã cập nhật Bảng vinh danh: ${btn.textContent.trim()}`);
-    }
-
   </script>
 </head>
 <body class="bg-[#f8fafc] sm:bg-slate-200 sm:py-6 font-sans text-slate-800 flex justify-center min-h-screen antialiased select-none">
 
   <!-- KHUNG THIẾT BỊ DI ĐỘNG (MOBILE CONTAINER - 100% NATIVE TRÊN ĐIỆN THOẠI, KHUNG IPHONE TRÊN MÁY TÍNH) -->
-  <div id="mobileAppFrame" class="w-full max-w-[430px] min-h-screen sm:min-h-[890px] bg-[#f8fafc] sm:rounded-[42px] sm:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] sm:border-4 sm:border-slate-800/80 relative flex flex-col sm:overflow-hidden">
+  <div id="mobileAppFrame" class="w-full max-w-[430px] min-h-screen sm:min-h-[calc(100vh-56px)] bg-[#f8fafc] sm:rounded-[42px] sm:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] sm:border-4 sm:border-slate-800/80 relative flex flex-col sm:overflow-hidden">
 
   <!-- ======================================================== -->
   <!-- 2. THANH HEADER TRÊN CÙNG (THEO CHUẨN WIREFRAME ĐÃ CHỐT) -->
@@ -231,7 +96,7 @@
         </div>
         <div class="flex flex-col min-w-0">
           <div class="flex items-center gap-1.5">
-            <span class="text-xs font-bold text-slate-900 truncate">Xin chào, Huy 👋</span>
+            <span class="text-xs font-bold text-slate-900 truncate" id="profileGreetingHome">Xin chào, Huy 👋</span>
             <span class="px-1.5 py-0.2 rounded bg-sky-100 text-[#0f3d64] text-[9px] font-bold">F1 PRO</span>
           </div>
           <span class="text-[11px] text-slate-500 font-medium truncate">F1 Đất Việt • Chi nhánh Sala</span>
@@ -312,7 +177,7 @@
   <!-- ======================================================== -->
   <!-- MAIN ROUTER (4 TAB NGHIỆP VỤ + SUBVIEW CHI TIẾT CĂN) -->
   <!-- ======================================================== -->
-  <main class="flex flex-col relative w-full pt-16 pb-24 bg-[#f8fafc] min-h-screen">
+  <main class="flex flex-col relative w-full pt-16 pb-24 bg-[#f8fafc] min-h-screen sm:min-h-[calc(100vh-56px)]">
     <!-- ---------------------------------------------------- -->
     <!-- TAB 1: TRANG CHỦ (DASHBOARD) - THEO ĐẶC TẢ THIẾT KẾ ĐÃ CHỐT -->
     <!-- ---------------------------------------------------- -->
@@ -450,35 +315,6 @@
         </div>
       </section>
 
-      <!-- 3. KHỐI LỐI TẮT NGHIỆP VỤ (CHỈ CÒN SỰ KIỆN & XIN PHÉP THEO YÊU CẦU) -->
-      <section class="flex flex-col gap-1.5">
-        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Lối Tắt Nghiệp Vụ</h3>
-        <div class="grid grid-cols-2 gap-3">
-          
-          <!-- Phím 1: [📅 Sự kiện & Dự án] -->
-          <button onclick="openScreen('events')" class="flex items-center justify-center gap-2.5 py-3.5 px-3 rounded-2xl bg-white border border-slate-200 shadow-xs hover:bg-slate-50 active:scale-98 transition-all group">
-            <div class="w-10 h-10 rounded-xl bg-sky-100 text-[#0f3d64] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-              <span class="material-symbols-outlined text-[22px]">event</span>
-            </div>
-            <div class="flex flex-col text-left min-w-0">
-              <strong class="text-xs font-bold text-slate-900 block leading-tight">Sự kiện &amp; Dự án</strong>
-              <span class="text-[10px] text-slate-400 mt-0.5">Mở bán &amp; Phân khu F1</span>
-            </div>
-          </button>
-
-          <!-- Phím 2: [📝 Xin phép / Giải trình] -->
-          <button onclick="openScreen('explanation')" class="flex items-center justify-center gap-2.5 py-3.5 px-3 rounded-2xl bg-white border border-slate-200 shadow-xs hover:bg-slate-50 active:scale-98 transition-all group">
-            <div class="w-10 h-10 rounded-xl bg-sky-100 text-[#0f3d64] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-              <span class="material-symbols-outlined text-[22px]">edit_calendar</span>
-            </div>
-            <div class="flex flex-col text-left min-w-0">
-              <strong class="text-xs font-bold text-slate-900 block leading-tight">Xin phép / Đơn từ</strong>
-              <span class="text-[10px] text-slate-400 mt-0.5">Quên chấm, đi muộn</span>
-            </div>
-          </button>
-        </div>
-      </section>
-
       <!-- 4. THANH NHẮC VIỆC GẤP (TASK BAR) -->
       <!-- ⚡ VIỆC CẦN LÀM: 2 khách hẹn hôm nay | 1 căn hết hạn cọc -->
       <section>
@@ -487,11 +323,13 @@
             <div class="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
               <span class="material-symbols-outlined text-[18px] text-white animate-pulse">bolt</span>
             </div>
-            <div class="flex items-center gap-1.5 text-xs font-bold truncate">
-              <span class="uppercase tracking-wide text-sky-200 shrink-0 text-[11px]">⚡ VIỆC GẤP:</span>
-              <span class="truncate cursor-pointer hover:underline" onclick="openScreen('my-units')">2 khách hẹn</span>
-              <span class="opacity-40">|</span>
-              <span class="truncate cursor-pointer hover:underline" onclick="openScreen('my-units')">1 căn sắp hết hạn (05:40)</span>
+            <div class="flex flex-col min-w-0 flex-1">
+              <span class="uppercase tracking-wide text-sky-200 text-[10px] font-bold">⚡ Việc gấp hôm nay</span>
+              <div class="flex items-center gap-1.5 text-[11px] font-bold">
+                <span class="cursor-pointer hover:underline whitespace-nowrap" onclick="openScreen('my-units')">2 khách hẹn</span>
+                <span class="opacity-40">•</span>
+                <span class="cursor-pointer hover:underline whitespace-nowrap" onclick="openScreen('my-units')">1 căn hết hạn <span id="booking-timer-1" class="font-mono">05:40</span></span>
+              </div>
             </div>
           </div>
           <button onclick="openScreen('my-units')" class="px-2.5 py-1 rounded-xl bg-white text-[#0f3d64] text-[11px] font-extrabold shrink-0 active:scale-95 shadow-xs transition-transform">
@@ -500,154 +338,54 @@
         </div>
       </section>
 
-      <!-- 5. BẢNG VINH DANH TOP SALE (HALL OF FAME - BỤC PODIUM TOP 1, 2, 3 + DẢI THỨ HẠNG CÁ NHÂN) -->
-      <section class="flex flex-col gap-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[#0f3d64] text-[20px]">military_tech</span>
-            <h3 class="text-sm font-bold text-slate-900">Bảng Vinh Danh Top Sale</h3>
-          </div>
-          <!-- Bộ lọc chu kỳ: Tuần này | Tháng này | Quý này -->
-          <div class="flex items-center bg-slate-200/80 p-0.5 rounded-xl text-[10px] font-bold">
-            <button onclick="switchLeaderboardPeriod('week', this)" class="period-btn px-2 py-1 rounded-lg text-slate-600 transition-all">Tuần</button>
-            <button onclick="switchLeaderboardPeriod('month', this)" class="period-btn active px-2 py-1 rounded-lg bg-white text-[#0f3d64] shadow-xs transition-all">Tháng</button>
-            <button onclick="switchLeaderboardPeriod('quarter', this)" class="period-btn px-2 py-1 rounded-lg text-slate-600 transition-all">Quý</button>
-          </div>
-        </div>
-
-        <!-- Bục Vinh Danh (Podium 1 - 2 - 3) -->
-        <div class="p-4 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col gap-3">
-          
-          <div class="flex items-end justify-center gap-2 pt-2 px-1">
-            
-            <!-- 🥈 TOP 2 (BÊN TRÁI): Trần Thị B -->
-            <div class="flex-1 flex flex-col items-center">
-              <div class="relative mb-1">
-                <div class="w-13 h-13 rounded-full overflow-hidden ring-2 ring-slate-300 border-2 border-white shadow-sm w-12 h-12">
-                  <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkTUPckAAzGaurN_G8y_viB7yvtITe_ypOoh5SQ6R2yfd7mb-B5sG60BdHB4zhW3R16eH2xj-X2kxVwgpA1Q4O_j2Zxc8BsYURENfEDyGZz3NstbHXR_rrF2MActAvzqUeZnOlxefK4EkA84_ryyaulW41aCxddgx21bA2EHNCXezc5748Sw16QRUqhGqz1SBm4FUV4bkCEOaGLu-IAV9JlRL1CgNzURqYhuTelxOs3uU1AI-TDWTt" alt="Top 2"/>
-                </div>
-                <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-700 text-[9px] font-extrabold border border-white shadow-xs">🥈 #2</span>
-              </div>
-              <span class="text-xs font-bold text-slate-900 truncate max-w-[85px] text-center mt-1" id="podiumName2">Trần Thị B</span>
-              <span class="text-[11px] font-extrabold text-slate-700 font-mono" id="podiumSales2">25.7 Tỷ</span>
-              <span class="text-[9px] text-slate-400">4 giao dịch</span>
-              <!-- Podium Step 2 -->
-              <div class="w-full h-16 rounded-t-xl bg-gradient-to-t from-slate-200 to-slate-100 flex items-center justify-center mt-1.5 shadow-inner">
-                <span class="text-lg font-black text-slate-400 font-mono">2</span>
-              </div>
-            </div>
-
-            <!-- 👑 TOP 1 (CHÍNH GIỮA - BỤC CAO NHẤT): Nguyễn Văn A -->
-            <div class="flex-[1.2] flex flex-col items-center relative -top-2">
-              <span class="text-xl mb-0.5 animate-bounce leading-none">👑</span>
-              <div class="relative mb-1">
-                <div class="w-16 h-16 rounded-full overflow-hidden ring-4 ring-[#0f3d64] border-2 border-white shadow-md">
-                  <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASlorQMWJQNa8y7ECcEEEPQ5gXRpyOy-eRtXTRB7ZvvP3T1ZNiaDBH420vqEAT5eC1P9V3Jt0zJXaLPVBgA29RmsLIRezGKdNu_jXEwyHKh31sqeOn6kvmSf6mlpOsAnquSV2eE4oIG6TBvkDNtPfPB-iJG7GUNW6LYNvG_w6lbmbjQgcPv026v0NdD0uOzFJ3o_Zmy1fVipVxKAbqEjvJpUQR1ePr09mfvJy9690YiYpIbqfhF-3g" alt="Top 1"/>
-                </div>
-                <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.2 rounded-full bg-[#0f3d64] text-white text-slate-900 text-[10px] font-black border border-white shadow-xs">👑 #1</span>
-              </div>
-              <span class="text-xs font-extrabold text-[#0f3d64] truncate max-w-[105px] text-center mt-1" id="podiumName1">Nguyễn Văn A</span>
-              <span class="text-xs font-black text-[#0f3d64] font-mono" id="podiumSales1">36.2 Tỷ</span>
-              <span class="text-[9px] text-slate-400">6 giao dịch</span>
-              <!-- Podium Step 1 -->
-              <div class="w-full h-22 rounded-t-2xl bg-gradient-to-t from-sky-300 via-sky-200 to-sky-100 border-t-2 border-sky-400 flex items-center justify-center mt-1.5 shadow-inner border-t-2 border-slate-300">
-                <span class="text-2xl font-black text-[#0f3d64] font-mono">1</span>
-              </div>
-            </div>
-
-            <!-- 🥉 TOP 3 (BÊN PHẢI): Lê Văn C -->
-            <div class="flex-1 flex flex-col items-center">
-              <div class="relative mb-1">
-                <div class="w-12 h-12 rounded-full overflow-hidden ring-2 ring-slate-300 border-2 border-white shadow-sm">
-                  <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApVPs_XKpyPT_bSJhZ0nvnGU3C_byblDBW2Oy24N_bvbxOcT2gLYcWejUgtUMRID6jcBkk-nqw839xoO4-FAlKKWMsOmtx-4tUnoLKCmmKxEknXtjTeiNyVOW-gcOUOOI2XibbBaX_90hihI6ClfIjKL8FRVaA-fDvpNH59XGHCSQgsQ6qLX0vcsCNJjfUG_aIJ-XQYD3qn-bKGNtYDISJ2cXpKQeseaC67E5thDmgeZkU-9v8TL4x" alt="Top 3"/>
-                </div>
-                <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.2 rounded-full bg-slate-600 text-white text-[9px] font-extrabold border border-white shadow-xs">🥉 #3</span>
-              </div>
-              <span class="text-xs font-bold text-slate-900 truncate max-w-[85px] text-center mt-1" id="podiumName3">Lê Văn C</span>
-              <span class="text-[11px] font-extrabold text-slate-700 font-mono" id="podiumSales3">22.4 Tỷ</span>
-              <span class="text-[9px] text-slate-400">3 giao dịch</span>
-              <!-- Podium Step 3 -->
-              <div class="w-full h-12 rounded-t-xl bg-gradient-to-t from-slate-200 to-slate-100 flex items-center justify-center mt-1.5 shadow-inner">
-                <span class="text-base font-black text-slate-500 font-mono">3</span>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- DẢI THỨ HẠNG CÁ NHÂN (MY RANK GHIM PHÍA DƯỚI) -->
-          <div class="p-3 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <span class="w-7 h-7 rounded-full bg-[#0f3d64] text-white text-xs font-bold flex items-center justify-center shadow-xs">12</span>
-              <div class="flex flex-col">
-                <span class="text-xs font-bold text-[#0f3d64]">Thứ hạng của bạn: #12</span>
-                <span class="text-[10px] text-slate-500">1 giao dịch thành công (Căn A3-2101 • 5.42 Tỷ)</span>
-              </div>
-            </div>
-            <div class="text-right">
-              <span class="text-[10px] text-slate-600 font-bold block">Cách Top 10: 1.8 Tỷ</span>
-              <button onclick="openScreen('inventory')" class="text-[10px] text-[#0f3d64] font-bold underline">Bán thêm căn →</button>
-            </div>
-          </div>
-
+      <!-- 5. KHỐI SẮP RA MẮT (LẤP PHẦN TRỐNG CÒN LẠI CỦA TRANG CHỦ) -->
+      <section class="flex-1 flex items-center justify-center min-h-[180px]">
+        <div class="w-full h-full min-h-[180px] rounded-3xl border-2 border-dashed border-slate-200 bg-white/40 flex flex-col items-center justify-center gap-1.5 px-6 text-center">
+          <span class="material-symbols-outlined text-[30px] text-slate-300">rocket_launch</span>
+          <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Coming soon</span>
+          <span class="text-[11px] text-slate-400 leading-relaxed">Tính năng mới đang được phát triển<br/>và sẽ sớm có mặt tại đây.</span>
         </div>
       </section>
 
     </div>
 
     <!-- ---------------------------------------------------- -->
-    <!-- TAB 2: GIỎ HÀNG THỐNG NHẤT (GỘP DỰ ÁN & SỰ KIỆN MỞ BÁN) -->
+    <!-- TAB 2: SỰ KIỆN & DỰ ÁN -->
     <!-- ---------------------------------------------------- -->
     <div id="view-inventory" class="mobile-tab-view flex flex-col w-full">
       
       <!-- THANH TÌM KIẾM & BỘ LỌC THỐNG NHẤT (GỘP DỰ ÁN & SỰ KIỆN VÀO 1 DÒNG CHẢY LIỀN MẠCH) -->
-      <div class="px-4 pt-3 pb-2.5 bg-white border-b border-slate-200 sticky top-16 z-30 shadow-xs flex flex-col gap-2">
+      <div id="invSearchHeader" class="px-4 pt-3 pb-2.5 bg-white border-b border-slate-200 sticky top-16 z-30 shadow-xs flex flex-col gap-2">
         <!-- Search bar -->
         <div class="relative w-full">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
-          <input id="unifiedSearchInput" oninput="filterUnifiedInventory(this.value)" class="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20 focus:bg-white transition-all" placeholder="Tìm dự án, sự kiện mở bán, căn hộ (Vinhomes, Ciputra, Aqua 1)..." type="text"/>
+          <input id="unifiedSearchInput" oninput="filterUnifiedInventory(this.value)" class="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20 focus:bg-white transition-all" placeholder="Tìm sự kiện, dự án, căn hộ..." type="text"/>
         </div>
 
         <!-- Quick Filter Chips: Tất cả | 🔥 Có Sự Kiện Mở Bán | 🏢 Dự Án F1 | 📍 Hà Nội | 📍 TP.HCM -->
         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5" id="inventoryFilterChips">
-          <button onclick="filterInventoryCategory('all', this)" class="inv-filter-chip active px-3 py-1.5 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shadow-xs shrink-0 transition-all">
+          <button data-cat="all" onclick="filterInventoryCategory('all', this)" class="inv-filter-chip active px-3 py-1.5 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shadow-xs shrink-0 transition-all">
             Tất cả (7)
           </button>
-          <button onclick="filterInventoryCategory('event', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-sky-50 border border-sky-200 text-[#0f3d64] shrink-0 flex items-center gap-1 hover:bg-sky-100 transition-all">
-            <span class="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
-            <span>🔥 Có Sự Kiện Mở Bán (3)</span>
+          <button data-cat="event" onclick="filterInventoryCategory('event', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">
+            Sự kiện (3)
           </button>
-          <button onclick="filterInventoryCategory('project', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 flex items-center gap-1 hover:bg-slate-50 transition-all">
-            <span class="material-symbols-outlined text-[15px] text-[#0f3d64]">apartment</span>
-            <span>🏢 Dự Án F1 (4)</span>
+          <button data-cat="project" onclick="filterInventoryCategory('project', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">
+            Dự án (4)
           </button>
-          <button onclick="filterInventoryCategory('hanoi', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 flex items-center gap-1 hover:bg-slate-50 transition-all">
-            <span class="material-symbols-outlined text-[15px] text-[#0f3d64]">location_on</span>
-            <span>Hà Nội</span>
+          <button data-cat="hanoi" onclick="filterInventoryCategory('hanoi', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">
+            Hà Nội
           </button>
-          <button onclick="filterInventoryCategory('tphcm', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 flex items-center gap-1 hover:bg-slate-50 transition-all">
-            <span class="material-symbols-outlined text-[15px] text-sky-600">location_on</span>
-            <span>TP.HCM</span>
+          <button data-cat="tphcm" onclick="filterInventoryCategory('tphcm', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">
+            TP.HCM
           </button>
         </div>
       </div>
 
-      <!-- CẤP 1: DANH SÁCH GIỎ HÀNG THỐNG NHẤT (HIỂN THỊ CẢ DỰ ÁN & SỰ KIỆN MỞ BÁN) -->
+      <!-- CẤP 1: DANH SÁCH SỰ KIỆN & DỰ ÁN -->
       <div id="invUnifiedListContainer" class="flex flex-col gap-3.5 p-4">
         
-        <!-- Realtime Ticker -->
-        <div class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-100 text-xs text-slate-600">
-          <div class="flex items-center gap-1.5 truncate">
-            <span class="w-2 h-2 rounded-full bg-[#0284c7] animate-ping"></span>
-            <span class="font-bold text-[#0f3d64]">Realtime Hub:</span>
-            <span class="truncate">Sale CenLand vừa giữ căn S501-12A08 (Origami Q9)</span>
-          </div>
-          <span class="text-[10px] text-slate-400 font-mono shrink-0">Vừa xong</span>
-        </div>
-
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-extrabold text-slate-500 uppercase tracking-wider" id="invListCountLabel">Giỏ Hàng &amp; Sự Kiện Phân Phối (7)</h3>
-          <span class="text-[11px] text-[#0f3d64] font-bold">F1 trực tiếp CĐT</span>
-        </div>
+        <h3 class="text-xs font-extrabold text-slate-500 uppercase tracking-wider" id="invListCountLabel">Sự kiện &amp; Dự án (7)</h3>
 
         <!-- MỤC 1: VINHOMES GRAND PARK (QUẬN 9) -->
         <div class="unified-inv-card p-3 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-[#0f3d64]/40 hover:shadow-md transition-all flex gap-3 cursor-pointer active:scale-[0.99]" onclick="selectInventoryProject('vin-q9')" data-category="project event tphcm" data-search="vinhomes grand park quan 9 thu duc vingroup the origami the beverly kick-off">
@@ -655,7 +393,6 @@
           <div class="relative w-28 h-28 rounded-xl overflow-hidden shrink-0 bg-slate-900 shadow-xs">
             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx-vgB5YTnrE4MGLJ6uqWcRp0IiYXDNFjjjlESMG394BsZZSBNN5fi6pK8O7MrWi54j3aJ6AkSA1Wbzo6YMGBTi-sgvONvbk08xvziBImc3PVhwVjzf7F0Jmiba9LOflivYo7PRAGCmEo4iab-751EyCe17i73-kOhfTCBuI3K-istt2yKfToaOj9mSVkCXVLcN3H0Nzf6YE6rQsC8xw7SewFiV4Z5mIBCxUyUsNToGA-daNX1aQ8x" alt="Vinhomes Grand Park" class="w-full h-full object-cover"/>
             <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-[#0f3d64] text-white text-[9px] font-extrabold uppercase shadow-xs">F1 Độc Quyền</span>
-            <span class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-[#0f3d64]/90 backdrop-blur-xs text-white text-[8px] font-extrabold uppercase shadow-xs">🔥 Có Sự Kiện</span>
           </div>
           <!-- BÊN PHẢI: MÔ TẢ & GIỎ HÀNG -->
           <div class="flex flex-col justify-between flex-1 min-w-0 py-0.5">
@@ -668,22 +405,14 @@
               </div>
               <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug mt-1">Dự Án Vinhomes Grand Park (Q9)</h4>
               <p class="text-[11px] text-slate-500 truncate mt-0.5">TP. Thủ Đức, TP.HCM • CĐT Vingroup</p>
-              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Từ 2,35 - 11,5 Tỷ • Cọc: 50 Tr • Vay 0% 24T</div>
-              <!-- Sự kiện đang diễn ra kèm theo -->
-              <div class="mt-1 px-1.5 py-0.5 rounded-md bg-sky-50 border border-sky-200 text-[10px] text-[#0f3d64] font-semibold truncate flex items-center gap-1">
-                <span class="material-symbols-outlined text-[12px] text-[#0f3d64]">stars</span>
-                <span>The Beverly: Voucher 50 Tr • Cọc: 30 Tr</span>
-              </div>
+              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Từ 2,35 Tỷ • Cọc 50 Tr</div>
             </div>
-            <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-100 mt-1">
-              <button onclick="event.stopPropagation(); openEventDetail('vin-q9')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-[11px] font-bold flex items-center gap-0.5 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-[13px]">description</span>
-                <span>Chi Tiết</span>
-              </button>
-              <button onclick="event.stopPropagation(); selectInventoryProject('vin-q9')" class="flex-1 py-1 px-2 rounded-lg bg-[#0f3d64] hover:bg-[#1e588a] text-white text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all">
-                <span>Xem Giỏ Hàng &amp; Căn</span>
-                <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
-              </button>
+            <div class="flex items-center justify-between pt-1.5 border-t border-slate-100 mt-1">
+              <button onclick="event.stopPropagation(); openEventDetail('vin-q9')" class="text-[11px] font-semibold text-slate-500 hover:text-[#0f3d64] underline underline-offset-2">Chi tiết</button>
+              <span onclick="event.stopPropagation(); selectInventoryProject('vin-q9')" class="text-[11px] font-bold text-[#0f3d64] flex items-center gap-0.5 cursor-pointer">
+                Xem căn
+                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+              </span>
             </div>
           </div>
         </div>
@@ -694,7 +423,6 @@
           <div class="relative w-28 h-28 rounded-xl overflow-hidden shrink-0 bg-slate-900 shadow-xs">
             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlv0-tZyz3oZK7gESQyComKFKzDw3YZ0RMd5A2fmdukj1z8WxWCTO9ImpjOhyQnYLe7Q6U7wQgfbhlX_bxJ9YvQNvDcSr-AEtL51F45ulzc-KCxNrlhJA5o78J8nGXJFC6blqp7vYIGPSf1ExvkUR8HfsD_45ptVNACddf4qBW3LOh0Xi8CfXY13II6c0jO2PF76SMX3enm1KNPvFBrKEdDOZEzw41_bx4sCsrws6kJkojKmii3FNo" alt="Metropolis" class="w-full h-full object-cover"/>
             <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-[#0f3d64] text-white text-[9px] font-extrabold uppercase shadow-xs">Kim Cương</span>
-            <span class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-[#0f3d64]/90 backdrop-blur-xs text-white text-[8px] font-extrabold uppercase shadow-xs">🔥 Đang Mở Bán</span>
           </div>
           <!-- BÊN PHẢI: MÔ TẢ & GIỎ HÀNG -->
           <div class="flex flex-col justify-between flex-1 min-w-0 py-0.5">
@@ -707,22 +435,14 @@
               </div>
               <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug mt-1">Dự Án Vinhomes Metropolis Liễu Giai</h4>
               <p class="text-[11px] text-slate-500 truncate mt-0.5">29 Liễu Giai, Ba Đình, Hà Nội</p>
-              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Từ 5,4 - 22 Tỷ • Cọc: 100 Tr • View Hồ Tây</div>
-              <!-- Sự kiện đang diễn ra kèm theo -->
-              <div class="mt-1 px-1.5 py-0.5 rounded-md bg-sky-50 border border-sky-200 text-[10px] text-[#0f3d64] font-semibold truncate flex items-center gap-1">
-                <span class="material-symbols-outlined text-[12px] text-[#0f3d64]">stars</span>
-                <span>Mở bán Aqua 1: Tặng 1 Cây Vàng SJC • Cọc: 30 Tr</span>
-              </div>
+              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Từ 5,4 Tỷ • Cọc 100 Tr</div>
             </div>
-            <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-100 mt-1">
-              <button onclick="event.stopPropagation(); openEventDetail('aqua-project')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-[11px] font-bold flex items-center gap-0.5 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-[13px]">description</span>
-                <span>Chi Tiết</span>
-              </button>
-              <button onclick="event.stopPropagation(); selectInventoryProject('metropolis-hn')" class="flex-1 py-1 px-2 rounded-lg bg-[#0f3d64] hover:bg-[#1e588a] text-white text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all">
-                <span>Xem Giỏ Hàng &amp; Căn</span>
-                <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
-              </button>
+            <div class="flex items-center justify-between pt-1.5 border-t border-slate-100 mt-1">
+              <button onclick="event.stopPropagation(); openEventDetail('aqua-project')" class="text-[11px] font-semibold text-slate-500 hover:text-[#0f3d64] underline underline-offset-2">Chi tiết</button>
+              <span onclick="event.stopPropagation(); selectInventoryProject('metropolis-hn')" class="text-[11px] font-bold text-[#0f3d64] flex items-center gap-0.5 cursor-pointer">
+                Xem căn
+                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+              </span>
             </div>
           </div>
         </div>
@@ -733,7 +453,6 @@
           <div class="relative w-28 h-28 rounded-xl overflow-hidden shrink-0 bg-slate-900 shadow-xs">
             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCULU1FouFwgmjGNN1MweflFGKJ5tBRZTohEuKDwWkYb350UUG8WwPQZElYfFZJxwjJgI4xIZjBAtvd7oHAWXD1Sy3isWyZGsqmLrPH8YesO4nchRaSfbFzpkKLApgY9jhaWxYcGdrzCuzS0jA5aDQk2U02pUM0W4xHXe83Exn3fpVzfcPwRwOTXT6AMP1QRMahn0v4Zz1JsmyAC7NTCysP2m37Now02o53Zh9XPj6KcylXBxmZkqoZ" alt="Ciputra" class="w-full h-full object-cover"/>
             <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-sky-600 text-white text-[9px] font-extrabold uppercase shadow-xs">Quỹ Ngoại Giao</span>
-            <span class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-slate-700/90 backdrop-blur-xs text-white text-[8px] font-extrabold uppercase shadow-xs">⚡ Flash Sale</span>
           </div>
           <!-- BÊN PHẢI: MÔ TẢ & GIỎ HÀNG -->
           <div class="flex flex-col justify-between flex-1 min-w-0 py-0.5">
@@ -746,22 +465,14 @@
               </div>
               <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug mt-1">Ciputra Hanoi International City</h4>
               <p class="text-[11px] text-slate-500 truncate mt-0.5">KĐT Nam Thăng Long, Tây Hồ, Hà Nội</p>
-              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Từ 4,8 - 35 Tỷ • Cọc: 100 Tr • Đô thị 301 ha</div>
-              <!-- Sự kiện đang diễn ra kèm theo -->
-              <div class="mt-1 px-1.5 py-0.5 rounded-md bg-slate-50 border border-slate-200 text-[10px] text-[#0f3d64] font-semibold truncate flex items-center gap-1">
-                <span class="material-symbols-outlined text-[12px] text-[#0f3d64]">bolt</span>
-                <span>Tuần Lễ Vàng: Bốc thăm Honda SH • Miễn 5 năm PQL</span>
-              </div>
+              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Từ 4,8 Tỷ • Cọc 100 Tr</div>
             </div>
-            <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-100 mt-1">
-              <button onclick="event.stopPropagation(); openEventDetail('ciputra-project')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-[11px] font-bold flex items-center gap-0.5 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-[13px]">description</span>
-                <span>Chi Tiết</span>
-              </button>
-              <button onclick="event.stopPropagation(); selectInventoryProject('ciputra-hn')" class="flex-1 py-1 px-2 rounded-lg bg-[#0f3d64] hover:bg-[#1e588a] text-white text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all">
-                <span>Xem Giỏ Hàng &amp; Căn</span>
-                <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
-              </button>
+            <div class="flex items-center justify-between pt-1.5 border-t border-slate-100 mt-1">
+              <button onclick="event.stopPropagation(); openEventDetail('ciputra-project')" class="text-[11px] font-semibold text-slate-500 hover:text-[#0f3d64] underline underline-offset-2">Chi tiết</button>
+              <span onclick="event.stopPropagation(); selectInventoryProject('ciputra-hn')" class="text-[11px] font-bold text-[#0f3d64] flex items-center gap-0.5 cursor-pointer">
+                Xem căn
+                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+              </span>
             </div>
           </div>
         </div>
@@ -783,21 +494,15 @@
                 <span class="text-[10px] text-[#0f3d64] font-bold bg-slate-50 px-1.5 py-0.5 rounded">28 Căn VIP</span>
               </div>
               <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug mt-1">Grand Marina Saigon (Bason Q.1)</h4>
-              <p class="text-[11px] text-slate-500 truncate mt-0.5">Số 2 Tôn Đức Thắng, Bason, Quận 1, TP.HCM</p>
-              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Từ 18,5 - 68 Tỷ • Cọc: 200 Tr • Marriott</div>
-              <div class="mt-1 px-1.5 py-0.5 rounded-md bg-slate-100 text-[10px] text-slate-600 font-medium truncate">
-                Dịch vụ quản gia Marriott tiêu chuẩn toàn cầu
-              </div>
+              <p class="text-[11px] text-slate-500 truncate mt-0.5">Bason, Quận 1, TP.HCM</p>
+              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Từ 18,5 Tỷ • Cọc 200 Tr</div>
             </div>
-            <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-100 mt-1">
-              <button onclick="event.stopPropagation(); openEventDetail('grand-marina-project')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-[11px] font-bold flex items-center gap-0.5 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-[13px]">description</span>
-                <span>Chi Tiết</span>
-              </button>
-              <button onclick="event.stopPropagation(); selectInventoryProject('grand-marina-sgn')" class="flex-1 py-1 px-2 rounded-lg bg-[#0f3d64] hover:bg-[#1e588a] text-white text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all">
-                <span>Chọn Tòa &amp; Căn</span>
-                <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
-              </button>
+            <div class="flex items-center justify-between pt-1.5 border-t border-slate-100 mt-1">
+              <button onclick="event.stopPropagation(); openEventDetail('grand-marina-project')" class="text-[11px] font-semibold text-slate-500 hover:text-[#0f3d64] underline underline-offset-2">Chi tiết</button>
+              <span onclick="event.stopPropagation(); selectInventoryProject('grand-marina-sgn')" class="text-[11px] font-bold text-[#0f3d64] flex items-center gap-0.5 cursor-pointer">
+                Xem căn
+                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+              </span>
             </div>
           </div>
         </div>
@@ -820,17 +525,14 @@
               </div>
               <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug mt-1">Lễ Mở Bán Đợt 1 - Tòa Aqua 1</h4>
               <p class="text-[11px] text-slate-500 truncate mt-0.5">Sheraton Hanoi • Quỹ 35 căn VIP</p>
-              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Tặng 1 cây vàng SJC • CK 2% • Cọc: 30 Tr</div>
+              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Tặng 1 cây vàng SJC • Cọc 30 Tr</div>
             </div>
-            <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-100 mt-1">
-              <button onclick="event.stopPropagation(); openEventDetail('ev-aqua1')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-[11px] font-bold flex items-center gap-0.5 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-[13px]">description</span>
-                <span>Chi Tiết</span>
-              </button>
-              <button onclick="event.stopPropagation(); selectInventoryProject('metropolis-hn')" class="flex-1 py-1 px-2 rounded-lg bg-[#0f3d64] hover:bg-slate-800 text-white text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-[13px]">how_to_reg</span>
-                <span>Quỹ Căn Sự Kiện</span>
-              </button>
+            <div class="flex items-center justify-between pt-1.5 border-t border-slate-100 mt-1">
+              <button onclick="event.stopPropagation(); openEventDetail('ev-aqua1')" class="text-[11px] font-semibold text-slate-500 hover:text-[#0f3d64] underline underline-offset-2">Chi tiết</button>
+              <span onclick="event.stopPropagation(); selectInventoryProject('metropolis-hn')" class="text-[11px] font-bold text-[#0f3d64] flex items-center gap-0.5 cursor-pointer">
+                Xem căn
+                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+              </span>
             </div>
           </div>
         </div>
@@ -853,17 +555,14 @@
               </div>
               <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug mt-1">Kick-off &amp; Ráp Căn The Beverly</h4>
               <p class="text-[11px] text-slate-500 truncate mt-0.5">Vincom Mega Mall Grand Park Q9</p>
-              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Voucher Vinpearl 50 Tr • Vay 0% 30T • Cọc: 30 Tr</div>
+              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Voucher 50 Tr • Cọc 30 Tr</div>
             </div>
-            <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-100 mt-1">
-              <button onclick="event.stopPropagation(); openEventDetail('ev-beverly')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-[11px] font-bold flex items-center gap-0.5 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-[13px]">description</span>
-                <span>Chi Tiết</span>
-              </button>
-              <button onclick="event.stopPropagation(); selectInventoryProject('vin-q9')" class="flex-1 py-1 px-2 rounded-lg bg-[#0f3d64] hover:bg-slate-800 text-white text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-[13px]">how_to_reg</span>
-                <span>Quỹ Căn Sự Kiện</span>
-              </button>
+            <div class="flex items-center justify-between pt-1.5 border-t border-slate-100 mt-1">
+              <button onclick="event.stopPropagation(); openEventDetail('ev-beverly')" class="text-[11px] font-semibold text-slate-500 hover:text-[#0f3d64] underline underline-offset-2">Chi tiết</button>
+              <span onclick="event.stopPropagation(); selectInventoryProject('vin-q9')" class="text-[11px] font-bold text-[#0f3d64] flex items-center gap-0.5 cursor-pointer">
+                Xem căn
+                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+              </span>
             </div>
           </div>
         </div>
@@ -886,17 +585,14 @@
               </div>
               <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug mt-1">Tuần Lễ Vàng Ciputra Grand Garden</h4>
               <p class="text-[11px] text-slate-500 truncate mt-0.5">Ciputra Club Tây Hồ Hà Nội</p>
-              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Bốc thăm Honda SH 150i • Miễn 5 năm PQL • Cọc: 50 Tr</div>
+              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">Bốc thăm Honda SH • Cọc 50 Tr</div>
             </div>
-            <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-100 mt-1">
-              <button onclick="event.stopPropagation(); openEventDetail('ev-ciputra')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-[11px] font-bold flex items-center gap-0.5 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-[13px]">description</span>
-                <span>Chi Tiết</span>
-              </button>
-              <button onclick="event.stopPropagation(); selectInventoryProject('ciputra-hn')" class="flex-1 py-1 px-2 rounded-lg bg-[#0f3d64] hover:bg-slate-800 text-white text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-[13px]">how_to_reg</span>
-                <span>Quỹ Căn Sự Kiện</span>
-              </button>
+            <div class="flex items-center justify-between pt-1.5 border-t border-slate-100 mt-1">
+              <button onclick="event.stopPropagation(); openEventDetail('ev-ciputra')" class="text-[11px] font-semibold text-slate-500 hover:text-[#0f3d64] underline underline-offset-2">Chi tiết</button>
+              <span onclick="event.stopPropagation(); selectInventoryProject('ciputra-hn')" class="text-[11px] font-bold text-[#0f3d64] flex items-center gap-0.5 cursor-pointer">
+                Xem căn
+                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+              </span>
             </div>
           </div>
         </div>
@@ -904,31 +600,20 @@
       </div>
 
       <!-- ======================================================== -->
-      <!-- BREADCRUMB ĐIỀU HƯỚNG PHÂN CẤP TAB GIỎ HÀNG (2, 3, 4)    -->
+      <!-- BREADCRUMB ĐIỀU HƯỚNG PHÂN CẤP (CẤP 2, 3, 4)           -->
       <!-- ======================================================== -->
-      <div id="invUnifiedBreadcrumb" class="hidden items-center justify-between px-4 py-2.5 bg-white border-b border-slate-200 shadow-2xs sticky top-16 z-20">
-        <button id="invBreadcrumbBackBtn" onclick="goBackInventoryHierarchy()" class="flex items-center gap-1 text-xs font-bold text-[#0f3d64] hover:underline active:scale-95 transition-all">
-          <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-          <span id="invBreadcrumbBackLabel">Quay lại Dự Án &amp; Sự Kiện</span>
-        </button>
-        <div class="flex items-center gap-1.5 text-xs text-slate-700 font-semibold truncate max-w-[210px]" id="invBreadcrumbCurrentPath">
-          <span class="material-symbols-outlined text-[15px] text-[#0f3d64]">apartment</span>
-          <span id="invBreadcrumbPathText">Vinhomes Grand Park</span>
+      <div id="invUnifiedBreadcrumb" class="hidden items-center px-4 py-2 bg-white border-b border-slate-200 sticky top-16 z-20">
+        <div class="flex items-center gap-1.5 text-xs text-slate-600 font-semibold min-w-0" id="invBreadcrumbCurrentPath">
+          <span class="material-symbols-outlined text-[15px] text-[#0f3d64] shrink-0">apartment</span>
+          <span id="invBreadcrumbPathText" class="truncate">Vinhomes Grand Park</span>
         </div>
+        <span id="invBreadcrumbBackLabel" class="hidden"></span>
       </div>
 
       <!-- ======================================================== -->
       <!-- CẤP 2: DANH SÁCH CÁC BLOCK PHÂN KHU (ZONE BLOCKS)        -->
       <!-- ======================================================== -->
       <div id="invLevelZones" class="hidden flex-col gap-3.5 p-4">
-        
-        <!-- Nút Back Rõ Ràng Cấp 2 Giỏ Hàng -->
-        <div class="flex items-center justify-between px-1">
-          <button onclick="goBackInventoryHierarchy()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-xs font-bold active:scale-95 transition-all shadow-2xs">
-            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-            <span>Quay lại Dự Án &amp; Sự Kiện</span>
-          </button>
-        </div>
         
         <!-- Banner Sự Kiện Nếu Dự Án Có Chiến Dịch Mở Bán -->
         <div id="invZoneEventBanner" class="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 via-[#154674] to-[#0f3d64] text-white shadow-sm flex flex-col gap-2">
@@ -953,14 +638,8 @@
 
         <!-- Tiêu đề cấp 2 -->
         <div class="flex items-center justify-between px-1">
-          <div>
-            <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider" id="invZonesHeaderTitle">2. Danh Sách Phân Khu</span>
-            <p class="text-[11px] text-slate-400 mt-0.5">Bấm vào phân khu để xem danh sách tòa nhà</p>
-          </div>
-          <button onclick="openDetailOfCurrentProject()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-[#0f3d64] text-xs font-bold border border-sky-200 shadow-2xs active:scale-95 transition-all">
-            <span class="material-symbols-outlined text-[14px]">info</span>
-            <span>Chi Tiết BĐS</span>
-          </button>
+          <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider" id="invZonesHeaderTitle">Danh Sách Phân Khu</span>
+          <button onclick="openDetailOfCurrentProject()" class="text-[11px] font-bold text-[#0f3d64] underline underline-offset-2 shrink-0">Chi tiết dự án</button>
         </div>
 
         <!-- Container render các BLOCK PHÂN KHU (to, rõ, bento card) -->
@@ -975,20 +654,9 @@
       <!-- ======================================================== -->
       <div id="invLevelTowers" class="hidden flex-col gap-3.5 p-4">
         
-        <!-- Nút Back Rõ Ràng Cấp 3 Giỏ Hàng -->
         <div class="flex items-center justify-between px-1">
-          <button onclick="goBackInventoryHierarchy()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-xs font-bold active:scale-95 transition-all shadow-2xs">
-            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-            <span>Quay lại Phân Khu</span>
-          </button>
-          <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold" id="invTowersCountBadge">3 Tòa nhà</span>
-        </div>
-
-        <div class="flex items-center justify-between px-1">
-          <div>
-            <span class="text-xs font-extrabold text-slate-800 uppercase tracking-wider" id="invTowersHeaderTitle">3. Danh Sách Tòa Nhà</span>
-            <p class="text-[11px] text-slate-400 mt-0.5">Bấm vào tòa nhà để xem danh sách tầng &amp; căn hộ</p>
-          </div>
+          <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider" id="invTowersHeaderTitle">Danh Sách Tòa Nhà</span>
+          <span class="text-[11px] text-slate-400 font-bold" id="invTowersCountBadge">3 Tòa nhà</span>
         </div>
 
         <!-- Container render các BLOCK TÒA NHÀ -->
@@ -1003,12 +671,8 @@
       <!-- ======================================================== -->
       <div id="invLevelFloors" class="hidden flex-col gap-3.5 p-4 pb-28">
         
-        <!-- Nút Back Rõ Ràng & Chế Độ Xem Lưới / Danh Sách Cấp 4 Giỏ Hàng -->
-        <div class="flex items-center justify-between px-1">
-          <button onclick="goBackInventoryHierarchy()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-xs font-bold active:scale-95 transition-all shadow-2xs">
-            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-            <span>Quay lại Tòa Nhà</span>
-          </button>
+        <!-- Chế Độ Xem Cấp 4: Lưới / Danh sách -->
+        <div class="flex items-center justify-end px-1">
           <!-- Chuyển đổi Dạng Lưới vs Dạng Danh Sách -->
           <div class="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
             <button id="btnInvViewGrid" onclick="setInventoryRoomViewMode('grid')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#0f3d64] text-white shadow-2xs transition-all flex items-center gap-1">
@@ -1049,33 +713,25 @@
               Tất cả
             </button>
             <button onclick="filterInventoryUnitStatus('available', this)" class="inv-unit-status-chip px-2.5 py-1 rounded-xl text-xs font-semibold bg-white border border-sky-300 text-[#0f3d64] shrink-0 flex items-center gap-1 hover:bg-sky-50 transition-all">
-              <span class="w-2 h-2 rounded-full bg-[#0284c7]"></span>
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
               <span>Trống</span>
             </button>
             <button onclick="filterInventoryUnitStatus('holding', this)" class="inv-unit-status-chip px-2.5 py-1 rounded-xl text-xs font-semibold bg-white border border-slate-300 text-[#0f3d64] shrink-0 flex items-center gap-1 hover:bg-slate-50 transition-all">
-              <span class="w-2 h-2 rounded-full bg-[#0284c7]"></span>
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
               <span>Giữ chỗ</span>
             </button>
             <button onclick="filterInventoryUnitStatus('deposited', this)" class="inv-unit-status-chip px-2.5 py-1 rounded-xl text-xs font-semibold bg-white border border-slate-300 text-slate-800 shrink-0 flex items-center gap-1 hover:bg-slate-50 transition-all">
-              <span class="w-2 h-2 rounded-full bg-[#475569]"></span>
+              <span class="w-2 h-2 rounded-full bg-orange-500"></span>
               <span>Đã cọc</span>
             </button>
             <button onclick="filterInventoryUnitStatus('sold', this)" class="inv-unit-status-chip px-2.5 py-1 rounded-xl text-xs font-semibold bg-white border border-sky-300 text-[#0f3d64] shrink-0 flex items-center gap-1 hover:bg-sky-50 transition-all">
-              <span class="w-2 h-2 rounded-full bg-[#0f3d64]"></span>
+              <span class="w-2 h-2 rounded-full bg-rose-500"></span>
               <span>Đã bán</span>
             </button>
             <button onclick="toggleAllInventoryFloors()" class="ml-auto text-[11px] text-[#0f3d64] font-bold underline shrink-0">
               Bung tất cả
             </button>
           </div>
-        </div>
-
-        <!-- Chú thích nhận diện 4 màu chuẩn -->
-        <div class="grid grid-cols-4 gap-1.5 text-[10px] text-center font-bold">
-          <span class="py-1 rounded-lg bg-sky-50 text-[#0f3d64] border border-sky-200">🟢 Trống</span>
-          <span class="py-1 rounded-lg bg-slate-50 text-[#0f3d64] border border-slate-200">🟡 Giữ chỗ</span>
-          <span class="py-1 rounded-lg bg-slate-50 text-slate-800 border border-slate-200">🟠 Đã cọc</span>
-          <span class="py-1 rounded-lg bg-sky-50 text-[#0f3d64] border border-sky-200">🔴 Đã bán</span>
         </div>
 
         <!-- Container render các TẦNG ACCORDION DROPDOWN XỔ XUỐNG CĂN HỘ -->
@@ -1087,7 +743,7 @@
 
     </div>
 
-    <!-- ----------------------------------------------------<!-- ---------------------------------------------------- -->
+    <!-- ---------------------------------------------------- -->
     <!-- MÀN HÌNH CHI TIẾT CĂN HỘ (CHUẨN ĐẶC TẢ BĐS MỤC 2.4)   -->
     <!-- ---------------------------------------------------- -->
     <div id="view-detail" class="mobile-tab-view flex flex-col w-full pb-36">
@@ -1426,20 +1082,20 @@
       <!-- 1. HEADER PROFILE & TỔNG QUAN DOANH SỐ CÁ NHÂN -->
       <div class="p-4 rounded-3xl bg-gradient-to-br from-[#0f3d64] via-[#154674] to-[#1e588a] text-white shadow-md flex flex-col gap-3">
         <div class="flex items-center justify-between border-b border-white/15 pb-2.5">
-          <div class="flex items-center gap-2.5">
+          <div class="flex items-center gap-2.5 min-w-0 flex-1">
             <div class="relative w-11 h-11 rounded-full overflow-hidden ring-2 ring-[#0f3d64] shrink-0">
               <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WS2PAoRHpXP3F0-LXtIPaWh7UKP3VM-MLVYlsw2EwbW-roG6_IDJIWnrJyZTJJRYgQy9CUUzt6uk1Dwf4dma4G1sMbDgoLv_GiEUxVb9pF5ssblbx9hwiuC1Rx78icgbTzv-_JrCJF4R3aMbPk3cuhqgsd9pOsw3w9srM-xb2w539Yh9fIAlV-j5_Ungl2fi-NHMOxpCbnnpYoDJweqWe8miPsM89PyzQkyWAj0XFqsIttoDXZdMJJhiw" alt="Quang Huy"/>
               <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#0284c7] rounded-full ring-2 ring-white"></span>
             </div>
-            <div>
-              <div class="flex items-center gap-1.5">
-                <h3 class="text-sm font-bold truncate">Quỹ Căn Cá Nhân: Quang Huy</h3>
-                <span class="px-1.5 py-0.2 rounded bg-[#0f3d64] text-white text-slate-900 text-[9px] font-extrabold">F1 PRO</span>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <h3 class="text-sm font-bold truncate" id="profileNameMyUnits">Quang Huy</h3>
+                <span class="px-1.5 py-0.2 rounded bg-[#0f3d64] text-white text-slate-900 text-[9px] font-extrabold shrink-0">F1 PRO</span>
               </div>
-              <span class="text-[11px] text-sky-200 block font-mono mt-0.5">NV-0012 • F1 Tân Long Land Sala</span>
+              <span class="text-[11px] text-sky-200 block font-mono mt-0.5 truncate" id="profileMetaMyUnits">NV-0012 • Chi nhánh Sala</span>
             </div>
           </div>
-          <span class="px-2.5 py-1 rounded-xl bg-white/15 backdrop-blur-md text-sky-200 font-mono text-xs font-bold border border-white/20">4 Căn của bạn</span>
+          <span class="px-2.5 py-1 rounded-xl bg-white/15 text-sky-200 font-mono text-xs font-bold border border-white/20 shrink-0 whitespace-nowrap">4 căn</span>
         </div>
 
         <!-- 3 KPI Bento Mini Cards -->
@@ -1460,189 +1116,69 @@
       </div>
 
       <!-- 2. BREADCRUMB ĐIỀU HƯỚNG PHÂN CẤP TỰ ĐỘNG -->
-      <div id="myNavBreadcrumb" class="hidden items-center justify-between px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 shadow-2xs">
-        <button id="myBreadcrumbBackBtn" onclick="goBackMyHierarchy()" class="flex items-center gap-1 text-xs font-bold text-[#0f3d64] hover:underline active:scale-95 transition-all">
-          <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-          <span id="myBreadcrumbBackLabel">Quay lại Dự Án</span>
-        </button>
-        <div class="flex items-center gap-1.5 text-xs text-slate-600 font-semibold truncate max-w-[210px]" id="myBreadcrumbCurrentPath">
-          <span class="material-symbols-outlined text-[15px] text-[#0f3d64]">apartment</span>
-          <span id="myBreadcrumbPathText">Vinhomes Grand Park</span>
+      <div id="myNavBreadcrumb" class="hidden items-center px-3.5 py-2 rounded-2xl bg-white border border-slate-200">
+        <div class="flex items-center gap-1.5 text-xs text-slate-600 font-semibold min-w-0" id="myBreadcrumbCurrentPath">
+          <span class="material-symbols-outlined text-[15px] text-[#0f3d64] shrink-0">apartment</span>
+          <span id="myBreadcrumbPathText" class="truncate">Vinhomes Grand Park</span>
         </div>
+        <span id="myBreadcrumbBackLabel" class="hidden"></span>
       </div>
 
       <!-- ======================================================== -->
       <!-- CẤP 1: DANH SÁCH DỰ ÁN (PROJECTS LIST)                  -->
       <!-- ======================================================== -->
       <div id="myLevelProjects" class="flex flex-col gap-3">
-        <div class="flex items-center justify-between px-1">
-          <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">1. Danh Sách Dự Án Có Căn Quản Lý (4)</span>
-          <span class="text-[10px] text-slate-400">Bấm dự án để xem phân khu</span>
+        <div class="px-1">
+          <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Dự Án Bạn Quản Lý</span>
         </div>
 
-        <!-- Project 1: Vinhomes Grand Park Q9 -->
-        <div onclick="selectMyProject('vin-q9')" class="p-3.5 rounded-2xl bg-white border-2 border-slate-200 hover:border-[#0f3d64] shadow-xs flex flex-col gap-3 cursor-pointer transition-all hover:shadow-md active:scale-[0.99]">
-          <div class="flex items-start justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-14 h-14 rounded-2xl overflow-hidden bg-slate-900 shrink-0 shadow-xs">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD342V4jXh6gH8iQjVb8k2H8L51LhO0RkQ3aB-q10gJ3kK5s9V5t4x7rO0y4rM1mK9iN3s2v8P1t8x0" alt="Vinhomes Grand Park" class="w-full h-full object-cover"/>
-              </div>
-              <div>
-                <h4 class="text-sm font-extrabold text-slate-900">Vinhomes Grand Park</h4>
-                <p class="text-[11px] text-slate-500 mt-0.5">TP. Thủ Đức, TP.HCM • Đại đô thị 271 ha</p>
-                <div class="flex items-center gap-1.5 mt-1">
-                  <span class="px-2 py-0.5 rounded-md bg-slate-50 border border-slate-200 text-[#0f3d64] text-[10px] font-extrabold">★ 2 Căn do bạn chốt</span>
-                  <span class="text-[10px] text-slate-500 font-mono">Doanh số: 7,83 Tỷ</span>
-                </div>
-              </div>
-            </div>
-            <span class="material-symbols-outlined text-slate-400 text-[20px] mt-1">chevron_right</span>
+        <!-- Danh sách dự án (render từ MY_PROJECTS_SUMMARY qua renderMyProjectsList) -->
+        <div class="flex flex-col gap-3" id="myProjectsList">
+          <!-- Rendered dynamically via renderMyProjectsList() -->
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- PHỄU KHÁCH HÀNG CÁ NHÂN (CRM LEADS)                     -->
+        <!-- ======================================================== -->
+        <div class="flex flex-col gap-2.5 pt-1">
+          <div class="flex items-center justify-between px-1">
+            <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Phễu Khách Hàng Của Bạn</span>
+            <button onclick="openNewLeadModal()" class="px-2.5 py-1 rounded-xl bg-[#0f3d64] text-white text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-all">
+              <span class="material-symbols-outlined text-[14px]">person_add</span>
+              <span>Thêm khách</span>
+            </button>
           </div>
 
-          <!-- Highlight căn cá nhân trong dự án này -->
-          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex flex-col gap-1.5 text-xs">
-            <div class="flex items-center justify-between">
-              <span class="text-[#0f3d64] font-bold flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-slate-500"></span>
-                Căn S501-1812 (The Origami):
-              </span>
-              <span class="font-mono font-bold text-slate-900">5,68 Tỷ • Cọc 50 Tr (Khách Nam)</span>
-            </div>
-            <div class="flex items-center justify-between pt-1 border-t border-slate-200/60">
-              <span class="text-[#0f3d64] font-bold flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-sky-600"></span>
-                Căn S501-0806 (The Origami):
-              </span>
-              <span class="font-mono font-bold text-[#0f3d64]">2,15 Tỷ • Đã bán 95% (Khách Hà)</span>
-            </div>
+          <!-- Ô tìm kiếm khách theo tên / số điện thoại -->
+          <div class="relative w-full">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+            <input id="crmSearchInput" oninput="searchCustomers(this.value)" type="text" placeholder="Tìm khách theo tên hoặc số điện thoại..." class="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20 focus:bg-white transition-all"/>
           </div>
 
-          <div class="flex items-center justify-between text-xs font-bold text-[#0f3d64] pt-0.5">
-            <span class="text-[11px] text-slate-400 font-normal">Gồm 4 phân khu: The Origami, The Beverly...</span>
-            <span class="flex items-center gap-0.5 hover:underline">
-              <span>Xem Phân Khu</span>
-              <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </span>
+          <!-- Bộ lọc phễu 5 bước -->
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            <button onclick="filterCrmStage('all', this)" class="pipeline-btn active px-3 py-1.5 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shadow-xs shrink-0 transition-all">Tất cả</button>
+            <button onclick="filterCrmStage('new', this)" class="pipeline-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">Khách mới</button>
+            <button onclick="filterCrmStage('caring', this)" class="pipeline-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">Chăm sóc</button>
+            <button onclick="filterCrmStage('tour', this)" class="pipeline-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">Hẹn xem</button>
+            <button onclick="filterCrmStage('booking', this)" class="pipeline-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">Chốt cọc</button>
+            <button onclick="filterCrmStage('won', this)" class="pipeline-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">Thành công</button>
+          </div>
+
+          <!-- Danh sách khách hàng (render từ CUSTOMERS_DATABASE) -->
+          <div class="flex flex-col gap-2.5" id="crmCustomerList">
+            <!-- Rendered dynamically via renderCustomerList() -->
           </div>
         </div>
 
-        <!-- Project 2: Vinhomes Metropolis Liễu Giai -->
-        <div onclick="selectMyProject('metropolis-hn')" class="p-3.5 rounded-2xl bg-white border-2 border-slate-200 hover:border-[#0f3d64] shadow-xs flex flex-col gap-3 cursor-pointer transition-all hover:shadow-md active:scale-[0.99]">
-          <div class="flex items-start justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-14 h-14 rounded-2xl overflow-hidden bg-slate-900 shrink-0 shadow-xs">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQo5occuROD7vbU8sLDKsb7mrFwo3gZwUMojTfU_I_rHhW0BzNpwD0RfruQsQGgi6SxG3j1tYTYtSq5Yovm065VbCpeVm1fCt_nknp6en9Aw-yxma9hco0lm-ggZOlepEey0pjCbQYe2xxKXFhnzd40wP_csgKEotpOojnhTr2zEVNUO68CrxfJjzUS7CK9_zdJ9CHDGAszvRnXfKhXf5K2cTEl2UanI_Z4WoKZpGfZ2LmGD-44VeS" alt="Metropolis" class="w-full h-full object-cover"/>
-              </div>
-              <div>
-                <h4 class="text-sm font-extrabold text-slate-900">Vinhomes Metropolis Liễu Giai</h4>
-                <p class="text-[11px] text-slate-500 mt-0.5">Ba Đình, Hà Nội • View Panorama Hồ Tây</p>
-                <div class="flex items-center gap-1.5 mt-1">
-                  <span class="px-2 py-0.5 rounded-md bg-slate-50 border border-slate-200 text-[#0f3d64] text-[10px] font-extrabold">★ 2 Căn do bạn chốt</span>
-                  <span class="text-[10px] text-slate-500 font-mono">Doanh số: 9,17 Tỷ</span>
-                </div>
-              </div>
-            </div>
-            <span class="material-symbols-outlined text-slate-400 text-[20px] mt-1">chevron_right</span>
-          </div>
-
-          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex flex-col gap-1.5 text-xs">
-            <div class="flex items-center justify-between">
-              <span class="text-[#0f3d64] font-bold flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-slate-500"></span>
-                Căn A1-2404 (Tháp Aqua 1):
-              </span>
-              <span class="font-mono font-bold text-[#0f3d64]">4,82 Tỷ • Cọc 100 Tr (Khách Hương)</span>
-            </div>
-            <div class="flex items-center justify-between pt-1 border-t border-slate-200/60">
-              <span class="text-[#0f3d64] font-bold flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-slate-500"></span>
-                Căn A2-0504 (Tháp Aqua 2):
-              </span>
-              <span class="font-mono font-bold text-[#0f3d64]">4,35 Tỷ • Cọc 50 Tr (Khách Cường)</span>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between text-xs font-bold text-[#0f3d64] pt-0.5">
-            <span class="text-[11px] text-slate-400 font-normal">Gồm 3 tháp: Aqua 1, Aqua 2, Aqua 3</span>
-            <span class="flex items-center gap-0.5 hover:underline">
-              <span>Xem Phân Khu</span>
-              <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </span>
-          </div>
-        </div>
-
-        <!-- Project 3: Ciputra Hanoi International City -->
-        <div onclick="selectMyProject('ciputra-hn')" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-[#0f3d64] shadow-xs flex flex-col gap-3 cursor-pointer transition-all hover:shadow-md active:scale-[0.99]">
-          <div class="flex items-start justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-14 h-14 rounded-2xl overflow-hidden bg-slate-900 shrink-0 shadow-xs">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx-vgB5YTnrE4MGLJ6uqWcRp0IiYXDNFjjjlESMG394BsZZSBNN5fi6pK8O7MrWi54j3aJ6AkSA1Wbzo6YMGBTi-sgvONvbk08xvziBImc3PVhwVjzf7F0Jmiba9LOflivYo7PRAGCmEo4iab-751EyCe17i73-kOhfTCBuI3K-istt2yKfToaOj9mSVkCXVLcN3H0Nzf6YE6rQsC8xw7SewFiV4Z5mIBCxUyUsNToGA-daNX1aQ8x" alt="Ciputra" class="w-full h-full object-cover"/>
-              </div>
-              <div>
-                <h4 class="text-sm font-extrabold text-slate-900">Ciputra Hanoi International City</h4>
-                <p class="text-[11px] text-slate-500 mt-0.5">Tây Hồ, Hà Nội • Đô thị quốc tế 301 ha</p>
-                <div class="flex items-center gap-1.5 mt-1">
-                  <span class="px-2 py-0.5 rounded-md bg-sky-50 border border-sky-200 text-sky-800 text-[10px] font-bold">Quỹ Căn F1 Ciputra</span>
-                  <span class="text-[10px] text-slate-500 font-mono">Bấm xem phân khu</span>
-                </div>
-              </div>
-            </div>
-            <span class="material-symbols-outlined text-slate-400 text-[20px] mt-1">chevron_right</span>
-          </div>
-
-          <div class="flex items-center justify-between text-xs font-bold text-[#0f3d64] pt-0.5">
-            <span class="text-[11px] text-slate-400 font-normal">Khu The Grand Park • Sân Golf Ciputra</span>
-            <span class="flex items-center gap-0.5 hover:underline">
-              <span>Xem Phân Khu</span>
-              <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </span>
-          </div>
-        </div>
-
-        <!-- Project 4: Grand Marina Saigon -->
-        <div onclick="selectMyProject('grand-marina-sgn')" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-[#0f3d64] shadow-xs flex flex-col gap-3 cursor-pointer transition-all hover:shadow-md active:scale-[0.99]">
-          <div class="flex items-start justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-14 h-14 rounded-2xl overflow-hidden bg-slate-900 shrink-0 shadow-xs">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwLqHk4yU6Z9O8s3t2k1mP4n7v9q2r1x8y6z3w5v4u1" alt="Grand Marina" class="w-full h-full object-cover"/>
-              </div>
-              <div>
-                <h4 class="text-sm font-extrabold text-slate-900">Grand Marina Saigon</h4>
-                <p class="text-[11px] text-slate-500 mt-0.5">Bason, Q.1, TP.HCM • Hàng hiệu Marriott</p>
-                <div class="flex items-center gap-1.5 mt-1">
-                  <span class="px-2 py-0.5 rounded-md bg-sky-50 border border-slate-200 text-slate-800 text-[10px] font-bold">Quỹ Căn Hàng Hiệu F1</span>
-                  <span class="text-[10px] text-slate-500 font-mono">Từ 18,5 - 68 Tỷ</span>
-                </div>
-              </div>
-            </div>
-            <span class="material-symbols-outlined text-slate-400 text-[20px] mt-1">chevron_right</span>
-          </div>
-
-          <div class="flex items-center justify-between text-xs font-bold text-[#0f3d64] pt-0.5">
-            <span class="text-[11px] text-slate-400 font-normal">Tháp Cove, Tháp Sea...</span>
-            <span class="flex items-center gap-0.5 hover:underline">
-              <span>Xem Phân Khu</span>
-              <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </span>
-          </div>
-        </div>
       </div>
 
       <!-- ======================================================== -->
       <!-- CẤP 2: DANH SÁCH PHÂN KHU (ZONES LIST)                  -->
       <!-- ======================================================== -->
       <div id="myLevelZones" class="hidden flex-col gap-3">
-        <!-- Nút Back Rõ Ràng Cho Flow Cá Nhân Cấp 2 -->
-        <div class="flex items-center justify-between px-1">
-          <button onclick="goBackMyHierarchy()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-xs font-bold active:scale-95 transition-all shadow-2xs">
-            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-            <span>Quay lại Dự Án</span>
-          </button>
-          <span class="text-[11px] text-slate-500 font-semibold" id="myZonesHeaderSubtitle">Vinhomes Grand Park</span>
-        </div>
-        <div class="flex items-center justify-between px-1">
-          <span class="text-xs font-extrabold text-slate-800 uppercase tracking-wider" id="myZonesHeaderTitle">2. Danh Sách Phân Khu</span>
-          <span class="text-[10px] text-slate-400">Bấm phân khu để xem tòa</span>
+        <div class="px-1">
+          <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider" id="myZonesHeaderTitle">Danh Sách Phân Khu</span>
         </div>
         <div class="flex flex-col gap-3" id="myZonesContainer">
           <!-- Rendered dynamically via JS -->
@@ -1653,17 +1189,8 @@
       <!-- CẤP 3: DANH SÁCH TÒA NHÀ (TOWERS LIST)                  -->
       <!-- ======================================================== -->
       <div id="myLevelTowers" class="hidden flex-col gap-3">
-        <!-- Nút Back Rõ Ràng Cho Flow Cá Nhân Cấp 3 -->
-        <div class="flex items-center justify-between px-1">
-          <button onclick="goBackMyHierarchy()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-xs font-bold active:scale-95 transition-all shadow-2xs">
-            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-            <span>Quay lại Phân Khu</span>
-          </button>
-          <span class="text-[11px] text-slate-500 font-semibold" id="myTowersHeaderSubtitle">The Origami</span>
-        </div>
-        <div class="flex items-center justify-between px-1">
-          <span class="text-xs font-extrabold text-slate-800 uppercase tracking-wider" id="myTowersHeaderTitle">3. Danh Sách Tòa Nhà</span>
-          <span class="text-[10px] text-slate-400">Bấm tòa để xem tầng &amp; phòng</span>
+        <div class="px-1">
+          <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider" id="myTowersHeaderTitle">Danh Sách Tòa Nhà</span>
         </div>
         <div class="flex flex-col gap-3" id="myTowersContainer">
           <!-- Rendered dynamically via JS -->
@@ -1675,12 +1202,8 @@
       <!-- ======================================================== -->
       <div id="myLevelFloors" class="hidden flex-col gap-3">
         
-        <!-- Nút Back Rõ Ràng & Dropdown Tòa Nhà Cấp 4 (Cá Nhân) -->
-        <div class="flex items-center justify-between px-1">
-          <button onclick="goBackMyHierarchy()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-xs font-bold active:scale-95 transition-all shadow-2xs">
-            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-            <span>Quay lại Tòa Nhà</span>
-          </button>
+        <!-- Chế Độ Xem Cấp 4 (Cá Nhân): Lưới / Danh sách -->
+        <div class="flex items-center justify-end px-1">
           <!-- Chuyển đổi Dạng Lưới vs Dạng Danh Sách -->
           <div class="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
             <button id="btnMyViewGrid" onclick="setMyRoomViewMode('grid')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#0f3d64] text-white shadow-2xs transition-all flex items-center gap-1">
@@ -1748,7 +1271,7 @@
 
     </div>
 
-    <!-- ----------------------------------------------------<!-- ---------------------------------------------------- -->
+    <!-- ---------------------------------------------------- -->
     <!-- MÀN HÌNH 1: CHẤM CÔNG GPS REAL-TIME (SCREEN RIÊNG BIỆT) -->
     <!-- ---------------------------------------------------- -->
     <div id="view-checkin" class="mobile-tab-view flex flex-col w-full px-4 py-3 gap-3.5 pb-28" style="display: none;">
@@ -2098,152 +1621,128 @@
     <!-- TAB 4: CÀI ĐẶT HỆ THỐNG & TÀI KHOẢN (SETTINGS)         -->
     <!-- ---------------------------------------------------- -->
     <div id="view-settings" class="mobile-tab-view flex flex-col w-full px-4 py-3 gap-3.5 pb-28" style="display: none;">
-      
-      <!-- Profile Header Card (Xanh nước, Trắng, Xám) -->
-      <div class="p-4 rounded-3xl bg-gradient-to-br from-[#0f3d64] to-[#1e588a] text-white shadow-md flex items-center justify-between">
-        <div class="flex items-center gap-3.5">
-          <div class="relative w-14 h-14 rounded-full overflow-hidden ring-4 ring-white/30 shrink-0">
-            <img alt="Quang Huy" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WS2PAoRHpXP3F0-LXtIPaWh7UKP3VM-MLVYlsw2EwbW-roG6_IDJIWnrJyZTJJRYgQy9CUUzt6uk1Dwf4dma4G1sMbDgoLv_GiEUxVb9pF5ssblbx9hwiuC1Rx78icgbTzv-_JrCJF4R3aMbPk3cuhqgsd9pOsw3w9srM-xb2w539Yh9fIAlV-j5_Ungl2fi-NHMOxpCbnnpYoDJweqWe8miPsM89PyzQkyWAj0XFqsIttoDXZdMJJhiw"/>
-            <span class="absolute bottom-0 right-0 w-3 h-3 bg-sky-300 rounded-full ring-2 ring-white"></span>
-          </div>
-          <div class="flex flex-col min-w-0">
-            <div class="flex items-center gap-2">
-              <h3 class="text-sm font-bold truncate">Nguyễn Quang Huy</h3>
-              <span class="px-2 py-0.5 rounded-full bg-white text-[#0f3d64] text-[10px] font-extrabold">F1 PRO</span>
-            </div>
-            <span class="text-xs text-sky-200 mt-0.5 font-mono">NV-0012 • 0912 345 678</span>
-            <span class="text-[11px] text-slate-200 truncate">F1 Tân Long Land • Chi nhánh Sala</span>
-          </div>
+
+      <!-- Thẻ hồ sơ + nút sửa -->
+      <div class="p-4 rounded-3xl bg-gradient-to-br from-[#0f3d64] to-[#1e588a] text-white shadow-md flex items-center gap-3.5">
+        <div class="relative w-14 h-14 rounded-full overflow-hidden ring-4 ring-white/25 shrink-0">
+          <img id="profileAvatarSettings" alt="Ảnh đại diện" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WS2PAoRHpXP3F0-LXtIPaWh7UKP3VM-MLVYlsw2EwbW-roG6_IDJIWnrJyZTJJRYgQy9CUUzt6uk1Dwf4dma4G1sMbDgoLv_GiEUxVb9pF5ssblbx9hwiuC1Rx78icgbTzv-_JrCJF4R3aMbPk3cuhqgsd9pOsw3w9srM-xb2w539Yh9fIAlV-j5_Ungl2fi-NHMOxpCbnnpYoDJweqWe8miPsM89PyzQkyWAj0XFqsIttoDXZdMJJhiw"/>
         </div>
-        <button onclick="showToast('Mở màn hình sửa thông tin cá nhân...', 'edit')" class="w-8 h-8 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center text-white active:scale-90 transition-all">
+        <div class="flex flex-col min-w-0 flex-1">
+          <div class="flex items-center gap-2 min-w-0">
+            <h3 class="text-sm font-bold truncate" id="profileNameSettings">Nguyễn Quang Huy</h3>
+            <span class="px-2 py-0.5 rounded-full bg-white text-[#0f3d64] text-[10px] font-extrabold shrink-0">F1 PRO</span>
+          </div>
+          <span class="text-xs text-sky-200 mt-0.5 font-mono truncate" id="profilePhoneSettings">NV-0012 • 0912 345 678</span>
+          <span class="text-[11px] text-slate-200 truncate" id="profileBranchSettings">Chi nhánh Sala</span>
+        </div>
+        <button onclick="openEditProfile()" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center text-white active:scale-90 transition-all shrink-0" aria-label="Sửa hồ sơ">
           <span class="material-symbols-outlined text-[18px]">edit</span>
         </button>
       </div>
 
-      <!-- 1. CÀI ĐẶT THÔNG BÁO -->
+      <!-- Thông báo -->
       <div class="rounded-2xl bg-white border border-slate-200 shadow-xs overflow-hidden">
-        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#0f3d64] text-[18px]">notifications</span>
-          <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Thông Báo &amp; Cảnh Báo</span>
+        <div class="px-4 py-2 border-b border-slate-100">
+          <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Thông báo</span>
         </div>
         <div class="divide-y divide-slate-100 text-xs">
-          <!-- Item 1 -->
-          <div class="p-3.5 flex items-center justify-between">
-            <div>
-              <span class="font-bold text-slate-800 block">Biến động giỏ hàng &amp; duyệt cọc</span>
-              <span class="text-[11px] text-slate-500">Nhận thông báo khi có căn mới hoặc đổi trạng thái</span>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" checked class="sr-only peer" onchange="showToast('Đã lưu cài đặt thông báo giỏ hàng', 'tune')">
-              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0f3d64]"></div>
+          <div class="p-3.5 flex items-center justify-between gap-3">
+            <span class="font-bold text-slate-800">Thông báo đẩy</span>
+            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+              <input type="checkbox" checked class="sr-only peer" onchange="showToast(this.checked ? 'Đã bật thông báo đẩy' : 'Đã tắt thông báo đẩy', 'notifications')">
+              <div class="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0f3d64]"></div>
             </label>
           </div>
-          <!-- Item 2 -->
-          <div class="p-3.5 flex items-center justify-between">
-            <div>
-              <span class="font-bold text-slate-800 block">Nhắc nhở chấm công GPS</span>
-              <span class="text-[11px] text-slate-500">Thông báo nhắc vào ca lúc 08:00 và tan ca 17:30</span>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" checked class="sr-only peer" onchange="showToast('Đã lưu cài đặt nhắc chấm công', 'tune')">
-              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0f3d64]"></div>
-            </label>
-          </div>
-          <!-- Item 3 -->
-          <div class="p-3.5 flex items-center justify-between">
-            <div>
-              <span class="font-bold text-slate-800 block">Sự kiện mở bán &amp; CSBH mới</span>
-              <span class="text-[11px] text-slate-500">Nhận lịch kick-off, bảng giá và chính sách ưu đãi F1</span>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" checked class="sr-only peer" onchange="showToast('Đã lưu cài đặt sự kiện', 'tune')">
-              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0f3d64]"></div>
+          <div class="p-3.5 flex items-center justify-between gap-3">
+            <span class="font-bold text-slate-800">Nhắc chấm công</span>
+            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+              <input type="checkbox" checked class="sr-only peer" onchange="showToast(this.checked ? 'Đã bật nhắc chấm công' : 'Đã tắt nhắc chấm công', 'schedule')">
+              <div class="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0f3d64]"></div>
             </label>
           </div>
         </div>
       </div>
 
-      <!-- 2. BẢO MẬT & ĐĂNG NHẬP -->
+      <!-- Tài khoản -->
       <div class="rounded-2xl bg-white border border-slate-200 shadow-xs overflow-hidden">
-        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#0f3d64] text-[18px]">security</span>
-          <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Bảo Mật &amp; Quyền Riêng Tư</span>
+        <div class="px-4 py-2 border-b border-slate-100">
+          <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">Tài khoản</span>
         </div>
         <div class="divide-y divide-slate-100 text-xs">
-          <!-- Item 1 -->
-          <div class="p-3.5 flex items-center justify-between">
-            <div>
-              <span class="font-bold text-slate-800 block">Khóa ứng dụng bằng Face ID / Vân tay</span>
-              <span class="text-[11px] text-slate-500">Bảo mật thông tin khách hàng &amp; quỹ căn cá nhân</span>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" checked class="sr-only peer" onchange="showToast('Đã kích hoạt Face ID bảo mật', 'fingerprint')">
-              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0f3d64]"></div>
-            </label>
-          </div>
-          <!-- Item 2 -->
-          <button onclick="showToast('Mở form đổi mật khẩu tài khoản...', 'key')" class="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left">
-            <div>
-              <span class="font-bold text-slate-800 block">Đổi mật khẩu tài khoản</span>
-              <span class="text-[11px] text-slate-500">Cập nhật lần cuối: 30 ngày trước</span>
-            </div>
+          <button onclick="openEditProfile()" class="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left">
+            <span class="font-bold text-slate-800">Thông tin cá nhân</span>
             <span class="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
+          </button>
+          <button onclick="showToast('Đã gửi liên kết đổi mật khẩu qua email.', 'key')" class="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left">
+            <span class="font-bold text-slate-800">Đổi mật khẩu</span>
+            <span class="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
+          </button>
+          <button onclick="showToast('Đã đăng xuất tài khoản an toàn!', 'logout')" class="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left">
+            <span class="font-bold text-rose-600">Đăng xuất</span>
+            <span class="material-symbols-outlined text-[18px] text-rose-300">chevron_right</span>
           </button>
         </div>
       </div>
 
-      <!-- 3. TIỆN ÍCH BẤT ĐỘNG SẢN & BẢN ĐỒ -->
-      <div class="rounded-2xl bg-white border border-slate-200 shadow-xs overflow-hidden">
-        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#0f3d64] text-[18px]">tune</span>
-          <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Tiện Ích &amp; Hiển Thị</span>
+      <span class="text-center text-[11px] text-slate-400 font-mono">Tân Long Land • v2.4.0</span>
+
+    </div>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- MÀN HÌNH: SỬA THÔNG TIN CÁ NHÂN                       -->
+    <!-- ---------------------------------------------------- -->
+    <div id="view-edit-profile" class="mobile-tab-view flex flex-col w-full px-4 py-3 gap-3.5 pb-28" style="display: none;">
+
+      <!-- Ảnh đại diện -->
+      <div class="flex flex-col items-center gap-2 py-1">
+        <div class="relative">
+          <div class="w-20 h-20 rounded-full overflow-hidden ring-4 ring-sky-100">
+            <img id="editProfileAvatar" alt="Ảnh đại diện" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WS2PAoRHpXP3F0-LXtIPaWh7UKP3VM-MLVYlsw2EwbW-roG6_IDJIWnrJyZTJJRYgQy9CUUzt6uk1Dwf4dma4G1sMbDgoLv_GiEUxVb9pF5ssblbx9hwiuC1Rx78icgbTzv-_JrCJF4R3aMbPk3cuhqgsd9pOsw3w9srM-xb2w539Yh9fIAlV-j5_Ungl2fi-NHMOxpCbnnpYoDJweqWe8miPsM89PyzQkyWAj0XFqsIttoDXZdMJJhiw"/>
+          </div>
+          <label for="editProfileAvatarInput" class="absolute -bottom-0.5 -right-0.5 w-8 h-8 rounded-full bg-[#0f3d64] text-white flex items-center justify-center border-2 border-white cursor-pointer active:scale-90 transition-transform">
+            <span class="material-symbols-outlined text-[16px]">photo_camera</span>
+          </label>
+          <input id="editProfileAvatarInput" type="file" accept="image/*" class="hidden" onchange="onPickProfileAvatar(this)"/>
         </div>
-        <div class="divide-y divide-slate-100 text-xs">
-          <div class="p-3.5 flex items-center justify-between">
-            <div>
-              <span class="font-bold text-slate-800 block">Định dạng tiền tệ BĐS</span>
-              <span class="text-[11px] text-slate-500">Hiển thị chuẩn Tỷ &amp; Triệu VNĐ</span>
-            </div>
-            <span class="font-mono font-bold text-[#0f3d64] bg-sky-50 px-2 py-0.5 rounded border border-sky-200">Tỷ / Triệu</span>
-          </div>
-          <div class="p-3.5 flex items-center justify-between">
-            <div>
-              <span class="font-bold text-slate-800 block">Bản đồ dẫn đường</span>
-              <span class="text-[11px] text-slate-500">Mở định vị sa bàn &amp; dự án</span>
-            </div>
-            <span class="font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">Google Maps</span>
-          </div>
+        <span class="text-[11px] text-slate-400">Chạm vào biểu tượng máy ảnh để đổi ảnh</span>
+      </div>
+
+      <!-- Các trường thông tin cơ bản -->
+      <div class="rounded-2xl bg-white border border-slate-200 shadow-xs divide-y divide-slate-100">
+        <label class="p-3.5 flex flex-col gap-1">
+          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Họ và tên</span>
+          <input id="editProfileName" type="text" class="text-sm font-bold text-slate-900 bg-transparent focus:outline-none" placeholder="Nhập họ và tên"/>
+        </label>
+        <label class="p-3.5 flex flex-col gap-1">
+          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Số điện thoại</span>
+          <input id="editProfilePhone" type="tel" inputmode="tel" class="text-sm font-bold text-slate-900 font-mono bg-transparent focus:outline-none" placeholder="09xx xxx xxx"/>
+        </label>
+        <label class="p-3.5 flex flex-col gap-1">
+          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Email</span>
+          <input id="editProfileEmail" type="email" inputmode="email" class="text-sm font-bold text-slate-900 bg-transparent focus:outline-none" placeholder="ten@tanlongland.vn"/>
+        </label>
+      </div>
+
+      <!-- Thông tin do công ty cấp, không sửa được -->
+      <div class="rounded-2xl bg-slate-50 border border-slate-200 divide-y divide-slate-200/70 text-xs">
+        <div class="p-3.5 flex items-center justify-between">
+          <span class="text-slate-500">Mã nhân viên</span>
+          <span class="font-mono font-bold text-slate-700" id="editProfileCode">NV-0012</span>
+        </div>
+        <div class="p-3.5 flex items-center justify-between">
+          <span class="text-slate-500">Chi nhánh</span>
+          <span class="font-bold text-slate-700" id="editProfileBranch">Chi nhánh Sala</span>
+        </div>
+        <div class="p-3.5 flex items-start justify-between gap-2">
+          <span class="text-slate-500 shrink-0">Ghi chú</span>
+          <span class="text-[11px] text-slate-400 text-right">Mã NV và chi nhánh do công ty cấp, liên hệ quản lý nếu cần đổi.</span>
         </div>
       </div>
 
-      <!-- 4. HỆ THỐNG & HỖ TRỢ -->
-      <div class="rounded-2xl bg-white border border-slate-200 shadow-xs overflow-hidden text-xs divide-y divide-slate-100">
-        <button onclick="showToast('Chuyển sang Bảng Điều Khiển Quản Trị Desktop...'); window.location.href='adminPanel.html';" class="w-full flex items-center justify-between p-3.5 hover:bg-sky-50 text-[#0f3d64] font-bold transition-colors text-left bg-sky-50/40">
-          <div class="flex items-center gap-2.5">
-            <span class="material-symbols-outlined text-[20px]">desktop_windows</span>
-            <span>Mở Bảng Điều Khiển Admin (Desktop)</span>
-          </div>
-          <span class="material-symbols-outlined text-[18px]">open_in_new</span>
-        </button>
-        <button onclick="showToast('Đang xóa bộ nhớ đệm cache ứng dụng...', 'cleaning_services')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors text-left">
-          <div class="flex items-center gap-2.5 text-slate-700">
-            <span class="material-symbols-outlined text-[20px] text-slate-500">cached</span>
-            <span>Xóa dữ liệu bộ nhớ đệm (Cache: 12.4 MB)</span>
-          </div>
-          <span class="text-[11px] text-slate-400">Dọn dẹp</span>
-        </button>
-        <div class="p-3.5 flex items-center justify-between text-slate-500 text-[11px]">
-          <span>Phiên bản ứng dụng</span>
-          <span class="font-mono font-bold text-slate-700">v2.4.0 (Tân Long Mobile Pro)</span>
-        </div>
-        <button onclick="showToast('Đã đăng xuất tài khoản an toàn!')" class="w-full flex items-center justify-between p-3.5 hover:bg-slate-100 text-slate-700 font-bold transition-colors text-left">
-          <div class="flex items-center gap-2.5">
-            <span class="material-symbols-outlined text-[20px] text-slate-500">logout</span>
-            <span>Đăng xuất tài khoản</span>
-          </div>
-          <span class="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
-        </button>
-      </div>
+      <button onclick="saveUserProfile()" class="w-full py-3 rounded-xl bg-[#0f3d64] hover:bg-[#1e588a] text-white text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[18px]">check</span>
+        <span>Lưu thay đổi</span>
+      </button>
 
     </div>
 
@@ -2965,11 +2464,136 @@
       </div>
 
     </div>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- MÀN HÌNH: HỒ SƠ CHI TIẾT KHÁCH HÀNG (CRM DETAIL)      -->
+    <!-- ---------------------------------------------------- -->
+    <div id="view-customer-detail" class="mobile-tab-view flex flex-col w-full px-4 py-3 gap-3.5 pb-28" style="display: none;">
+
+      <!-- 1. Thẻ thông tin khách hàng -->
+      <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-3">
+        <div class="flex items-start gap-3">
+          <div class="w-14 h-14 rounded-2xl overflow-hidden bg-slate-200 shrink-0 ring-2 ring-sky-100">
+            <img id="cdAvatar" class="w-full h-full object-cover" src="" alt="Khách hàng"/>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <h3 id="cdName" class="text-sm font-extrabold text-slate-900 truncate">Khách hàng</h3>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span id="cdTier" class="px-1.5 py-0.2 rounded bg-[#0f3d64] text-white text-[9px] font-extrabold">VIP</span>
+                  <span id="cdAddress" class="text-[11px] text-slate-500 truncate">—</span>
+                </div>
+              </div>
+              <span id="cdStatusBadge" class="px-2.5 py-1 rounded-xl text-xs font-bold shrink-0 bg-slate-100 text-slate-700">—</span>
+            </div>
+            <div class="flex items-center gap-1.5 mt-1.5">
+              <span class="material-symbols-outlined text-[15px] text-[#0f3d64]">call</span>
+              <span id="cdPhone" class="text-xs font-bold font-mono text-slate-800">—</span>
+              <button onclick="copyCurrentCustomerPhone()" class="text-[10px] text-[#0f3d64] font-bold underline">Sao chép</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cụm hành động nhanh -->
+        <div class="grid grid-cols-3 gap-2">
+          <a id="cdCallLink" href="tel:" class="py-2 rounded-xl bg-[#0f3d64] hover:bg-[#1e588a] text-white text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[15px]">call</span>
+            <span>Gọi ngay</span>
+          </a>
+          <button onclick="openZaloForCurrentCustomer()" class="py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[15px]">chat</span>
+            <span>Nhắn Zalo</span>
+          </button>
+          <button onclick="openAppointmentMap('Nhà mẫu Vinhomes Metropolis, Liễu Giai, Hà Nội')" class="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[15px]">near_me</span>
+            <span>Chỉ đường</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Phễu tiến trình 5 bước (bấm để đổi trạng thái) -->
+      <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px] text-[#0f3d64]">conversion_path</span>
+            Tiến Trình Chăm Sóc
+          </span>
+          <span class="text-[10px] text-slate-400">Bấm để cập nhật</span>
+        </div>
+        <div id="cdPipelineStepper" class="grid grid-cols-5 gap-1.5">
+          <!-- Rendered dynamically via renderCustomerStepper() -->
+        </div>
+      </div>
+
+      <!-- 3. Nhu cầu & ngân sách -->
+      <div class="grid grid-cols-2 gap-2">
+        <div class="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-0.5">
+          <span class="text-[10px] text-slate-400 font-bold uppercase">Nhu Cầu Quan Tâm</span>
+          <span id="cdDemand" class="text-xs font-extrabold text-slate-900">—</span>
+        </div>
+        <div class="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-0.5">
+          <span class="text-[10px] text-slate-400 font-bold uppercase">Ngân Sách Dự Kiến</span>
+          <span id="cdBudget" class="text-xs font-extrabold text-[#0f3d64] font-mono">—</span>
+        </div>
+      </div>
+
+      <!-- 4. Ghi chú nổi bật hiện tại -->
+      <div class="p-3 rounded-2xl bg-sky-50 border border-sky-200 flex items-start gap-2">
+        <span class="material-symbols-outlined text-[18px] text-[#0f3d64] shrink-0">sticky_note_2</span>
+        <p id="cdMainNote" class="text-xs text-slate-700 italic leading-relaxed">—</p>
+      </div>
+
+      <!-- 5. Quỹ căn đã gửi khách -->
+      <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-2">
+        <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[18px] text-[#0f3d64]">real_estate_agent</span>
+          Căn Hộ Đã Gửi Khách
+        </span>
+        <div id="cdSentUnitsContainer" class="flex flex-col gap-2">
+          <!-- Rendered dynamically via renderCustomerSentUnits() -->
+        </div>
+      </div>
+
+      <!-- 6. Nhật ký tiến trình + ô thêm ghi chú -->
+      <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px] text-[#0f3d64]">history</span>
+            Nhật Ký Tư Vấn
+          </span>
+          <span id="cdHistoryCount" class="text-[10px] text-slate-400">0 Ghi chú</span>
+        </div>
+
+        <!-- Chip gợi ý 1 chạm -->
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <button onclick="insertDetailNoteChip('Đã gọi, khách bận hẹn gọi lại')" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold shrink-0 active:scale-95">Gọi lại sau</button>
+          <button onclick="insertDetailNoteChip('Đã gửi bảng giá &amp; mặt bằng qua Zalo')" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold shrink-0 active:scale-95">Đã gửi báo giá</button>
+          <button onclick="insertDetailNoteChip('Khách hẹn ra sa bàn xem nhà mẫu')" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold shrink-0 active:scale-95">Hẹn xem nhà mẫu</button>
+          <button onclick="insertDetailNoteChip('Khách cân nhắc gói vay ngân hàng')" class="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold shrink-0 active:scale-95">Cân nhắc vay</button>
+        </div>
+
+        <div class="flex items-end gap-2">
+          <textarea id="cdNewNoteInput" rows="2" placeholder="Nhập tiến trình mới sau khi trao đổi với khách..." class="flex-1 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20 focus:bg-white resize-none"></textarea>
+          <button onclick="submitNewCustomerNote()" class="h-11 px-3 rounded-xl bg-[#0f3d64] hover:bg-[#1e588a] text-white text-xs font-bold flex items-center gap-1 shrink-0 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[16px]">send</span>
+            <span>Lưu</span>
+          </button>
+        </div>
+
+        <!-- Timeline -->
+        <div id="cdTimelineList" class="flex flex-col gap-3 pl-5 border-l-2 border-slate-100 ml-1">
+          <!-- Rendered dynamically via renderCustomerTimeline() -->
+        </div>
+      </div>
+
+    </div>
+
   </main>
 
   <!-- ======================================================== -->
   <!-- 4. BOTTOM NAVIGATION BAR & NÚT CHẤM CÔNG TRÒN Ở GIỮA     -->
-  <!-- [Trang chủ]  [Giỏ hàng]   ( [O] Chấm công )   [Booking]  [Khách hàng] -->
+  <!-- [Trang chủ]  [Sự kiện]   ( [O] Chấm công )   [Cá nhân]  [Cài đặt] -->
   <!-- ======================================================== -->
   <nav class="fixed bottom-0 inset-x-0 sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 w-full sm:max-w-[430px] z-50 pb-safe bg-white/95 sm:rounded-b-[38px] backdrop-blur-xl shadow-[0_-2px_16px_rgba(0,0,0,0.08)] border-t border-slate-200" id="bottomNav">
     <div class="flex items-center justify-around h-16 px-1 relative">
@@ -2980,10 +2604,10 @@
         <span class="text-[10px]">Trang chủ</span>
       </button>
 
-      <!-- Tab 2: Giỏ hàng -->
+      <!-- Tab 2: Sự kiện -->
       <button onclick="openScreen('inventory')" class="mob-nav-btn flex flex-col items-center justify-center gap-1 flex-1 h-full text-slate-500 hover:text-[#0f3d64] transition-colors relative" data-tab="gio-hang">
         <span class="material-symbols-outlined text-[22px]">domain</span>
-        <span class="text-[10px]">Giỏ hàng</span>
+        <span class="text-[10px]">Sự kiện</span>
       </button>
 
       <!-- 3. NÚT CHẤM CÔNG NHANH (FAB TRÒN NỔI BẬT Ở CHÍNH GIỮA BOTTOM BAR) -->
@@ -3164,7 +2788,7 @@
 
     const SCREEN_REGISTRY = {
       'home': { viewId: 'view-home', title: '', tab: 'trang-chu', isMainTab: true },
-      'inventory': { viewId: 'view-inventory', title: 'Giỏ Hàng Toàn Sàn', tab: 'gio-hang', isMainTab: true },
+      'inventory': { viewId: 'view-inventory', title: 'Sự Kiện Toàn Sàn', tab: 'gio-hang', isMainTab: true },
       'my-units': { viewId: 'view-my-units', title: 'Cá Nhân', tab: 'ca-nhan', isMainTab: true },
       'profile': { viewId: 'view-my-units', title: 'Cá Nhân', tab: 'ca-nhan', isMainTab: true },
       'settings': { viewId: 'view-settings', title: 'Cài Đặt', tab: 'cai-dat', isMainTab: true },
@@ -3180,6 +2804,7 @@
       'personal-qr': { viewId: 'view-personal-qr', title: 'Mã QR Điểm Danh Cá Nhân', subtitle: 'Danh thiếp điện tử & Check-in' },
       'event-detail': { viewId: 'view-event-detail', title: 'Chi Tiết Sự Kiện & Dự Án', subtitle: 'Thông tin mở bán & quyền lợi F1' },
       'customer-detail': { viewId: 'view-customer-detail', title: 'Hồ Sơ Khách Hàng', subtitle: 'Lịch sử tư vấn, nhu cầu & nhật ký tiến trình' },
+      'edit-profile': { viewId: 'view-edit-profile', title: 'Thông Tin Cá Nhân', subtitle: 'Chỉnh sửa hồ sơ của bạn' },
     };
 
     function openScreen(screenName, options = {}) {
@@ -3351,13 +2976,10 @@
         if (statusText) statusText.textContent = "ĐANG MỞ BÁN (F1)";
       }
 
-      const depositBadge = document.getElementById('dtDepositBadge');
-      if (depositBadge) {
-        if (isAqua) depositBadge.textContent = 'Cọc: 100 Tr';
-        else if (c.startsWith('CIP')) depositBadge.textContent = 'Cọc: 100 Tr';
-        else if (c.startsWith('COVE')) depositBadge.textContent = 'Cọc: 200 Tr';
-        else depositBadge.textContent = 'Cọc: 50 Tr';
-      }
+      // Mức cọc niêm yết theo dự án (dùng cho nút Khóa Căn phía dưới)
+      let depositLabel = 'Cọc: 50 Tr';
+      if (isAqua || c.startsWith('CIP')) depositLabel = 'Cọc: 100 Tr';
+      else if (c.startsWith('COVE')) depositLabel = 'Cọc: 200 Tr';
 
       if (isAqua) {
         if (priceDisc) priceDisc.innerHTML = '5,04 Tỷ ';
@@ -3441,7 +3063,7 @@
           lockBtn.onclick = () => showToast(`Căn ${c} đã bán thành công. Đang mở hồ sơ bàn giao...`, 'verified');
         } else if (isDeposited) {
           lockBtn.className = "flex-[1.4] py-3 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all";
-          lockBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">receipt</span><span>Xem HĐ Cọc (50Tr)</span>';
+          lockBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">receipt</span><span>Xem HĐ Cọc (${depositLabel.replace('Cọc: ', '')})</span>`;
           lockBtn.onclick = () => showToast(`Đang mở hợp đồng cọc #5120 của căn ${c}...`, 'receipt');
         } else if (isHolding) {
           lockBtn.className = "flex-[1.4] py-3 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all";
@@ -3449,7 +3071,7 @@
           lockBtn.onclick = () => openQueueModal(c);
         } else {
           lockBtn.className = "flex-[1.4] py-3 rounded-xl bg-[#0f3d64] hover:bg-[#1e588a] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all";
-          lockBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">lock</span><span>Khóa Căn • Cọc: 50 Tr</span>';
+          lockBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">lock</span><span>Khóa Căn • ${depositLabel}</span>`;
           lockBtn.onclick = () => triggerQuickLockModal(c, priceDisc ? priceDisc.textContent : '4 Tỷ');
         }
       }
@@ -3464,31 +3086,25 @@
       const map = { 'trang-chu': 'home', 'gio-hang': 'inventory', 'ca-nhan': 'my-units', 'can-cua-toi': 'my-units', 'cai-dat': 'settings', 'ho-so': 'settings', 'settings': 'settings', 'booking': 'my-units', 'khach-hang': 'my-units' };
       openScreen(map[tabId] || 'home');
     }
-    function openCameraCheckinModal() { openScreen('checkin'); }
-    function closeCameraCheckinModal() { goBackScreen(); }
-    function openAttendanceHistoryModal() { openScreen('attendance-history'); }
-    function closeAttendanceHistoryModal() { goBackScreen(); }
-    function openNotificationModal() { openScreen('notifications'); }
-    function closeNotificationModal() { goBackScreen(); }
-    function openProfileModal() { openScreen('profile'); }
-    function closeProfileModal() { goBackScreen(); }
-    function openEventsHubModal() { openScreen('events'); }
-    function closeEventsHubModal() { goBackScreen(); }
-    function openSalesKitModal() { openScreen('saleskit'); }
-    function closeSalesKitModal() { goBackScreen(); }
-    function openLeaveRequestModal() { openScreen('explanation'); }
-    function closeLeaveRequestModal() { goBackScreen(); }
-    function openQrScannerModal() { openScreen('qr-scanner'); }
-    function closeQrScannerModal() { goBackScreen(); }
-    function openPersonalQrModal() { openScreen('personal-qr'); }
-    function closePersonalQrModal() { goBackScreen(); }
+    // Chuyển chuỗi giá hiển thị ("4,15 Tỷ" / "850 Tr") sang số VNĐ
+    function parseVndPrice(text) {
+      if (typeof text === 'number') return text;
+      const raw = String(text || '').trim();
+      const num = parseFloat(raw.replace(/[^0-9,.-]/g, '').replace(/\./g, '').replace(',', '.'));
+      if (isNaN(num)) return null;
+      if (/tỷ|ty/i.test(raw)) return Math.round(num * 1e9);
+      if (/tr|triệu/i.test(raw)) return Math.round(num * 1e6);
+      return Math.round(num);
+    }
+
     function openMortgageModal(code, price) {
-      if (price) {
+      openScreen('mortgage', { subtitle: code ? `Căn ${code} • Lãi suất ưu đãi MB Bank & VCB` : undefined });
+      const value = parseVndPrice(price);
+      if (value) {
         const pInput = document.getElementById('mortgageHomePrice');
-        if (pInput) pInput.value = price;
-        calculateMortgage();
+        if (pInput) pInput.value = value;
       }
-      openScreen('mortgage');
+      calculateMortgage();
     }
 
 
@@ -3970,6 +3586,39 @@
       openScreen('event-detail', { title: ev.isProject ? 'Chi Tiết Dự Án' : 'Chi Tiết Sự Kiện', subtitle: ev.project });
     }
 
+    // Tabs Lịch Thanh Toán (Tiến độ chuẩn / Thanh toán sớm 95% / Gói vay 0%)
+    function switchPaymentScheduleTab(mode) {
+      const views = {
+        standard: document.getElementById('scheduleViewStandard'),
+        early: document.getElementById('scheduleViewEarly'),
+        bank: document.getElementById('scheduleViewBank')
+      };
+      const tabs = {
+        standard: document.getElementById('tabSchedule1'),
+        early: document.getElementById('tabSchedule2'),
+        bank: document.getElementById('tabSchedule3')
+      };
+      const activeCls = 'py-1.5 rounded-lg bg-white text-[#0f3d64] shadow-xs';
+      const idleCls = 'py-1.5 rounded-lg text-slate-600 hover:text-slate-900';
+
+      Object.keys(views).forEach(key => {
+        const view = views[key];
+        if (view) {
+          view.classList.toggle('hidden', key !== mode);
+          view.classList.toggle('flex', key === mode);
+        }
+        const tab = tabs[key];
+        if (tab) tab.className = (key === mode ? activeCls : idleCls);
+      });
+    }
+
+    // Chọn nhóm hiển thị trong Giỏ Hàng thống nhất ('projects' | 'events' | 'all')
+    function switchInventoryMainTab(mode) {
+      const cat = { projects: 'project', events: 'event', all: 'all' }[mode] || 'all';
+      const chip = document.querySelector(`.inv-filter-chip[data-cat="${cat}"]`);
+      filterInventoryCategory(cat, chip);
+    }
+
     // Inventory Bridge
     function goToInventoryForProject(projectName) {
       openScreen('inventory');
@@ -4070,83 +3719,15 @@
     }
 
 
-    // Layout Switcher: Cards vs Matrix
-    function switchInventoryLayout(mode) {
-      const cards = document.getElementById('unitCardList');
-      const matrix = document.getElementById('unitMatrixView');
-      const btnC = document.getElementById('btnViewCards');
-      const btnM = document.getElementById('btnViewMatrix');
-
-      if (mode === 'cards') {
-        cards.classList.remove('hidden');
-        matrix.classList.add('hidden');
-        btnC.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-[#0f3d64] text-white shadow-xs transition-all flex items-center gap-1";
-        btnM.className = "px-2.5 py-1 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1";
-      } else {
-        cards.classList.add('hidden');
-        matrix.classList.remove('hidden');
-        btnM.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-[#0f3d64] text-white shadow-xs transition-all flex items-center gap-1";
-        btnC.className = "px-2.5 py-1 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1";
-      }
-    }
-
-    // Inventory Status Filtering
-    function setInventoryStatusFilter(status, btn) {
-      document.querySelectorAll('.inv-filter-btn').forEach(b => {
-        b.classList.remove('ring-2', 'ring-[#0f3d64]', 'shadow-xs');
-      });
-      btn.classList.add('ring-2', 'ring-[#0f3d64]', 'shadow-xs');
-
-      const cards = document.querySelectorAll('.unit-item-card');
-      let count = 0;
-      cards.forEach(card => {
-        const cStatus = card.getAttribute('data-status');
-        if (status === 'all' || cStatus === status) {
-          card.classList.remove('hidden');
-          count++;
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-      document.getElementById('unitCountDisplay').textContent = `${count} căn phù hợp`;
-    }
-
-    function filterUnitsBySearch(q) {
-      const query = q.trim().toUpperCase();
-      const clearBtn = document.getElementById('clearSearchBtn');
-      if (clearBtn) clearBtn.classList.toggle('hidden', query.length === 0);
-
-      document.querySelectorAll('.unit-item-card').forEach(c => {
-        const code = (c.getAttribute('data-code') || '').toUpperCase();
-        c.classList.toggle('hidden', query.length > 0 && !code.includes(query));
-      });
-    }
-
-    function clearUnitSearch() {
-      const inp = document.getElementById('unitSearchInput');
-      if (inp) inp.value = '';
-      filterUnitsBySearch('');
-    }
-
-    // Check-in Modal Functions (FAB tròn ở giữa)
+    // Check-in: mở màn hình Chấm Công GPS (FAB tròn ở giữa)
     function openCameraCheckinModal() {
-      const m = document.getElementById('camera-checkin-modal');
-      if (m) {
-        m.classList.remove('hidden');
-        m.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-      }
+      openScreen('checkin');
       retakeCheckinPhoto();
       updateCamClock();
     }
 
     function closeCameraCheckinModal() {
-      const m = document.getElementById('camera-checkin-modal');
-      if (m) {
-        m.classList.add('hidden');
-        m.classList.remove('flex');
-        document.body.style.overflow = '';
-      }
+      goBackScreen();
     }
 
     function selectWorkMode(mode) {
@@ -4228,7 +3809,7 @@
       const dateStr = now.toLocaleDateString('vi-VN');
 
       // Add to attendance history list
-      const container = document.getElementById('historyCardContainer');
+      const container = document.getElementById('screenHistoryCardContainer');
       if (container) {
         const item = document.createElement('div');
         item.className = 'p-3 rounded-xl bg-sky-50 border border-sky-200 flex items-start gap-3 animate-in fade-in slide-in-from-top duration-300';
@@ -4249,95 +3830,30 @@
         container.prepend(item);
       }
 
-      closeCameraCheckinModal();
       showToast(`Chấm công thành công tại ${locName}!`, 'verified');
+      openScreen('attendance-history');
     }
 
-    // Modal Triggers for Header Icons
-    function openAttendanceHistoryModal() {
-      const m = document.getElementById('attendance-history-modal');
-      if (m) {
-        m.classList.remove('hidden');
-        m.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-      }
-    }
-    function closeAttendanceHistoryModal() {
-      const m = document.getElementById('attendance-history-modal');
-      if (m) {
-        m.classList.add('hidden');
-        m.classList.remove('flex');
-        document.body.style.overflow = '';
-      }
-    }
+    // Điều hướng các màn hình phụ (trước đây là modal, nay là screen riêng)
+    function openAttendanceHistoryModal() { openScreen('attendance-history'); }
+    function closeAttendanceHistoryModal() { goBackScreen(); }
 
-    function openNotificationModal() {
-      const m = document.getElementById('notification-modal');
-      if (m) {
-        m.classList.remove('hidden');
-        m.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-      }
-    }
-    function closeNotificationModal() {
-      const m = document.getElementById('notification-modal');
-      if (m) {
-        m.classList.add('hidden');
-        m.classList.remove('flex');
-        document.body.style.overflow = '';
-      }
-    }
+    function openNotificationModal() { openScreen('notifications'); }
+    function closeNotificationModal() { goBackScreen(); }
 
-    function openProfileModal() {
-      const m = document.getElementById('profile-modal');
-      if (m) {
-        m.classList.remove('hidden');
-        m.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-      }
-    }
-    function closeProfileModal() {
-      const m = document.getElementById('profile-modal');
-      if (m) {
-        m.classList.add('hidden');
-        m.classList.remove('flex');
-        document.body.style.overflow = '';
-      }
-    }
+    function openProfileModal() { openScreen('profile'); }
+    function closeProfileModal() { goBackScreen(); }
 
-    function openLeaveRequestModal() {
-      const m = document.getElementById('leave-request-modal');
-      if (m) {
-        m.classList.remove('hidden');
-        m.classList.add('flex');
-      }
-    }
-    function closeLeaveRequestModal() {
-      const m = document.getElementById('leave-request-modal');
-      if (m) {
-        m.classList.add('hidden');
-        m.classList.remove('flex');
-      }
-    }
+    function openLeaveRequestModal() { openScreen('explanation'); }
+    function closeLeaveRequestModal() { goBackScreen(); }
     function submitLeaveRequest() {
-      closeLeaveRequestModal();
       showToast('Đã gửi đơn giải trình công tới Quản lý duyệt!', 'send');
+      closeLeaveRequestModal();
     }
 
-    function openQrScannerModal() {
-      const m = document.getElementById('qr-scanner-modal');
-      if (m) {
-        m.classList.remove('hidden');
-        m.classList.add('flex');
-      }
-    }
-    function closeQrScannerModal() {
-      const m = document.getElementById('qr-scanner-modal');
-      if (m) {
-        m.classList.add('hidden');
-        m.classList.remove('flex');
-      }
-    }
+    function openQrScannerModal() { openScreen('qr-scanner'); }
+    function closeQrScannerModal() { goBackScreen(); }
+
     function simulateQrCheckinSuccess() {
       closeQrScannerModal();
       showToast('Check-in sự kiện mở bán thành công! Ghế số: B-12', 'qr_code_scanner');
@@ -4391,9 +3907,6 @@
       showToast(`Đã hủy giữ căn ${code} về quỹ chung.`, 'cancel');
     }
 
-    function openMortgageModal(code, price) {
-      showToast(`Mở bảng tính dòng tiền vay mua căn ${code}...`, 'calculate');
-    }
     function openNewLeadModal() {
       showToast('Mở form thêm khách hàng mới CRM...', 'person_add');
     }
@@ -4865,6 +4378,275 @@
       showToast('Đã lưu tiến trình mới vào lịch sử!', 'check_circle');
     }
 
+    // =============================================================
+    // HỒ SƠ CÁ NHÂN: 1 nguồn dữ liệu, đồng bộ ra mọi màn hình
+    // =============================================================
+    const USER_PROFILE = {
+      name: 'Nguyễn Quang Huy',
+      shortName: 'Huy',
+      phone: '0912 345 678',
+      email: 'huy.nguyen@tanlongland.vn',
+      code: 'NV-0012',
+      branch: 'Chi nhánh Sala',
+      avatar: document.getElementById('profileAvatarSettings') ? document.getElementById('profileAvatarSettings').src : ''
+    };
+
+    function applyUserProfile() {
+      const p = USER_PROFILE;
+      const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+      const setSrc = (id, src) => { const el = document.getElementById(id); if (el && src) el.src = src; };
+
+      set('profileGreetingHome', `Xin chào, ${p.shortName} 👋`);
+      set('profileNameSettings', p.name);
+      set('profilePhoneSettings', `${p.code} • ${p.phone}`);
+      set('profileBranchSettings', p.branch);
+      set('profileNameMyUnits', p.name);
+      set('profileMetaMyUnits', `${p.code} • ${p.branch}`);
+      setSrc('profileAvatarSettings', p.avatar);
+      setSrc('editProfileAvatar', p.avatar);
+
+      // Mọi ảnh đại diện dùng chung 1 nguồn
+      if (p.avatar) {
+        document.querySelectorAll('[data-profile-avatar]').forEach(img => { img.src = p.avatar; });
+      }
+    }
+
+    function openEditProfile() {
+      const p = USER_PROFILE;
+      const val = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+      val('editProfileName', p.name);
+      val('editProfilePhone', p.phone);
+      val('editProfileEmail', p.email);
+      const set = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+      set('editProfileCode', p.code);
+      set('editProfileBranch', p.branch);
+      const av = document.getElementById('editProfileAvatar');
+      if (av && p.avatar) av.src = p.avatar;
+      openScreen('edit-profile');
+    }
+
+    // Đổi ảnh đại diện ngay trên máy (xem trước tức thì, chưa cần server)
+    function onPickProfileAvatar(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const av = document.getElementById('editProfileAvatar');
+        if (av) av.src = e.target.result;
+        USER_PROFILE.avatar = e.target.result;
+        showToast('Đã chọn ảnh mới, bấm Lưu để áp dụng.', 'photo_camera');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveUserProfile() {
+      const get = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      const name = get('editProfileName');
+      const phone = get('editProfilePhone');
+      const email = get('editProfileEmail');
+
+      if (!name) { showToast('Vui lòng nhập họ và tên!', 'warning'); return; }
+      const digits = phone.replace(/[^0-9]/g, '');
+      if (digits.length < 9 || digits.length > 11) { showToast('Số điện thoại chưa hợp lệ!', 'warning'); return; }
+      if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { showToast('Email chưa hợp lệ!', 'warning'); return; }
+
+      USER_PROFILE.name = name;
+      USER_PROFILE.shortName = name.trim().split(/\s+/).pop();
+      USER_PROFILE.phone = phone;
+      USER_PROFILE.email = email;
+
+      applyUserProfile();
+      showToast('Đã lưu thông tin cá nhân!', 'check_circle');
+      goBackScreen();
+    }
+
+    // =============================================================
+    // COMPONENT: THẺ DỰ ÁN TRONG TAB CÁ NHÂN
+    // Toàn bộ 4 thẻ dùng chung 1 khuôn nên bố cục luôn đồng nhất.
+    // =============================================================
+    const MY_PROJECTS_SUMMARY = [
+      {
+        key: 'vin-q9',
+        name: 'Vinhomes Grand Park',
+        location: 'TP. Thủ Đức, TP.HCM',
+        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAx-vgB5YTnrE4MGLJ6uqWcRp0IiYXDNFjjjlESMG394BsZZSBNN5fi6pK8O7MrWi54j3aJ6AkSA1Wbzo6YMGBTi-sgvONvbk08xvziBImc3PVhwVjzf7F0Jmiba9LOflivYo7PRAGCmEo4iab-751EyCe17i73-kOhfTCBuI3K-istt2yKfToaOj9mSVkCXVLcN3H0Nzf6YE6rQsC8xw7SewFiV4Z5mIBCxUyUsNToGA-daNX1aQ8x',
+        sales: '7,83 Tỷ',
+        units: [
+          { code: 'S501-1812', zone: 'The Origami', price: '5,68 Tỷ', client: 'Khách Nam', status: 'deposited', statusLabel: 'Đã cọc' },
+          { code: 'S501-0806', zone: 'The Origami', price: '2,15 Tỷ', client: 'Khách Hà', status: 'sold', statusLabel: 'Đã bán' }
+        ]
+      },
+      {
+        key: 'metropolis-hn',
+        name: 'Vinhomes Metropolis Liễu Giai',
+        location: 'Ba Đình, Hà Nội',
+        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDQo5occuROD7vbU8sLDKsb7mrFwo3gZwUMojTfU_I_rHhW0BzNpwD0RfruQsQGgi6SxG3j1tYTYtSq5Yovm065VbCpeVm1fCt_nknp6en9Aw-yxma9hco0lm-ggZOlepEey0pjCbQYe2xxKXFhnzd40wP_csgKEotpOojnhTr2zEVNUO68CrxfJjzUS7CK9_zdJ9CHDGAszvRnXfKhXf5K2cTEl2UanI_Z4WoKZpGfZ2LmGD-44VeS',
+        sales: '9,17 Tỷ',
+        units: [
+          { code: 'A1-2404', zone: 'Tháp Aqua 1', price: '4,82 Tỷ', client: 'Khách Hương', status: 'deposited', statusLabel: 'Đã cọc' },
+          { code: 'A2-0504', zone: 'Tháp Aqua 2', price: '4,35 Tỷ', client: 'Khách Cường', status: 'deposited', statusLabel: 'Đã cọc' }
+        ]
+      },
+      {
+        key: 'ciputra-hn',
+        name: 'Ciputra Hanoi International City',
+        location: 'Tây Hồ, Hà Nội',
+        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAx-vgB5YTnrE4MGLJ6uqWcRp0IiYXDNFjjjlESMG394BsZZSBNN5fi6pK8O7MrWi54j3aJ6AkSA1Wbzo6YMGBTi-sgvONvbk08xvziBImc3PVhwVjzf7F0Jmiba9LOflivYo7PRAGCmEo4iab-751EyCe17i73-kOhfTCBuI3K-istt2yKfToaOj9mSVkCXVLcN3H0Nzf6YE6rQsC8xw7SewFiV4Z5mIBCxUyUsNToGA-daNX1aQ8x',
+        sales: null,
+        units: []
+      },
+      {
+        key: 'grand-marina-sgn',
+        name: 'Grand Marina Saigon',
+        location: 'Bason, Q.1, TP.HCM',
+        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBlv0-tZyz3oZK7gESQyComKFKzDw3YZ0RMd5A2fmdukj1z8WxWCTO9ImpjOhyQnYLe7Q6U7wQgfbhlX_bxJ9YvQNvDcSr-AEtL51F45ulzc-KCxNrlhJA5o78J8nGXJFC6blqp7vYIGPSf1ExvkUR8HfsD_45ptVNACddf4qBW3LOh0Xi8CfXY13II6c0jO2PF76SMX3enm1KNPvFBrKEdDOZEzw41_bx4sCsrws6kJkojKmii3FNo',
+        sales: null,
+        units: []
+      }
+    ];
+
+    const MY_UNIT_STATUS_CLASSES = {
+      deposited: 'bg-orange-100 text-orange-800',
+      sold: 'bg-rose-100 text-rose-800',
+      holding: 'bg-amber-100 text-amber-800'
+    };
+
+    // Một dòng căn hộ: mã căn + phân khu ở trên, giá + khách ở dưới -> không bao giờ bị chèn chữ
+    function myProjectUnitRow(u) {
+      return `
+        <div class="flex items-center justify-between gap-2 py-1.5">
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-extrabold text-slate-900 font-mono">${u.code}</span>
+              <span class="text-[10px] text-slate-400 truncate">${u.zone}</span>
+            </div>
+            <span class="text-[11px] text-slate-500 block truncate mt-0.5">${u.price} • ${u.client}</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0 ${MY_UNIT_STATUS_CLASSES[u.status] || 'bg-slate-100 text-slate-600'}">${u.statusLabel}</span>
+        </div>
+      `;
+    }
+
+    // Số phân khu đọc từ nguồn dữ liệu thật, tránh nhãn ghi một đằng nội dung một nẻo
+    function myProjectZoneCount(key) {
+      const cfg = MY_PROJECTS_DATABASE[key];
+      return cfg && cfg.zones ? Object.keys(cfg.zones).length : 0;
+    }
+
+    function myProjectCard(p) {
+      const unitsBlock = p.units.length ? `
+        <div class="rounded-xl bg-slate-50 border border-slate-100 px-2.5 divide-y divide-slate-200/70">
+          ${p.units.map(myProjectUnitRow).join('')}
+        </div>
+      ` : '';
+
+      const metaBadge = p.units.length
+        ? `<span class="px-2 py-0.5 rounded-md bg-sky-50 border border-sky-200 text-[#0f3d64] text-[10px] font-extrabold shrink-0">★ ${p.units.length} căn của bạn</span>`
+        : `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold shrink-0">Chưa có căn</span>`;
+
+      const salesText = p.sales
+        ? `<span class="text-[10px] text-slate-500 font-mono truncate">Doanh số ${p.sales}</span>`
+        : '';
+
+      return `
+        <div onclick="selectMyProject('${p.key}')" class="rounded-2xl bg-white border border-slate-200 hover:border-[#0f3d64] shadow-xs cursor-pointer transition-all active:scale-[0.99] flex flex-col">
+          <!-- Phần 1: nhận diện dự án -->
+          <div class="flex items-center gap-3 p-3.5">
+            <div class="w-12 h-12 rounded-xl overflow-hidden bg-sky-50 text-[#0f3d64] shrink-0 flex items-center justify-center relative">
+              <span class="material-symbols-outlined text-[22px]">apartment</span>
+              <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover absolute inset-0" onerror="this.style.display='none'"/>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-sm font-extrabold text-slate-900 truncate">${p.name}</h4>
+              <p class="text-[11px] text-slate-500 truncate mt-0.5">${p.location}</p>
+              <div class="flex items-center gap-1.5 mt-1.5">
+                ${metaBadge}
+                ${salesText}
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-slate-300 text-[22px] shrink-0">chevron_right</span>
+          </div>
+
+          <!-- Phần 2: các căn của bạn trong dự án -->
+          ${unitsBlock ? `<div class="px-3.5 pb-3">${unitsBlock}</div>` : ''}
+
+          <!-- Phần 3: dẫn xuống phân khu -->
+          <div class="flex items-center justify-between px-3.5 py-2.5 border-t border-slate-100">
+            <span class="text-[11px] text-slate-400">${myProjectZoneCount(p.key)} phân khu</span>
+            <span class="text-[11px] font-bold text-[#0f3d64] flex items-center gap-0.5">
+              Xem phân khu
+              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            </span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMyProjectsList() {
+      const container = document.getElementById('myProjectsList');
+      if (!container) return;
+      container.innerHTML = MY_PROJECTS_SUMMARY.map(myProjectCard).join('');
+    }
+
+    // 0. Render danh sách khách hàng trong tab Cá Nhân (từ CUSTOMERS_DATABASE)
+    const CRM_STAGE_CLASSES = {
+      new: 'bg-sky-100 text-[#0f3d64]',
+      caring: 'bg-sky-100 text-sky-700',
+      tour: 'bg-sky-100 text-[#0284c7]',
+      booking: 'bg-sky-100 text-[#0f3d64]',
+      won: 'bg-sky-200 text-slate-900'
+    };
+
+    function renderCustomerList() {
+      const container = document.getElementById('crmCustomerList');
+      if (!container) return;
+
+      container.innerHTML = Object.values(CUSTOMERS_DATABASE).map(c => `
+        <div class="customer-card p-3 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-2 cursor-pointer hover:border-[#0f3d64]/40 hover:shadow-md active:scale-[0.99] transition-all"
+             data-customer-id="${c.id}" data-stage="${c.stage}"
+             data-search="${(c.name + ' ' + c.phone + ' ' + c.phoneClean + ' ' + c.demand).toLowerCase()}"
+             onclick="openCustomerDetail('${c.id}')">
+          <div class="flex items-start gap-2.5">
+            <div class="w-11 h-11 rounded-xl overflow-hidden bg-slate-200 shrink-0">
+              <img class="w-full h-full object-cover" src="${c.avatar}" alt="${c.name}"/>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <h4 class="text-xs font-extrabold text-slate-900 truncate">${c.name}</h4>
+                <span class="customer-stage-badge px-2 py-0.5 rounded-md text-[10px] font-bold ${CRM_STAGE_CLASSES[c.stage] || 'bg-slate-100 text-slate-700'}">${c.stageLabel}</span>
+              </div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="px-1.5 py-0.2 rounded bg-[#0f3d64] text-white text-[9px] font-extrabold">${c.tier}</span>
+                <span class="text-[11px] text-slate-500 font-mono truncate">${c.phone}</span>
+              </div>
+              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">${c.demand} • ${c.budget}</div>
+            </div>
+          </div>
+
+          <p class="customer-note-quote text-[11px] text-slate-600 italic line-clamp-2 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100">📝 "${c.note}"</p>
+
+          <div class="grid grid-cols-4 gap-1.5 pt-1.5 border-t border-slate-100">
+            <a href="tel:${c.phoneClean}" onclick="event.stopPropagation()" class="py-1.5 rounded-lg bg-[#0f3d64] text-white text-[10px] font-bold flex items-center justify-center gap-0.5 active:scale-95 transition-all">
+              <span class="material-symbols-outlined text-[13px]">call</span>
+              <span>Gọi</span>
+            </a>
+            <button onclick="copyCustomerPhone('${c.phone}', event)" class="py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold flex items-center justify-center gap-0.5 active:scale-95 transition-all">
+              <span class="material-symbols-outlined text-[13px]">content_copy</span>
+              <span>SĐT</span>
+            </button>
+            <button onclick="openQuickNoteModal('${c.id}', event)" class="py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-[10px] font-bold flex items-center justify-center gap-0.5 active:scale-95 transition-all">
+              <span class="material-symbols-outlined text-[13px]">edit_note</span>
+              <span>Ghi chú</span>
+            </button>
+            <button onclick="openChangeStatusModal('${c.id}', event)" class="py-1.5 rounded-lg bg-sky-50 border border-sky-200 text-[#0f3d64] text-[10px] font-bold flex items-center justify-center gap-0.5 active:scale-95 transition-all">
+              <span class="material-symbols-outlined text-[13px]">sync_alt</span>
+              <span>Đổi TT</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
     // 10. Tìm kiếm khách hàng theo tên hoặc số điện thoại realtime
     function searchCustomers(query) {
       const q = (query || '').toLowerCase().trim();
@@ -4949,17 +4731,6 @@
       goToCarouselSlide(newIdx);
     }
 
-    function openEventDetailModal(idx) {
-      const events = [
-        "Kickoff Ciputra Giai Đoạn 2 • Grand Park • 27/10",
-        "Thưởng nóng 50 Tr cho giao dịch căn 3PN Aqua",
-        "Chính sách vay ngân hàng 0% 24 tháng mới từ MB Bank",
-        "Mở bán 20 căn góc VIP Metropolis Riverside",
-        "Bảng vàng đua Top Sale Q4: Thưởng chuyến đi Châu Âu"
-      ];
-      showToast(`Chi tiết: ${events[idx]}`, 'campaign');
-    }
-
     // 2. Events Hub Screen
     function openEventsHubModal() { openScreen('events'); }
     function closeEventsHubModal() { goBackScreen(); }
@@ -4999,43 +4770,6 @@
     function openPersonalQrModal() { openScreen('personal-qr'); }
     function closePersonalQrModal() { goBackScreen(); }
 
-    // 5. Leaderboard Period Switcher
-    function switchLeaderboardPeriod(period, btn) {
-      document.querySelectorAll('.period-btn').forEach(b => {
-        b.classList.remove('bg-white', 'text-[#0f3d64]', 'shadow-xs');
-        b.classList.add('text-slate-600');
-      });
-      btn.classList.remove('text-slate-600');
-      btn.classList.add('bg-white', 'text-[#0f3d64]', 'shadow-xs');
-
-      const data = {
-        'week': {
-          p1: { name: 'Lê Thị Thu Hương', sales: '8.5 Tỷ' },
-          p2: { name: 'Nguyễn Văn A', sales: '6.2 Tỷ' },
-          p3: { name: 'Nguyễn Quang Huy', sales: '5.4 Tỷ' }
-        },
-        'month': {
-          p1: { name: 'Nguyễn Văn A', sales: '36.2 Tỷ' },
-          p2: { name: 'Trần Thị B', sales: '25.7 Tỷ' },
-          p3: { name: 'Lê Văn C', sales: '22.4 Tỷ' }
-        },
-        'quarter': {
-          p1: { name: 'Trần Quốc Bảo', sales: '82.0 Tỷ' },
-          p2: { name: 'Nguyễn Văn A', sales: '74.5 Tỷ' },
-          p3: { name: 'Trần Thị B', sales: '68.2 Tỷ' }
-        }
-      };
-
-      const cur = data[period] || data['month'];
-      document.getElementById('podiumName1').textContent = cur.p1.name;
-      document.getElementById('podiumSales1').textContent = cur.p1.sales;
-      document.getElementById('podiumName2').textContent = cur.p2.name;
-      document.getElementById('podiumSales2').textContent = cur.p2.sales;
-      document.getElementById('podiumName3').textContent = cur.p3.name;
-      document.getElementById('podiumSales3').textContent = cur.p3.sales;
-
-      showToast(`Đã cập nhật Bảng vinh danh: ${btn.textContent.trim()}`);
-    }
 
 
     // =============================================================
@@ -5086,7 +4820,7 @@
 
       const countLabel = document.getElementById('invListCountLabel');
       if (countLabel) {
-        countLabel.textContent = `Giỏ Hàng & Sự Kiện Phân Phối (${visibleCount})`;
+        countLabel.textContent = `Sự kiện & Dự án (${visibleCount})`;
       }
     }
 
@@ -5465,6 +5199,9 @@
         breadcrumb.classList.remove('hidden');
         breadcrumb.classList.add('flex');
       }
+      // Ô tìm kiếm & chip lọc chỉ phục vụ danh sách cấp 1 -> ẩn khi đi sâu vào dự án
+      const searchHeader = document.getElementById('invSearchHeader');
+      if (searchHeader) searchHeader.classList.add('hidden');
       if (backLabel) backLabel.textContent = 'Quay lại Dự Án';
       if (pathText) pathText.textContent = proj.name;
 
@@ -5484,7 +5221,7 @@
 
       // Title & Subtitle
       const titleEl = document.getElementById('invZonesHeaderTitle');
-      if (titleEl) titleEl.textContent = `2. Các Phân Khu Thuộc: ${proj.name}`;
+      if (titleEl) titleEl.textContent = `Phân khu • ${proj.name}`;
 
       // Update Event Banner
       const banner = document.getElementById('invZoneEventBanner');
@@ -5507,33 +5244,20 @@
         container.innerHTML = proj.zones.map(z => {
           const isEventZone = z.badge.includes('Sự Kiện') || (initialZoneKey && z.key === initialZoneKey);
           return `
-            <div onclick="selectInventoryZone('${z.key}')" class="p-4 rounded-2xl bg-white border ${isEventZone ? 'border-[#0f3d64] ring-2 ring-sky-100 shadow-sm' : 'border-slate-200 hover:border-[#0f3d64] shadow-xs'} cursor-pointer transition-all hover:shadow-md active:scale-[0.99] flex flex-col gap-3">
-              <div class="flex items-start justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-12 h-12 rounded-2xl bg-sky-50 text-[#0f3d64] border border-sky-100 flex items-center justify-center font-bold shrink-0">
-                    <span class="material-symbols-outlined text-[26px]">holiday_village</span>
-                  </div>
-                  <div>
-                    <div class="flex items-center gap-1.5">
-                      <h4 class="text-sm font-extrabold text-slate-900">${z.name}</h4>
-                      <span class="px-2 py-0.5 rounded-md bg-slate-100 text-[#0f3d64] text-[10px] font-extrabold">${z.badge}</span>
-                    </div>
-                    <p class="text-[11px] text-slate-500 mt-0.5">${z.desc}</p>
-                  </div>
-                </div>
-                <span class="material-symbols-outlined text-slate-400 text-[22px] mt-1">chevron_right</span>
+            <div onclick="selectInventoryZone('${z.key}')" class="p-3.5 rounded-2xl bg-white border ${isEventZone ? 'border-[#0f3d64] ring-1 ring-sky-100' : 'border-slate-200 hover:border-[#0f3d64]'} shadow-xs cursor-pointer transition-all active:scale-[0.99] flex items-center gap-3">
+              <div class="w-11 h-11 rounded-xl bg-sky-50 text-[#0f3d64] flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[24px]">holiday_village</span>
               </div>
-
-              <div class="flex items-center justify-between pt-2.5 border-t border-slate-100 text-xs">
-                <div class="flex items-center gap-2">
-                  <span class="px-2 py-0.5 rounded-md bg-sky-50 border border-sky-200 text-[#0f3d64] text-[10px] font-bold">🟢 Còn ${z.availableUnitsCount} căn F1</span>
-                  <span class="text-[11px] text-slate-400 font-mono">${z.towers.length} Tòa</span>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-extrabold text-slate-900 truncate">${z.name}</h4>
+                <p class="text-[11px] text-slate-500 truncate mt-0.5">${z.desc}</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-[11px] font-bold text-emerald-700">Còn ${z.availableUnitsCount} căn</span>
+                  <span class="text-[11px] text-slate-400">•</span>
+                  <span class="text-[11px] text-slate-500">${z.towers.length} tòa</span>
                 </div>
-                <span class="text-xs font-bold text-[#0f3d64] flex items-center gap-0.5 hover:underline">
-                  <span>Xem ${z.towers.length} Tòa Nhà</span>
-                  <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
-                </span>
               </div>
+              <span class="material-symbols-outlined text-slate-300 text-[22px] shrink-0">chevron_right</span>
             </div>
           `;
         }).join('');
@@ -5573,37 +5297,23 @@
 
       const titleEl = document.getElementById('invTowersHeaderTitle');
       const countBadge = document.getElementById('invTowersCountBadge');
-      if (titleEl) titleEl.textContent = `3. Các Tòa Nhà Thuộc: ${zone.name}`;
+      if (titleEl) titleEl.textContent = `Tòa nhà • ${zone.name}`;
       if (countBadge) countBadge.textContent = `${zone.towers.length} Tòa`;
 
       // Render Các BLOCK TÒA NHÀ
       const container = document.getElementById('invTowersContainer');
       if (container && zone.towers) {
         container.innerHTML = zone.towers.map(t => `
-          <div onclick="selectInventoryTower('${t.key}')" class="p-4 rounded-2xl bg-white border border-slate-200 hover:border-[#0f3d64] shadow-xs cursor-pointer transition-all hover:shadow-md active:scale-[0.99] flex flex-col gap-3">
-            <div class="flex items-start justify-between">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-slate-100 text-[#0f3d64] border border-slate-200 flex items-center justify-center font-bold shrink-0">
-                  <span class="material-symbols-outlined text-[26px]">apartment</span>
-                </div>
-                <div>
-                  <h4 class="text-sm font-extrabold text-slate-900">${t.name}</h4>
-                  <p class="text-[11px] text-slate-500 mt-0.5">${t.details}</p>
-                </div>
-              </div>
-              <span class="material-symbols-outlined text-slate-400 text-[22px] mt-1">chevron_right</span>
+          <div onclick="selectInventoryTower('${t.key}')" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-[#0f3d64] shadow-xs cursor-pointer transition-all active:scale-[0.99] flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-slate-100 text-[#0f3d64] flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[24px]">apartment</span>
             </div>
-
-            <div class="flex items-center justify-between pt-2.5 border-t border-slate-100 text-xs">
-              <div class="flex items-center gap-1.5">
-                <span class="px-2 py-0.5 rounded-md bg-sky-50 text-[#0f3d64] border border-sky-200 text-[10px] font-extrabold">🟢 ${t.availCount} Căn trống</span>
-                <span class="text-[11px] text-slate-400 font-mono">F1 trực tiếp</span>
-              </div>
-              <span class="text-xs font-bold text-[#0f3d64] flex items-center gap-0.5 hover:underline">
-                <span>Xem Tầng &amp; Căn Hộ</span>
-                <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
-              </span>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-sm font-extrabold text-slate-900 truncate">${t.name}</h4>
+              <p class="text-[11px] text-slate-500 truncate mt-0.5">${t.details}</p>
+              <span class="text-[11px] font-bold text-emerald-700 block mt-1">Còn ${t.availCount} căn trống</span>
             </div>
+            <span class="material-symbols-outlined text-slate-300 text-[22px] shrink-0">chevron_right</span>
           </div>
         `).join('');
       }
@@ -5686,21 +5396,21 @@
             let labelClass = '';
 
             if (u.status === 'available') {
-              blockStyles = 'bg-white border-2 border-[#0f3d64] text-[#0f3d64] hover:bg-sky-50/50';
+              blockStyles = 'bg-emerald-50 border-2 border-emerald-500 text-emerald-800 hover:bg-emerald-100';
               labelText = 'Trống';
-              labelClass = 'bg-sky-100 text-[#0f3d64]';
+              labelClass = 'bg-emerald-500 text-white';
             } else if (u.status === 'holding') {
-              blockStyles = 'bg-slate-100 border border-slate-300 text-slate-800 hover:bg-slate-200';
+              blockStyles = 'bg-amber-50 border-2 border-amber-400 text-amber-800 hover:bg-amber-100';
               labelText = 'Giữ chỗ';
-              labelClass = 'bg-slate-200 text-slate-700';
+              labelClass = 'bg-amber-400 text-amber-950';
             } else if (u.status === 'deposited') {
-              blockStyles = 'bg-slate-200 border border-slate-300 text-slate-800 hover:bg-slate-300';
+              blockStyles = 'bg-orange-50 border-2 border-orange-400 text-orange-800 hover:bg-orange-100';
               labelText = 'Đã cọc';
-              labelClass = 'bg-slate-300 text-slate-800';
+              labelClass = 'bg-orange-500 text-white';
             } else {
-              blockStyles = 'bg-slate-800 border border-slate-900 text-white hover:bg-slate-900';
+              blockStyles = 'bg-rose-100 border-2 border-rose-400 text-rose-800 hover:bg-rose-200';
               labelText = 'Đã bán';
-              labelClass = 'bg-slate-700 text-slate-300';
+              labelClass = 'bg-rose-500 text-white';
             }
 
             // Block tinh gọn: Chỉ số phòng + Màu trạng thái, bấm vào để bung chi tiết
@@ -5719,40 +5429,38 @@
           // ===============================================
           const rows = units.map(u => {
             const shortCode = u.code.includes('-') ? u.code.split('-')[1] : u.code;
-            let squareBg = 'bg-[#0f3d64] text-white';
+            let squareBg = 'bg-emerald-500 text-white';
             let statusText = '🟢 Còn trống';
-            let statusStyle = 'text-[#0f3d64] bg-sky-50';
+            let statusStyle = 'text-emerald-700 bg-emerald-50 border border-emerald-200';
 
             if (u.status === 'holding') {
-              squareBg = 'bg-slate-300 text-slate-800';
+              squareBg = 'bg-amber-400 text-amber-950';
               statusText = '🟡 Giữ chỗ';
-              statusStyle = 'text-slate-700 bg-slate-100';
+              statusStyle = 'text-amber-800 bg-amber-50 border border-amber-200';
             } else if (u.status === 'deposited') {
-              squareBg = 'bg-sky-200 text-[#0f3d64]';
+              squareBg = 'bg-orange-500 text-white';
               statusText = '🟠 Đã cọc';
-              statusStyle = 'text-[#0f3d64] bg-sky-50';
+              statusStyle = 'text-orange-800 bg-orange-50 border border-orange-200';
             } else if (u.status === 'sold') {
-              squareBg = 'bg-slate-800 text-white';
+              squareBg = 'bg-rose-500 text-white';
               statusText = '🔴 Đã bán';
-              statusStyle = 'text-slate-500 bg-slate-100 line-through';
+              statusStyle = 'text-rose-700 bg-rose-50 border border-rose-200 line-through';
             }
 
             return `
-              <div onclick="openQuickUnitModal('${u.code}')" class="p-2.5 rounded-xl bg-white border border-slate-200 hover:border-[#0f3d64] shadow-2xs flex items-center justify-between cursor-pointer transition-all active:scale-[0.99]">
-                <div class="flex items-center gap-2.5">
+              <div onclick="openQuickUnitModal('${u.code}')" class="p-2.5 rounded-xl bg-white border border-slate-200 hover:border-[#0f3d64] shadow-2xs flex items-center justify-between gap-2 cursor-pointer transition-all active:scale-[0.99]">
+                <div class="flex items-center gap-2.5 min-w-0 flex-1">
                   <span class="w-12 h-9 rounded-lg ${squareBg} font-mono text-xs font-black flex items-center justify-center shrink-0">${shortCode}</span>
-                  <div>
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-xs font-bold text-slate-900">${u.bed || 'Căn hộ'}</span>
-                      <span class="text-[10px] text-slate-500 font-normal">• ${u.area || ''}</span>
-                    </div>
-                    <span class="text-[10px] text-slate-400 font-medium">Hướng: ${u.orient || 'Đông Nam'}</span>
+                  <div class="min-w-0">
+                    <div class="text-xs font-bold text-slate-900 truncate">${u.bed || 'Căn hộ'}</div>
+                    <span class="text-[10px] text-slate-500 font-normal block truncate">${u.area || ''}</span>
+                    <span class="text-[10px] text-slate-400 font-medium block truncate">Hướng: ${u.orient || 'Đông Nam'}</span>
                   </div>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1 shrink-0">
                   <div class="text-right">
-                    <span class="text-xs font-black text-[#0f3d64] font-mono block">${u.price}</span>
-                    <span class="text-[9px] font-bold ${statusStyle} px-1.5 py-0.5 rounded">${statusText}</span>
+                    <span class="text-xs font-black text-[#0f3d64] font-mono block whitespace-nowrap">${u.price}</span>
+                    <span class="text-[9px] font-bold ${statusStyle} px-1.5 py-0.5 rounded inline-block whitespace-nowrap mt-0.5">${statusText}</span>
                   </div>
                   <span class="material-symbols-outlined text-slate-400 text-[18px]">chevron_right</span>
                 </div>
@@ -5767,9 +5475,9 @@
           <div class="inv-floor-item rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-2xs transition-all">
             <button onclick="toggleInventoryFloorAccordion('${fl.floorId}')" class="w-full px-3.5 py-3 flex items-center justify-between bg-white hover:bg-slate-50 active:bg-slate-100 transition-colors text-left">
               <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full ${availCount > 0 ? 'bg-[#0f3d64]' : 'bg-slate-400'}"></span>
+                <span class="w-2.5 h-2.5 rounded-full ${availCount > 0 ? 'bg-emerald-500' : 'bg-rose-400'}"></span>
                 <span class="text-xs font-extrabold text-slate-900">${fl.floorName}</span>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${availCount > 0 ? 'bg-sky-50 text-[#0f3d64] border border-sky-200' : 'bg-slate-100 text-slate-500'}">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${availCount > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-600 border border-rose-200'}">
                   ${availCount > 0 ? `🟢 ${availCount} Trống` : 'Đã kín'}
                 </span>
                 <span class="text-[10px] text-slate-400 font-mono">(${units.length} Căn)</span>
@@ -5892,6 +5600,8 @@
         breadcrumb.classList.remove('flex');
         breadcrumb.classList.add('hidden');
       }
+      const searchHeader = document.getElementById('invSearchHeader');
+      if (searchHeader) searchHeader.classList.remove('hidden');
       if (zLevel) {
         zLevel.classList.remove('flex');
         zLevel.classList.add('hidden');
@@ -6452,9 +6162,7 @@
       }
 
       const titleEl = document.getElementById('myZonesHeaderTitle');
-      const subEl = document.getElementById('myZonesHeaderSubtitle');
-      if (titleEl) titleEl.textContent = `2. Phân Khu Thuộc: ${project.name}`;
-      if (subEl) subEl.textContent = project.name;
+      if (titleEl) titleEl.textContent = 'Danh Sách Phân Khu';
 
       const zContainer = document.getElementById('myZonesContainer');
       if (!zContainer) return;
@@ -6520,9 +6228,7 @@
       }
 
       const titleEl = document.getElementById('myTowersHeaderTitle');
-      const subEl = document.getElementById('myTowersHeaderSubtitle');
-      if (titleEl) titleEl.textContent = `3. Tòa Nhà Thuộc: ${zone.name}`;
-      if (subEl) subEl.textContent = zone.name;
+      if (titleEl) titleEl.textContent = 'Danh Sách Tòa Nhà';
 
       const tContainer = document.getElementById('myTowersContainer');
       if (!tContainer) return;
@@ -6635,17 +6341,17 @@
               labelText = u.status === 'sold' ? '★ Đã bán' : '★ Bạn chốt';
               labelClass = 'bg-[#0f3d64] text-white';
             } else if (u.status === 'available') {
-              blockStyles = 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50';
+              blockStyles = 'bg-emerald-50 border-2 border-emerald-500 text-emerald-800 hover:bg-emerald-100';
               labelText = 'Trống';
-              labelClass = 'bg-slate-100 text-slate-600';
+              labelClass = 'bg-emerald-500 text-white';
             } else if (u.status === 'holding') {
-              blockStyles = 'bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200';
+              blockStyles = 'bg-amber-50 border-2 border-amber-400 text-amber-800 hover:bg-amber-100';
               labelText = 'Giữ chỗ';
-              labelClass = 'bg-slate-200 text-slate-700';
+              labelClass = 'bg-amber-400 text-amber-950';
             } else {
-              blockStyles = 'bg-slate-800 border border-slate-900 text-white';
+              blockStyles = 'bg-rose-100 border-2 border-rose-400 text-rose-800 hover:bg-rose-200';
               labelText = 'Sàn khác';
-              labelClass = 'bg-slate-700 text-slate-200';
+              labelClass = 'bg-rose-500 text-white';
             }
 
             // Block phòng cá nhân tinh gọn: Chỉ số phòng + Màu trạng thái, bấm vào để xem chi tiết khách cọc
@@ -6995,6 +6701,17 @@
         showToast(`Đã mở tiến trình xử lý cho căn ${currentModalUnit}!`, 'lock');
       }
     }
+
+    // =============================================================
+    // KHỞI TẠO LÚC TẢI TRANG
+    // =============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      applyUserProfile();
+      renderMyProjectsList();
+      renderCustomerList();
+      updateCarouselDots();
+      calculateMortgage();
+    });
 
   </script>
 
