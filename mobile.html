@@ -740,23 +740,12 @@
           </div>
         </div>
 
-        <!-- Header thông tin Tòa Nhà & Dropdown chọn tòa trực tiếp -->
+        <!-- Header thông tin Tòa Nhà đã chọn -->
         <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-2.5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2 flex-1 min-w-0">
               <span class="material-symbols-outlined text-[20px] text-[#0f3d64]">apartment</span>
-              <!-- Dropdown bắt đầu từ Tòa Nhà -->
-              <div class="relative flex-1 max-w-[200px]">
-                <select id="invTowerDropdownSelect" onchange="selectInventoryTower(this.value)" class="w-full h-8 pl-2.5 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-[#0f3d64] appearance-none focus:outline-none focus:ring-1 focus:ring-[#0f3d64] cursor-pointer">
-                  <option value="S501">Tòa S5.01 (Origami VIP)</option>
-                  <option value="S502">Tòa S5.02 (View Vườn Nhật)</option>
-                  <option value="S503">Tòa S5.03 (Gần Vincom)</option>
-                  <option value="BEV01">Tòa BEV.01 (The Beverly)</option>
-                  <option value="A1">Tháp Aqua 1 (Metropolis)</option>
-                  <option value="G1">Tòa Grand 1 (Ciputra)</option>
-                </select>
-                <span class="material-symbols-outlined absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 text-[16px] pointer-events-none">expand_more</span>
-              </div>
+              <span id="invSelectedTowerName" class="text-xs font-extrabold text-[#0f3d64] truncate">Tòa đã chọn</span>
             </div>
             <span class="px-2.5 py-1 rounded-xl bg-sky-50 text-[#0f3d64] text-[10px] font-extrabold border border-sky-200" id="invFloorsAvailableBadge">12 Căn trống</span>
           </div>
@@ -5461,11 +5450,8 @@
 
       updateAppHeaderBackButton(true, 'inv');
 
-      // Sync tower dropdown
-      const dropdown = document.getElementById('invTowerDropdownSelect');
-      if (dropdown && zone.towers) {
-        dropdown.innerHTML = zone.towers.map(t => `<option value="${t.key}" ${t.key === towerKey ? 'selected' : ''}>${t.name}</option>`).join('');
-      }
+      const selectedTowerName = document.getElementById('invSelectedTowerName');
+      if (selectedTowerName) selectedTowerName.textContent = towerInfo ? towerInfo.name : towerKey;
 
       // Update Breadcrumb
       const backLabel = document.getElementById('invBreadcrumbBackLabel');
@@ -5838,20 +5824,20 @@
         name: 'Vinhomes Grand Park',
         location: 'TP. Thủ Đức, TP.HCM',
         badge: 'Đại đô thị 271 ha',
-        myUnitsCount: 2,
+        myUnitsCount: 4,
         totalSalesRevenue: '7,83 Tỷ',
         zones: {
           'origami': {
             id: 'origami',
             name: 'The Origami (Phân Khu Nhật Bản)',
             badge: 'Vườn Tùng La Hán • Hồ Cá Koi',
-            myUnitsCount: 2,
+            myUnitsCount: 4,
             towers: {
               'S501': {
                 id: 'S501',
                 name: 'Tòa S5.01 (The Origami)',
-                details: '21 Tầng • 380 Căn • Căn góc view công viên cầu vồng',
-                myUnitsCount: 2,
+                details: '24 Tầng • 380 Căn • Căn góc view công viên cầu vồng',
+                myUnitsCount: 4,
                 floors: [
                   {
                     floorId: 'fl-18',
@@ -5970,18 +5956,22 @@
                     floorId: 'fl-24',
                     floorName: 'Tầng 24 (Sky Collection)',
                     unitsCount: 2,
-                    hasMyUnit: false,
-                    myBadgeText: '0 Căn của bạn',
+                    hasMyUnit: true,
+                    myBadgeText: '★ 1 Căn của bạn (Giữ chỗ 30p)',
                     units: [
                       {
                         code: 'S501-2404',
                         type: '3PN Duplex • 3WC',
                         area: '112,0 m²',
                         price: '6,10 Tỷ',
-                        isMyUnit: false,
+                        isMyUnit: true,
                         status: 'holding',
-                        statusLabel: 'Đang giữ chỗ 30p',
-                        statusBadgeBg: 'bg-slate-200 text-slate-800'
+                        statusLabel: '★ Căn của bạn: Đang giữ chỗ 30p',
+                        statusBadgeBg: 'bg-amber-100 text-amber-900',
+                        depositAmount: '30.000.000 đ (30 Tr)',
+                        buyerName: 'Lê Minh Cường',
+                        buyerPhone: '0908 123 456',
+                        timer: '28:10'
                       },
                       {
                         code: 'S501-2401',
@@ -5999,18 +5989,21 @@
                     floorId: 'fl-12a',
                     floorName: 'Tầng 12A',
                     unitsCount: 2,
-                    hasMyUnit: false,
-                    myBadgeText: '0 Căn của bạn',
+                    hasMyUnit: true,
+                    myBadgeText: '★ 1 Căn của bạn (Đã cọc)',
                     units: [
                       {
                         code: 'S501-12A08',
                         type: '2PN Corner • 2WC',
                         area: '69,2 m²',
                         price: '4,85 Tỷ',
-                        isMyUnit: false,
-                        status: 'available',
-                        statusLabel: 'Còn trống (Sẵn sàng khóa)',
-                        statusBadgeBg: 'bg-sky-100 text-[#0f3d64]'
+                        isMyUnit: true,
+                        status: 'deposited',
+                        statusLabel: '★ Căn của bạn: Đã cọc',
+                        statusBadgeBg: 'bg-orange-100 text-orange-900',
+                        depositAmount: '50.000.000 đ (50 Tr)',
+                        buyerName: 'Phạm Thu Trang',
+                        buyerPhone: '0911 222 333'
                       },
                       {
                         code: 'S501-12A02',
@@ -6561,22 +6554,26 @@
             let labelText = '';
             let labelClass = '';
 
-            if (u.isMyUnit) {
-              blockStyles = 'bg-white border-2 border-[#0f3d64] text-[#0f3d64] ring-2 ring-sky-100 hover:bg-sky-50/50';
-              labelText = u.status === 'sold' ? '★ Đã bán' : '★ Bạn chốt';
-              labelClass = 'bg-[#0f3d64] text-white';
+            if (u.status === 'holding') {
+              blockStyles = 'bg-amber-50 border-2 border-amber-400 text-amber-900 hover:bg-amber-100';
+              labelText = '★ Giữ chỗ';
+              labelClass = 'bg-amber-400 text-amber-950';
+            } else if (u.status === 'deposited') {
+              blockStyles = 'bg-orange-50 border-2 border-orange-400 text-orange-900 hover:bg-orange-100';
+              labelText = '★ Đã cọc';
+              labelClass = 'bg-orange-500 text-white';
+            } else if (u.status === 'sold') {
+              blockStyles = 'bg-rose-100 border-2 border-rose-400 text-rose-900 hover:bg-rose-200';
+              labelText = '★ Đã bán';
+              labelClass = 'bg-rose-500 text-white';
             } else if (u.status === 'available') {
               blockStyles = 'bg-emerald-50 border-2 border-emerald-500 text-emerald-800 hover:bg-emerald-100';
-              labelText = 'Trống';
+              labelText = '★ Trống';
               labelClass = 'bg-emerald-500 text-white';
-            } else if (u.status === 'holding') {
-              blockStyles = 'bg-amber-50 border-2 border-amber-400 text-amber-800 hover:bg-amber-100';
-              labelText = 'Giữ chỗ';
-              labelClass = 'bg-amber-400 text-amber-950';
             } else {
-              blockStyles = 'bg-rose-100 border-2 border-rose-400 text-rose-800 hover:bg-rose-200';
-              labelText = 'Sàn khác';
-              labelClass = 'bg-rose-500 text-white';
+              blockStyles = 'bg-slate-100 border-2 border-slate-300 text-slate-700 hover:bg-slate-200';
+              labelText = '★ Đang cập nhật';
+              labelClass = 'bg-slate-500 text-white';
             }
 
             // Block phòng cá nhân tinh gọn: Chỉ số phòng + Màu trạng thái, bấm vào để xem chi tiết khách cọc
@@ -6596,7 +6593,10 @@
           // ===============================================
           const rows = (fl.units || []).map(u => {
             const shortCode = u.code.includes('-') ? u.code.split('-')[1] : u.code;
-            let squareBg = u.isMyUnit ? 'bg-[#0f3d64] text-white' : 'bg-slate-200 text-slate-700';
+            let squareBg = 'bg-emerald-500 text-white';
+            if (u.status === 'holding') squareBg = 'bg-amber-400 text-amber-950';
+            else if (u.status === 'deposited') squareBg = 'bg-orange-500 text-white';
+            else if (u.status === 'sold') squareBg = 'bg-rose-500 text-white';
 
             return `
               <div onclick="openQuickUnitModal('${u.code}', true)" class="p-2.5 rounded-xl bg-white border ${u.isMyUnit ? 'border-[#0f3d64] ring-1 ring-sky-100' : 'border-slate-200'} hover:border-[#0f3d64] shadow-2xs flex items-center justify-between cursor-pointer transition-all active:scale-[0.99]">
@@ -6613,7 +6613,7 @@
                 <div class="flex items-center gap-2">
                   <div class="text-right">
                     <span class="text-xs font-black text-[#0f3d64] font-mono block">${u.price}</span>
-                    <span class="text-[9px] font-bold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">${u.isMyUnit ? (u.depositAmount ? u.depositAmount : 'Đã cọc') : u.statusLabel}</span>
+                    <span class="text-[9px] font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">${u.statusLabel || 'Đang cập nhật'}</span>
                   </div>
                   <span class="material-symbols-outlined text-slate-400 text-[18px]">chevron_right</span>
                 </div>
