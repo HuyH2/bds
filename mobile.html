@@ -31,6 +31,41 @@
     #mobileAppFrame > main {
       padding-top: 5rem;
       padding-bottom: 7rem;
+      box-sizing: border-box;
+      height: 100%;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    #mobileAppFrame {
+      height: 100dvh;
+      min-height: 0;
+      max-height: 100dvh;
+      overflow: hidden;
+    }
+    #mobileAppFrame > #appHeader,
+    #mobileAppFrame > #subHeader,
+    #mobileAppFrame > #detailHeader,
+    #mobileAppFrame > #bottomNav {
+      position: absolute;
+      inset-inline: 0;
+      width: 100%;
+      max-width: none;
+      transform: none;
+    }
+    #mobileAppFrame > #appHeader,
+    #mobileAppFrame > #subHeader,
+    #mobileAppFrame > #detailHeader {
+      top: 0;
+    }
+    #mobileAppFrame > #bottomNav {
+      bottom: 0;
+    }
+    @media (min-width: 640px) {
+      #mobileAppFrame {
+        height: calc(100vh - 56px);
+        max-height: calc(100vh - 56px);
+      }
     }
     
     /* !important để thắng class .flex của Tailwind CDN (nạp sau <style> này),
