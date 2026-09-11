@@ -2913,6 +2913,8 @@
         target.classList.add('active');
       }
 
+      if (screenName === 'my-units') resetMyHierarchy();
+
       if (screenName === 'home' || screenName === 'inventory') {
         const projectChip = document.querySelector('.inv-filter-chip[data-cat="project"]');
         if (projectChip) filterInventoryCategory('project', projectChip);
@@ -6350,6 +6352,7 @@
       if (pLevel) pLevel.classList.add('hidden');
       if (tLevel) tLevel.classList.add('hidden');
       if (fLevel) fLevel.classList.add('hidden');
+      if (fLevel) fLevel.classList.remove('flex');
       if (zLevel) {
         zLevel.classList.remove('hidden');
         zLevel.classList.add('flex');
@@ -6394,6 +6397,27 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    function resetMyHierarchy() {
+      myCurrentProject = null;
+      myCurrentZone = null;
+      myCurrentTower = null;
+
+      const projectLevel = document.getElementById('myLevelProjects');
+      const zoneLevel = document.getElementById('myLevelZones');
+      const towerLevel = document.getElementById('myLevelTowers');
+      const floorLevel = document.getElementById('myLevelFloors');
+      const breadcrumb = document.getElementById('myNavBreadcrumb');
+
+      projectLevel?.classList.remove('hidden');
+      projectLevel?.classList.add('flex');
+      [zoneLevel, towerLevel, floorLevel].forEach(level => {
+        level?.classList.add('hidden');
+        level?.classList.remove('flex');
+      });
+      breadcrumb?.classList.add('hidden');
+      breadcrumb?.classList.remove('flex');
+    }
+
     function selectMyZone(zoneKey) {
       if (!myCurrentProject) return;
       const project = MY_PROJECTS_DATABASE[myCurrentProject];
@@ -6416,6 +6440,7 @@
 
       if (zLevel) zLevel.classList.add('hidden');
       if (fLevel) fLevel.classList.add('hidden');
+      if (fLevel) fLevel.classList.remove('flex');
       if (tLevel) {
         tLevel.classList.remove('hidden');
         tLevel.classList.add('flex');
