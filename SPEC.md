@@ -1,6 +1,6 @@
 # TÀI LIỆU ĐẶC TẢ YÊU CẦU HỆ THỐNG (SOFTWARE REQUIREMENTS SPECIFICATION - SRS)
 ## HỆ THỐNG QUẢN LÝ BÁN HÀNG BẤT ĐỘNG SẢN & BẢNG HÀNG REAL-TIME (PROPTECH SALES SUITE)
-**Đơn vị phát triển / Ứng dụng:** Tân Long Land (Tan Long Land)  
+**Đơn vị phát triển / Ứng dụng:** BĐS (Bất động sản)  
 **Phiên bản:** 1.0.0 | **Ngày ban hành:** 2026-09-09  
 **Nền tảng mục tiêu:** Mobile App (iOS / Android - React Native/Flutter) & Web Admin Portal (React / Next.js)
 
@@ -59,7 +59,7 @@ graph TD
 #### Luồng nghiệp vụ:
 1. Sale mở tab **Chấm công** trên Mobile App.
 2. Ứng dụng tự động lấy tọa độ GPS của thiết bị (`latitude`, `longitude`, `accuracy`).
-3. Hệ thống đối chiếu tọa độ thiết bị với danh sách tọa độ hợp lệ đã cấu hình cho Sale (Văn phòng Tân Long Land, Nhà mẫu dự án, Địa điểm Roadshow/Event).
+3. Hệ thống đối chiếu tọa độ thiết bị với danh sách tọa độ hợp lệ đã cấu hình cho Sale (Văn phòng BĐS, Nhà mẫu dự án, Địa điểm Roadshow/Event).
 4. **Kiểm tra bán kính (Geofencing):** Khoảng cách tính bằng công thức Haversine phải `<= R_configured` (mặc định: 100 mét). Nếu ngoài vùng, hiển thị cảnh báo đỏ và khóa nút bấm.
 5. **Chụp ảnh Selfie xác thực:** Bật camera trước, bắt buộc chụp ảnh khuôn mặt thực tế tại hiện trường (chống Fake GPS / giả lập ảnh thư viện).
 6. Nhấn **Check-in** (buổi sáng) hoặc **Check-out** (kết thúc ca). Hệ thống lưu vết: `User_ID`, `Timestamp`, `GPS`, `Image_URL`, `Device_ID`, `Location_Name`, `Status` (Đúng giờ / Đi muộn).
