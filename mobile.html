@@ -5295,7 +5295,7 @@
       }
       if (invCurrentTower) {
         const towerData = INVENTORY_TOWERS_DATABASE[invCurrentTower] || INVENTORY_TOWERS_DATABASE['S501'];
-        renderInventoryFloorsAccordion(towerData);
+        renderInventoryFloorsAccordion(completeTowerFloors(towerData, getInventoryTowerFloorCount(invCurrentTower), `inv-${invCurrentTower}`));
       }
     }
 
@@ -5316,9 +5316,19 @@
         const proj = MY_PROJECTS_DATABASE[myCurrentProject];
         if (proj && proj.zones[myCurrentZone]) {
           const tower = proj.zones[myCurrentZone].towers[myCurrentTower];
-          if (tower) renderMyFloorsAccordion(tower);
+          if (tower) renderMyFloorsAccordion(completeTowerFloors(tower, extractFloorCount(tower.details), `my-${myCurrentTower}`));
         }
       }
+    }
+
+    function getInventoryTowerFloorCount(towerKey) {
+      for (const project of Object.values(INVENTORY_PROJECTS_CONFIGS)) {
+        for (const zone of project.zones || []) {
+          const tower = (zone.towers || []).find(item => item.key === towerKey);
+          if (tower) return extractFloorCount(tower.details);
+        }
+      }
+      return 0;
     }
 
     // ========================================================
@@ -5499,11 +5509,49 @@
       if (availBadge) availBadge.textContent = `${towerInfo ? towerInfo.availCount : 12} Căn trống F1`;
 
       const towerData = INVENTORY_TOWERS_DATABASE[towerKey] || INVENTORY_TOWERS_DATABASE['S501'];
-      renderInventoryFloorsAccordion(towerData);
+      const floorCount = extractFloorCount(towerInfo?.details || towerData.details || '');
+      renderInventoryFloorsAccordion(completeTowerFloors(towerData, floorCount, `inv-${towerKey}`));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // Render Tầng Accordion & Các BLOCK PHÒNG (DẠNG LƯỚI & DANH SÁCH)
+    function extractFloorCount(text) {
+      const match = String(text).match(/(\d+)\s*Tầng/i);
+      return match ? Number(match[1]) : 0;
+    }
+
+    function completeTowerFloors(tower, floorCount, idPrefix) {
+      if (!floorCount || floorCount < 1) return tower;
+
+      const existingFloors = (tower.floors || []).filter(floor => {
+        const match = String(floor.floorName).match(/Tầng\s*(\d+)/i);
+        return !match || Number(match[1]) <= floorCount;
+      });
+      const existingNumbers = new Set(existingFloors.map(floor => {
+        const match = String(floor.floorName).match(/Tầng\s*(\d+)/i);
+        return match ? Number(match[1]) : null;
+      }).filter(Number.isFinite));
+      const generatedFloors = [];
+
+      for (let floorNumber = 1; floorNumber <= floorCount; floorNumber += 1) {
+        if (existingNumbers.has(floorNumber)) continue;
+        generatedFloors.push({
+          floorName: `Tầng ${String(floorNumber).padStart(2, '0')}`,
+          floorId: `${idPrefix}-fl${floorNumber}`,
+          units: []
+        });
+      }
+
+      return {
+        ...tower,
+        floors: [...existingFloors, ...generatedFloors].sort((a, b) => {
+          const aNumber = Number(String(a.floorName).match(/Tầng\s*(\d+)/i)?.[1] || 0);
+          const bNumber = Number(String(b.floorName).match(/Tầng\s*(\d+)/i)?.[1] || 0);
+          return aNumber - bNumber;
+        })
+      };
+    }
+
     function renderInventoryFloorsAccordion(towerData) {
       const container = document.getElementById('invFloorsAccordionContainer');
       if (!container) return;
@@ -5527,7 +5575,11 @@
 
         let contentHtml = '';
 
-        if (invRoomViewMode === 'grid') {
+        if (units.length === 0) {
+          contentHtml = '<div class="p-3 rounded-xl bg-white border border-dashed border-slate-200 text-[11px] text-slate-400 text-center">Đang cập nhật bảng hàng tầng này</div>';
+        }
+
+        if (units.length > 0 && invRoomViewMode === 'grid') {
           // ===============================================
           // DẠNG LƯỚI: CÁC PHÒNG LÀ BLOCK VỚI SỐ & MÀU TRẠNG THÁI
           // ===============================================
@@ -5565,7 +5617,7 @@
           }).join('');
 
           contentHtml = `<div class="grid grid-cols-4 gap-2">${blocks}</div>`;
-        } else {
+        } else if (units.length > 0) {
           // ===============================================
           // DẠNG DANH SÁCH: CÁC DÒNG GỌN GÀNG, DỄ NHÌN
           // ===============================================
@@ -5692,7 +5744,7 @@
             f.units = f.units.filter(u => u.status === statusKey);
           });
         }
-        renderInventoryFloorsAccordion(towerData);
+        renderInventoryFloorsAccordion(completeTowerFloors(towerData, getInventoryTowerFloorCount(invCurrentTower), `inv-${invCurrentTower}`));
       }
     }
 
@@ -6442,7 +6494,7 @@
       const tBadge = document.getElementById('myTowerMyUnitsCountBadge');
       if (tBadge) tBadge.textContent = `★ ${tower.myUnitsCount} Căn của bạn`;
 
-      renderMyFloorsAccordion(tower);
+      renderMyFloorsAccordion(completeTowerFloors(tower, extractFloorCount(tower.details), `my-${towerKey}`));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -6468,7 +6520,11 @@
 
         let contentHtml = '';
 
-        if (myRoomViewMode === 'grid') {
+        if ((fl.units || []).length === 0) {
+          contentHtml = '<div class="p-3 rounded-xl bg-white border border-dashed border-slate-200 text-[11px] text-slate-400 text-center">Chưa có căn mẫu ở tầng này</div>';
+        }
+
+        if ((fl.units || []).length > 0 && myRoomViewMode === 'grid') {
           // ===============================================
           // DẠNG LƯỚI TRONG CÁ NHÂN: BLOCK SỐ & MÀU TRẠNG THÁI
           // ===============================================
@@ -6507,7 +6563,7 @@
           }).join('');
 
           contentHtml = `<div class="grid grid-cols-4 gap-2">${blocks}</div>`;
-        } else {
+        } else if ((fl.units || []).length > 0) {
           // ===============================================
           // DẠNG DANH SÁCH TRONG CÁ NHÂN
           // ===============================================
