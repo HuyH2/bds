@@ -2349,6 +2349,18 @@
         </div>
       </div>
 
+      <!-- Hành động nhanh ở đầu bài viết -->
+      <div class="event-detail-actions flex items-center justify-center gap-2 p-3 rounded-2xl bg-gray-300 border border-gray-400 shadow-sm">
+        <button onclick="handleEventSecondaryAction()" class="event-detail-secondary min-h-11 flex-1 max-w-[150px] py-2.5 px-3 rounded-xl bg-white text-slate-700 border border-gray-400 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm">
+          <span class="material-symbols-outlined text-[18px]" data-action-icon>how_to_reg</span>
+          <span class="event-detail-secondary-text">Tham Gia</span>
+        </button>
+        <button onclick="openInvitationModal()" class="event-detail-invite min-h-11 flex-1 max-w-[150px] py-2.5 px-3 rounded-xl bg-[#0284c7] text-white font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm" title="Tạo thiệp mời gửi khách">
+          <span class="material-symbols-outlined text-[18px]">mail</span>
+          <span>Thiệp mời</span>
+        </button>
+      </div>
+
       <!-- 2. Thẻ Thông Tin Chủ Chốt (Key Facts) -->
       <div class="p-4 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col gap-3">
         <h3 class="text-xs font-bold text-slate-900 flex items-center gap-1.5 border-b border-slate-100 pb-2">
@@ -2470,12 +2482,12 @@
       </div>
 
       <!-- 7. Sticky Actions Footer -->
-      <div class="fixed bottom-16 inset-x-0 sm:bottom-24 sm:left-1/2 sm:-translate-x-1/2 w-full sm:max-w-[430px] z-40 bg-gray-300/95 sm:rounded-b-[38px] backdrop-blur-xl border-t border-gray-400 px-4 py-3 pb-safe shadow-[0_-6px_18px_rgba(15,23,42,0.18)] flex items-center justify-center gap-2">
-        <button id="evDetailFooterSecondaryBtn" onclick="handleEventSecondaryAction()" class="min-h-11 flex-1 max-w-[150px] py-2.5 px-3 rounded-xl bg-white text-slate-700 border border-gray-400 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm">
+      <div class="event-detail-actions flex items-center justify-center gap-2 p-3 rounded-2xl bg-gray-300 border border-gray-400 shadow-sm">
+        <button id="evDetailFooterSecondaryBtn" onclick="handleEventSecondaryAction()" class="event-detail-secondary min-h-11 flex-1 max-w-[150px] py-2.5 px-3 rounded-xl bg-white text-slate-700 border border-gray-400 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm">
           <span class="material-symbols-outlined text-[18px]" id="evDetailFooterSecondaryIcon">how_to_reg</span>
-          <span id="evDetailFooterSecondaryText">Tham Gia</span>
+          <span id="evDetailFooterSecondaryText" class="event-detail-secondary-text">Tham Gia</span>
         </button>
-        <button id="evDetailInviteBtn" onclick="openInvitationModal()" class="min-h-11 flex-1 max-w-[150px] py-2.5 px-3 rounded-xl bg-[#0284c7] text-white font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm" title="Tạo thiệp mời gửi khách">
+        <button id="evDetailInviteBtn" onclick="openInvitationModal()" class="event-detail-invite min-h-11 flex-1 max-w-[150px] py-2.5 px-3 rounded-xl bg-[#0284c7] text-white font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm" title="Tạo thiệp mời gửi khách">
           <span class="material-symbols-outlined text-[18px]">mail</span>
           <span>Thiệp mời</span>
         </button>
@@ -3585,8 +3597,8 @@
       const scEl = document.getElementById('evDetailScale');
       const unEl = document.getElementById('evDetailUnits');
       const mpEl = document.getElementById('evDetailMapNote');
-      const footerSecTxt = document.getElementById('evDetailFooterSecondaryText');
-      const footerSecIco = document.getElementById('evDetailFooterSecondaryIcon');
+      const footerSecTxt = document.querySelectorAll('.event-detail-secondary-text');
+      const footerSecIco = document.querySelectorAll('.event-detail-secondary [data-action-icon], #evDetailFooterSecondaryIcon');
 
       if (imgEl) imgEl.src = ev.image;
       if (typeEl) {
@@ -3607,10 +3619,9 @@
       if (scEl) scEl.textContent = ev.scale;
       if (unEl) unEl.textContent = ev.units;
       if (mpEl) mpEl.textContent = ev.mapNote;
-      if (footerSecTxt) footerSecTxt.textContent = ev.footerSecondaryText || 'Tham Gia';
-      if (footerSecIco) footerSecIco.textContent = ev.footerSecondaryIcon || 'how_to_reg';
-      const inviteBtn = document.getElementById('evDetailInviteBtn');
-      if (inviteBtn) inviteBtn.classList.toggle('hidden', ev.isProject);
+      footerSecTxt.forEach(element => { element.textContent = ev.footerSecondaryText || 'Tham Gia'; });
+      footerSecIco.forEach(element => { element.textContent = ev.footerSecondaryIcon || 'how_to_reg'; });
+      document.querySelectorAll('.event-detail-invite').forEach(button => button.classList.toggle('hidden', ev.isProject));
 
       // Render Perks
       const perksContainer = document.getElementById('evDetailPerks');
