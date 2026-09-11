@@ -661,10 +661,7 @@
           <span class="material-symbols-outlined text-[15px] text-[#0f3d64] shrink-0">apartment</span>
           <span id="invBreadcrumbPathText" class="truncate">Vinhomes Grand Park</span>
         </div>
-        <button onclick="goBackInventoryHierarchy()" class="h-9 px-3 -ml-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-xs font-bold flex items-center gap-1.5 shrink-0 active:scale-95 transition-all" aria-label="Quay lại cấp trước">
-          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-          <span id="invBreadcrumbBackLabel">Quay lại</span>
-        </button>
+        <span id="invBreadcrumbBackLabel" class="hidden"></span>
       </div>
 
       <!-- ======================================================== -->
@@ -1674,10 +1671,7 @@
         </div>
         <div class="flex flex-col min-w-0 flex-1">
           <div class="flex items-center gap-2 min-w-0">
-            <h3 class="text-sm font-bold truncate" id="profileNameSettings">Nguyễn Quang Huy</h3>
-            <span class="px-2 py-0.5 rounded-full bg-white text-[#0f3d64] text-[10px] font-extrabold shrink-0">F1 PRO</span>
-          </div>
-          <span class="text-xs text-sky-200 mt-0.5 font-mono truncate" id="profilePhoneSettings">NV-0012 • 0912 345 678</span>
+              <span id="invBreadcrumbBackLabel" class="hidden"></span>
           <span class="text-[11px] text-slate-200 truncate" id="profileBranchSettings">Chi nhánh Sala</span>
         </div>
         <button onclick="openEditProfile()" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center text-white active:scale-90 transition-all shrink-0" aria-label="Sửa hồ sơ">
@@ -5324,6 +5318,7 @@
       if (searchHeader) searchHeader.classList.add('hidden');
       if (backLabel) backLabel.textContent = 'Quay lại Dự Án';
       if (pathText) pathText.textContent = proj.name;
+      setSubHeaderContext('Dự Án', proj.name);
 
       // Hide other levels
       const pLevel = document.getElementById('invUnifiedListContainer');
@@ -5402,6 +5397,7 @@
       const pathText = document.getElementById('invBreadcrumbPathText');
       if (backLabel) backLabel.textContent = 'Quay lại Phân Khu';
       if (pathText) pathText.textContent = `${proj.name} > ${zone.name}`;
+      setSubHeaderContext('Dự Án', zone.name);
 
       // Hide other levels
       const zLevel = document.getElementById('invLevelZones');
@@ -5462,6 +5458,7 @@
       const pathText = document.getElementById('invBreadcrumbPathText');
       if (backLabel) backLabel.textContent = 'Quay lại Tòa Nhà';
       if (pathText) pathText.textContent = `${zone.name} > ${towerInfo ? towerInfo.name : towerKey}`;
+      setSubHeaderContext('Dự Án', towerInfo ? towerInfo.name : towerKey);
 
       // Show level 4
       const tLevel = document.getElementById('invLevelTowers');
@@ -6755,14 +6752,27 @@
     // ========================================================
     // ĐỒNG BỘ NÚT QUAY LẠI TRÊN TOP SUBHEADER (APP HEADER)
     // ========================================================
+    function setSubHeaderContext(title, subtitle) {
+      const titleEl = document.getElementById('subHeaderTitle');
+      const subtitleEl = document.getElementById('subHeaderSubtitle');
+      if (titleEl) titleEl.textContent = title;
+      if (subtitleEl) subtitleEl.textContent = subtitle;
+    }
+
     function updateAppHeaderBackButton(show, flowType) {
       const backBtn = document.getElementById('subHeaderBackBtn');
       const tabIcon = document.getElementById('subHeaderTabIcon');
+      const appHeader = document.getElementById('appHeader');
+      const subHeader = document.getElementById('subHeader');
       if (!backBtn) return;
 
       if (show) {
+        if (appHeader) appHeader.classList.add('hidden');
+        if (subHeader) subHeader.classList.remove('hidden');
         backBtn.classList.remove('hidden');
         if (tabIcon) tabIcon.classList.add('hidden');
+        const title = document.getElementById('subHeaderTitle');
+        if (title) title.textContent = flowType === 'my' ? 'Cá Nhân' : 'Dự Án';
         if (flowType === 'my') {
           backBtn.onclick = goBackMyHierarchy;
         } else if (flowType === 'inv') {
