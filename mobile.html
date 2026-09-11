@@ -1271,21 +1271,12 @@
           </div>
         </div>
 
-        <!-- Header thông tin tòa & Dropdown chọn tòa nhanh -->
+        <!-- Header thông tin tòa đã chọn -->
         <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-2.5">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2 flex-1 min-w-0">
               <span class="material-symbols-outlined text-[20px] text-[#0f3d64]">apartment</span>
-              <!-- Dropdown chọn Tòa Nhà trực tiếp -->
-              <div class="relative flex-1 max-w-[190px]">
-                <select id="myTowerDropdownSelect" onchange="selectMyTower(this.value)" class="w-full h-8 pl-2.5 pr-7 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-[#0f3d64] appearance-none focus:outline-none focus:ring-1 focus:ring-[#0f3d64] cursor-pointer">
-                  <option value="S501">Tòa S5.01 (Origami)</option>
-                  <option value="S502">Tòa S5.02 (Origami)</option>
-                  <option value="A1">Tháp M1 (Aqua 1)</option>
-                  <option value="A2">Tháp M2 (Aqua 2)</option>
-                </select>
-                <span class="material-symbols-outlined absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 text-[16px] pointer-events-none">expand_more</span>
-              </div>
+              <span id="mySelectedTowerName" class="text-xs font-extrabold text-[#0f3d64] truncate">Tòa đã chọn</span>
             </div>
             <span class="px-2.5 py-1 rounded-xl bg-sky-50 text-[#0f3d64] text-[10px] font-extrabold border border-sky-200" id="myTowerMyUnitsCountBadge">★ 2 Căn của bạn</span>
           </div>
@@ -2361,23 +2352,6 @@
         </div>
       </div>
 
-      <!-- NÚT CHUYỂN SANG GIỎ HÀNG DỰ ÁN (THEO LOGIC BÁN HÀNG BĐS) -->
-      <div class="p-3.5 rounded-2xl bg-gradient-to-r from-[#0f3d64] via-[#154674] to-[#1e588a] text-white shadow-sm flex items-center justify-between gap-3" id="evDetailCartBanner">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-10 h-10 rounded-xl bg-[#0f3d64] text-white text-slate-900 flex items-center justify-center shrink-0 shadow-xs font-bold">
-            <span class="material-symbols-outlined text-[22px]">domain</span>
-          </div>
-          <div class="flex flex-col min-w-0">
-            <span class="text-xs font-bold truncate" id="evDetailCartTitle">Bảng Hàng &amp; Giỏ Hàng Dự Án</span>
-            <span class="text-[10px] text-slate-200 truncate" id="evDetailCartSubtitle">Khóa căn trực tuyến &amp; Giữ chỗ 15 phút</span>
-          </div>
-        </div>
-        <button onclick="goToInventoryForCurrentDetail()" class="px-3.5 py-2 rounded-xl bg-[#0f3d64] hover:bg-[#0f3d64] text-white text-slate-950 text-xs font-extrabold flex items-center gap-1 shrink-0 active:scale-95 transition-transform shadow-xs">
-          <span>Xem Giỏ Hàng</span>
-          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-        </button>
-      </div>
-
       <!-- 2. Thẻ Thông Tin Chủ Chốt (Key Facts) -->
       <div class="p-4 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col gap-3">
         <h3 class="text-xs font-bold text-slate-900 flex items-center gap-1.5 border-b border-slate-100 pb-2">
@@ -2463,7 +2437,7 @@
           <img id="evDetailMapImg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx-vgB5YTnrE4MGLJ6uqWcRp0IiYXDNFjjjlESMG394BsZZSBNN5fi6pK8O7MrWi54j3aJ6AkSA1Wbzo6YMGBTi-sgvONvbk08xvziBImc3PVhwVjzf7F0Jmiba9LOflivYo7PRAGCmEo4iab-751EyCe17i73-kOhfTCBuI3K-istt2yKfToaOj9mSVkCXVLcN3H0Nzf6YE6rQsC8xw7SewFiV4Z5mIBCxUyUsNToGA-daNX1aQ8x" alt="Sa ban" class="w-full h-full object-cover"/>
           <div class="absolute bottom-2 left-2 right-2 p-2 rounded-xl bg-black/60 backdrop-blur-md text-white text-[10px] flex items-center justify-between">
             <span>Bàn tư vấn độc quyền: Tân Long Land</span>
-            <button onclick="goToInventoryForCurrentDetail()" class="text-sky-200 font-bold hover:underline">Mở giỏ hàng →</button>
+            <span class="text-sky-200 font-bold">Xem thông tin sự kiện</span>
           </div>
         </div>
       </div>
@@ -2500,10 +2474,6 @@
 
       <!-- 7. Sticky Actions Footer -->
       <div class="fixed bottom-16 inset-x-0 sm:bottom-24 sm:left-1/2 sm:-translate-x-1/2 w-full sm:max-w-[430px] z-40 bg-white/95 sm:rounded-b-[38px] backdrop-blur-xl border-t border-slate-200 px-4 py-3 pb-safe shadow-lg flex items-center gap-2">
-        <button onclick="goToInventoryForCurrentDetail()" class="py-3 px-4 rounded-2xl bg-[#0f3d64] hover:bg-[#1e588a] text-white font-bold text-xs flex-1 flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all">
-          <span class="material-symbols-outlined text-[18px]">domain</span>
-          <span id="evDetailFooterMainBtn">Xem Giỏ Hàng &amp; Khóa Căn</span>
-        </button>
         <button id="evDetailFooterSecondaryBtn" onclick="handleEventSecondaryAction()" class="py-3 px-3 rounded-2xl bg-sky-50 text-[#0f3d64] border border-sky-200 font-bold text-xs flex items-center justify-center gap-1 active:scale-95 transition-all shrink-0">
           <span class="material-symbols-outlined text-[18px]" id="evDetailFooterSecondaryIcon">how_to_reg</span>
           <span id="evDetailFooterSecondaryText">Tham Gia</span>
@@ -2804,7 +2774,7 @@
   </div>
 
   <!-- 7. TOAST NOTIFICATION CONTAINER -->
-  <div class="fixed top-20 left-1/2 -translate-x-1/2 z-50 transform transition-all duration-300 opacity-0 pointer-events-none -translate-y-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 max-w-[90vw] text-xs font-medium" id="quickToast">
+  <div class="fixed top-20 left-1/2 -translate-x-1/2 z-[120] transform transition-all duration-300 opacity-0 pointer-events-none -translate-y-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl flex items-start gap-2 w-[calc(100%-1.5rem)] max-w-[390px] text-xs font-medium leading-relaxed" id="quickToast" role="status" aria-live="polite">
     <span class="material-symbols-outlined text-[18px] text-sky-400" id="toastIcon">check_circle</span>
     <span id="toastMessage">Thông báo trạng thái</span>
   </div>
@@ -2814,7 +2784,11 @@
       <div class="flex items-center justify-between border-b border-slate-100 pb-2">
         <div>
           <h3 class="text-sm font-extrabold text-slate-900">Tạo thiệp mời gửi khách</h3>
-          <p class="text-[10px] text-slate-500">Nội dung lấy theo sự kiện đang chọn</p>
+          <p class="text-[10px] text-slate-500">Soạn nội dung gửi riêng cho khách mời</p>
+        </div>
+        <div class="p-2.5 rounded-xl bg-sky-50 border border-sky-200">
+          <span id="invitationEventTitle" class="text-xs font-extrabold text-[#0f3d64] block">Tên sự kiện</span>
+          <span id="invitationEventMeta" class="text-[10px] text-slate-600 block mt-0.5">Thời gian • Địa điểm</span>
         </div>
         <button onclick="closeInvitationModal()" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center" aria-label="Đóng">
           <span class="material-symbols-outlined text-[18px]">close</span>
@@ -2824,10 +2798,10 @@
       <textarea id="invitationMessage" rows="7" class="p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20 resize-none"></textarea>
       <div class="flex gap-2">
         <button onclick="copyInvitationText()" class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95">
-          <span class="material-symbols-outlined text-[17px]">content_copy</span> Sao chép
+          <span class="material-symbols-outlined text-[17px]">content_copy</span> Sao chép thiệp
         </button>
         <button onclick="shareInvitationText()" class="flex-1 py-2.5 rounded-xl bg-[#0f3d64] text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95">
-          <span class="material-symbols-outlined text-[17px]">share</span> Chia sẻ
+          <span class="material-symbols-outlined text-[17px]">share</span> Gửi khách
         </button>
       </div>
     </div>
@@ -3576,6 +3550,7 @@
         footerMainBtn: 'Xem Giỏ Hàng Đua Top',
         footerSecondaryText: 'Thể Lệ',
         footerSecondaryIcon: 'military_tech',
+        secondaryAction: 'rules',
         perks: [
           'Top 1: Tour du lịch 8 nước Châu Âu trị giá 120 Triệu đồng',
           'Top 2: Chuyến du lịch Nhật Bản - Hàn Quốc 50 Triệu đồng',
@@ -3613,9 +3588,6 @@
       const scEl = document.getElementById('evDetailScale');
       const unEl = document.getElementById('evDetailUnits');
       const mpEl = document.getElementById('evDetailMapNote');
-      const cartTitle = document.getElementById('evDetailCartTitle');
-      const cartSub = document.getElementById('evDetailCartSubtitle');
-      const footerMain = document.getElementById('evDetailFooterMainBtn');
       const footerSecTxt = document.getElementById('evDetailFooterSecondaryText');
       const footerSecIco = document.getElementById('evDetailFooterSecondaryIcon');
 
@@ -3638,9 +3610,6 @@
       if (scEl) scEl.textContent = ev.scale;
       if (unEl) unEl.textContent = ev.units;
       if (mpEl) mpEl.textContent = ev.mapNote;
-      if (cartTitle) cartTitle.textContent = ev.cartTitle || 'Giỏ Hàng & Bảng Hàng Dự Án';
-      if (cartSub) cartSub.textContent = ev.cartSubtitle || 'Khóa căn trực tuyến & Giữ chỗ 15 phút';
-      if (footerMain) footerMain.textContent = ev.footerMainBtn || 'Xem Giỏ Hàng & Khóa Căn';
       if (footerSecTxt) footerSecTxt.textContent = ev.footerSecondaryText || 'Tham Gia';
       if (footerSecIco) footerSecIco.textContent = ev.footerSecondaryIcon || 'how_to_reg';
       const inviteBtn = document.getElementById('evDetailInviteBtn');
@@ -3733,7 +3702,9 @@
     }
 
     function handleEventSecondaryAction() {
-      if (currentDetailIsProject) {
+      if (currentDetailEvent?.secondaryAction === 'rules') {
+        showToast('Đang mở thể lệ và tiêu chí xét giải của sự kiện.', 'menu_book');
+      } else if (currentDetailIsProject) {
         showToast('Đang tải file Bảng Giá & CSBH chi tiết...', 'download');
       } else {
         showToast('Đã đăng ký tham gia sự kiện thành công! Vé mời QR đã được lưu.', 'check_circle');
@@ -3745,6 +3716,10 @@
       const guestName = document.getElementById('invitationGuestName');
       const message = document.getElementById('invitationMessage');
       if (guestName) guestName.value = '';
+      const title = document.getElementById('invitationEventTitle');
+      const meta = document.getElementById('invitationEventMeta');
+      if (title) title.textContent = currentDetailEvent.title;
+      if (meta) meta.textContent = `${currentDetailEvent.time} • ${currentDetailEvent.location}`;
       if (message) {
         message.value = `Kính mời anh/chị [Tên khách] tham dự ${currentDetailEvent.title}.\n\nThời gian: ${currentDetailEvent.time}\nĐịa điểm: ${currentDetailEvent.location}\n\nTân Long Land trân trọng đón tiếp anh/chị. Vui lòng xác nhận tham dự để chúng tôi chuẩn bị đón tiếp chu đáo.`;
       }
@@ -6483,12 +6458,8 @@
 
       updateAppHeaderBackButton(true, 'my');
 
-      // Sync tower dropdown in Cá nhân
-      const dropdown = document.getElementById('myTowerDropdownSelect');
-      if (dropdown && zone.towers) {
-        const towerKeys = Object.keys(zone.towers);
-        dropdown.innerHTML = towerKeys.map(k => `<option value="${k}" ${k === towerKey ? 'selected' : ''}>${zone.towers[k].name}</option>`).join('');
-      }
+      const selectedTowerName = document.getElementById('mySelectedTowerName');
+      if (selectedTowerName) selectedTowerName.textContent = tower.name;
 
       const backLabel = document.getElementById('myBreadcrumbBackLabel');
       const pathText = document.getElementById('myBreadcrumbPathText');
