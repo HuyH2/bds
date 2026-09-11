@@ -61,6 +61,13 @@
     #mobileAppFrame > #bottomNav {
       bottom: 0;
     }
+    /* Thanh hành động Chi Tiết Căn: neo trong khung app ngay trên bottom nav (openScreen đặt bottom = chiều cao nav) */
+    #mobileAppFrame > #dtActionBar {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 65px;
+      z-index: 90;
+    }
     #invUnifiedBreadcrumb {
       position: relative !important;
       top: auto !important;
@@ -408,31 +415,12 @@
     <!-- ---------------------------------------------------- -->
     <div id="view-inventory" class="mobile-tab-view flex flex-col w-full">
       
-      <!-- THANH TÌM KIẾM & BỘ LỌC THỐNG NHẤT (GỘP DỰ ÁN & SỰ KIỆN VÀO 1 DÒNG CHẢY LIỀN MẠCH) -->
+      <!-- THANH TÌM KIẾM DỰ ÁN -->
       <div id="invSearchHeader" class="px-4 pt-3 pb-2.5 bg-white border-b border-slate-200 sticky top-16 z-30 shadow-xs flex flex-col gap-2">
         <!-- Search bar -->
         <div class="relative w-full">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
-          <input id="unifiedSearchInput" oninput="filterUnifiedInventory(this.value)" class="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20 focus:bg-white transition-all" placeholder="Tìm sự kiện, dự án, căn hộ..." type="text"/>
-        </div>
-
-        <!-- Quick Filter Chips: Tất cả | 🔥 Có Sự Kiện Mở Bán | 🏢 Dự Án F1 | 📍 Hà Nội | 📍 TP.HCM -->
-        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5" id="inventoryFilterChips">
-          <button data-cat="all" onclick="filterInventoryCategory('all', this)" class="inv-filter-chip active px-3 py-1.5 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shadow-xs shrink-0 transition-all">
-            Tất cả (7)
-          </button>
-          <button data-cat="event" onclick="filterInventoryCategory('event', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">
-            Sự kiện (3)
-          </button>
-          <button data-cat="project" onclick="filterInventoryCategory('project', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">
-            Dự án (4)
-          </button>
-          <button data-cat="hanoi" onclick="filterInventoryCategory('hanoi', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">
-            Hà Nội
-          </button>
-          <button data-cat="tphcm" onclick="filterInventoryCategory('tphcm', this)" class="inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">
-            TP.HCM
-          </button>
+          <input id="unifiedSearchInput" oninput="filterUnifiedInventory(this.value)" class="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20 focus:bg-white transition-all" placeholder="Tìm dự án, căn hộ..." type="text"/>
         </div>
       </div>
 
@@ -659,7 +647,7 @@
       <div id="invUnifiedBreadcrumb" class="hidden items-center justify-between gap-2 px-4 py-2 bg-white border-b border-slate-200 sticky top-16 z-20">
         <div class="flex items-center gap-1.5 text-xs text-slate-600 font-semibold min-w-0" id="invBreadcrumbCurrentPath">
           <span class="material-symbols-outlined text-[15px] text-[#0f3d64] shrink-0">apartment</span>
-          <span id="invBreadcrumbPathText" class="truncate">Vinhomes Grand Park</span>
+          <span id="invBreadcrumbPathText" class="min-w-0 leading-snug break-words">Vinhomes Grand Park</span>
         </div>
         <span id="invBreadcrumbBackLabel" class="hidden"></span>
       </div>
@@ -669,26 +657,8 @@
       <!-- ======================================================== -->
       <div id="invLevelZones" class="hidden flex-col gap-3.5 p-4">
         
-        <!-- Banner Sự Kiện Nếu Dự Án Có Chiến Dịch Mở Bán -->
-        <div id="invZoneEventBanner" class="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 via-[#154674] to-[#0f3d64] text-white shadow-sm flex flex-col gap-2">
-          <div class="flex items-center justify-between">
-            <span class="px-2 py-0.5 rounded-md bg-sky-500 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
-              SỰ KIỆN MỞ BÁN ĐANG DIỄN RA
-            </span>
-            <span class="text-xs text-sky-200 font-bold font-mono">Ưu Đãi Hội Trường</span>
-          </div>
-          <div>
-            <h4 class="text-xs font-extrabold text-white" id="invZoneEventBannerTitle">Tặng 1 Cây Vàng SJC + Chiết Khấu Thêm 2%</h4>
-            <p class="text-[11px] text-slate-200 mt-0.5" id="invZoneEventBannerSub">Áp dụng cho giao dịch chốt cọc nhanh tại bàn trong thời gian sự kiện</p>
-          </div>
-          <div class="pt-1 flex items-center justify-between border-t border-white/20">
-            <span class="text-[10px] text-slate-300 font-mono" id="invZoneEventBannerMeta">Cọc sự kiện: 30 Tr</span>
-            <button onclick="openDetailOfCurrentProject()" class="px-2.5 py-1 rounded-lg bg-white text-[#0f3d64] text-[11px] font-extrabold flex items-center gap-1 active:scale-95 transition-transform">
-              <span>Xem Thể Lệ &amp; Bài Viết →</span>
-            </button>
-          </div>
-        </div>
+        <!-- Banner Sự Kiện Nếu Dự Án Có Chiến Dịch Mở Bán (nội dung render bằng renderZoneEventBanner) -->
+        <div id="invZoneEventBanner" class="p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 via-[#154674] to-[#0f3d64] text-white shadow-sm flex flex-col gap-3"></div>
 
         <!-- Tiêu đề cấp 2 -->
         <div class="flex items-center justify-between px-1">
@@ -787,333 +757,11 @@
     </div>
 
     <!-- ---------------------------------------------------- -->
-    <!-- MÀN HÌNH CHI TIẾT CĂN HỘ (CHUẨN ĐẶC TẢ BĐS MỤC 2.4)   -->
+    <!-- MÀN HÌNH CHI TIẾT CĂN HỘ: nội dung render bằng component trong openUnitDetail -->
+    <!-- Thanh hành động (#dtActionBar) nằm ngoài view, neo ngay trên bottom nav      -->
     <!-- ---------------------------------------------------- -->
-    <div id="view-detail" class="mobile-tab-view flex flex-col w-full pb-36">
-      
-      <!-- 1. HEADER & IDENTITY CĂN HỘ -->
-      <div class="p-4 flex flex-col gap-3 bg-white border-b border-slate-200">
-        <div class="flex items-center justify-between">
-          <span id="dtStatusBadge" class="px-2.5 py-0.5 rounded-full bg-sky-100 text-[#0284c7] text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-[#0284c7] animate-pulse"></span>
-            <span id="dtStatusText">ĐANG MỞ BÁN (F1)</span>
-          </span>
-          <span id="dtUnitCodePill" class="text-xs font-mono font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-md">S501-12A08</span>
-        </div>
-
-        <div>
-          <h2 id="dtUnitTitle" class="text-xl font-extrabold text-slate-900 tracking-tight">Căn Hộ S501-12A08 • Tầng 12A</h2>
-          <p id="dtUnitSubtitle" class="text-xs text-slate-500 mt-0.5">Tòa S5.01 • Phân khu The Origami • Vinhomes Grand Park (Quận 9)</p>
-        </div>
-
-        <!-- 2. GIÁ TẦNG / GIÁ CĂN (GIÁ GỐC, GIÁ SAU CHIẾT KHẤU) -->
-        <div class="p-3.5 rounded-2xl bg-gradient-to-br from-slate-50 to-sky-50/50 border border-slate-200 flex flex-col gap-2">
-          <div class="flex items-baseline justify-between">
-            <div>
-              <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Giá sau chiết khấu (Thanh toán sớm)</span>
-              <div class="text-2xl font-extrabold text-[#0f3d64] font-mono tracking-tight mt-0.5" id="dtPriceDiscounted">
-                4,00 Tỷ 
-              </div>
-            </div>
-            <div class="text-right">
-              <span class="px-2 py-0.5 rounded bg-sky-100 text-[#0284c7] text-xs font-bold font-mono" id="dtUnitPricePerM2">~62.1 Tr/m²</span>
-              <span class="text-[10px] text-slate-400 block mt-0.5">Thông thủy</span>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs">
-            <div class="flex items-center gap-1.5 text-slate-500">
-              <span>Giá gốc CĐT (niêm yết):</span>
-              <span class="font-mono line-through text-slate-400 font-semibold" id="dtPriceOriginal">4,15 Tỷ</span>
-            </div>
-            <div class="font-bold text-[#0f3d64] bg-sky-50 px-2 py-0.5 rounded-md" id="dtDiscountAmount">
-              -145,2 Tr (CK 3.5%)
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. THÔNG TIN CĂN HỘ (DIỆN TÍCH TIM TƯỜNG / THÔNG THỦY, SỐ PN - WC, HƯỚNG, VIEW) -->
-        <div class="flex flex-col gap-2">
-          <span class="text-xs font-bold text-slate-900 uppercase tracking-wider">Thông Số Chi Tiết Căn Hộ</span>
-          
-          <div class="grid grid-cols-2 gap-2">
-            <!-- Diện tích tim tường / thông thủy -->
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-0.5">
-              <span class="text-[10px] text-slate-400 font-bold uppercase">Diện Tích Thông Thủy</span>
-              <div class="text-sm font-extrabold text-[#0f3d64] font-mono" id="dtNetArea">64.5 m²</div>
-              <span class="text-[10px] text-slate-500" id="dtGrossArea">Tim tường: 69.2 m²</span>
-            </div>
-
-            <!-- Số PN - WC -->
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-0.5">
-              <span class="text-[10px] text-slate-400 font-bold uppercase">Cấu Trúc Phòng</span>
-              <div class="text-sm font-extrabold text-slate-900" id="dtBedBath">2 PN + 1 • 2 WC</div>
-              <span class="text-[10px] text-slate-500">1 Master, 1 Đơn, 1 Đa năng</span>
-            </div>
-
-            <!-- Hướng cửa & Ban công -->
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-0.5">
-              <span class="text-[10px] text-slate-400 font-bold uppercase">Hướng Cửa / Ban Công</span>
-              <div class="text-xs font-bold text-slate-900" id="dtOrientation">Ban công: Đông Nam</div>
-              <span class="text-[10px] text-slate-500">Cửa chính: Tây Bắc</span>
-            </div>
-
-            <!-- Tầm View -->
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-0.5">
-              <span class="text-[10px] text-slate-400 font-bold uppercase">Tầm View Cảnh Quan</span>
-              <div class="text-xs font-bold text-[#0f3d64] truncate" id="dtView">Vườn Nhật &amp; Hồ Cá Koi</div>
-              <span class="text-[10px] text-slate-500">Công viên Cầu Vồng</span>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-            <div>Chiều cao trần: <strong class="text-slate-900">3.4 m</strong></div>
-            <div>Tiêu chuẩn: <strong class="text-slate-900">Liền tường cao cấp</strong></div>
-          </div>
-        </div>
-
-        <!-- 5. BÓC TÁCH CHI PHÍ: GIÁ BÁN, VAT, PHÍ BẢO TRÌ, CHI PHÍ KHÁC, TỔNG THANH TOÁN ƯỚC TÍNH -->
-        <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-2.5">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-            <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[18px] text-[#0f3d64]">receipt_long</span>
-              Bóc Tách Chi Phí &amp; Tổng Thanh Toán
-            </span>
-            <span class="text-[10px] text-sky-600 font-bold bg-sky-50 px-2 py-0.5 rounded">CSBH F1 Mới Nhất</span>
-          </div>
-
-          <div class="flex flex-col gap-2 text-xs">
-            <!-- Giá bán chưa VAT -->
-            <div class="flex justify-between text-slate-600">
-              <span>1. Giá bán CĐT (chưa VAT):</span>
-              <span class="font-bold text-slate-900 font-mono" id="dtCostBase">3,77 Tỷ</span>
-            </div>
-            
-            <!-- VAT 10% -->
-            <div class="flex justify-between text-slate-600">
-              <span class="flex items-center gap-1">
-                <span>2. Thuế VAT (10%):</span>
-                <span class="material-symbols-outlined text-[13px] text-slate-400" title="Theo quy định nhà nước">info</span>
-              </span>
-              <span class="font-mono text-slate-800 font-semibold" id="dtCostVat">+377,2 Tr</span>
-            </div>
-
-            <!-- Phí bảo trì 2% -->
-            <div class="flex justify-between text-slate-600">
-              <span class="flex items-center gap-1">
-                <span>3. Phí bảo trì (2% KPBT):</span>
-                <span class="text-[10px] text-slate-400">(Nộp khi nhận nhà)</span>
-              </span>
-              <span class="font-mono text-slate-800 font-semibold" id="dtCostMaintenance">+75,4 Tr</span>
-            </div>
-
-            <!-- Chi phí khác -->
-            <div class="flex justify-between text-slate-600">
-              <span class="flex items-center gap-1">
-                <span>4. Chi phí khác (ước tính lệ phí sổ hồng):</span>
-                <span class="text-[10px] text-slate-400">(0.5% lệ phí trước bạ)</span>
-              </span>
-              <span class="font-mono text-slate-800 font-semibold" id="dtCostOther">+20 Tr</span>
-            </div>
-
-            <!-- Chiết khấu & quà tặng trừ vào giá -->
-            <div class="flex justify-between text-[#0284c7] pt-1 border-t border-dashed border-slate-200">
-              <span>5. Chiết khấu thanh toán sớm (3.5%):</span>
-              <span class="font-mono font-bold" id="dtCostDiscount">-145,2 Tr</span>
-            </div>
-            <div class="flex justify-between text-[#0284c7]">
-              <span>6. Voucher VinFast quà tặng:</span>
-              <span class="font-mono font-bold" id="dtCostVoucher">-150 Tr</span>
-            </div>
-          </div>
-
-          <!-- Tổng thanh toán ước tính -->
-          <div class="p-3 rounded-xl bg-gradient-to-r from-sky-50 to-slate-100 border border-sky-200 flex flex-col gap-1 mt-1">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-extrabold text-slate-900">TỔNG THANH TOÁN ƯỚC TÍNH:</span>
-              <span class="text-base font-extrabold text-[#0f3d64] font-mono" id="dtTotalCost">3,95 Tỷ</span>
-            </div>
-            <span class="text-[10px] text-slate-500 italic">* Đã bao gồm toàn bộ VAT, 2% kinh phí bảo trì &amp; khấu trừ ưu đãi</span>
-          </div>
-        </div>
-
-        <!-- 6. LỊCH THANH TOÁN (TIẾN ĐỘ CHUẨN, THANH TOÁN SỚM, GÓI VAY) -->
-        <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-2.5">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-            <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[18px] text-[#0f3d64]">calendar_clock</span>
-              Lịch Thanh Toán &amp; Bảng Tiến Độ
-            </span>
-            <span class="text-[10px] text-slate-400">3 Phương án</span>
-          </div>
-
-          <!-- Segment Chọn Phương Án Thanh Toán -->
-          <div class="grid grid-cols-3 p-1 rounded-xl bg-slate-100 text-xs font-bold text-center">
-            <button id="tabSchedule1" onclick="switchPaymentScheduleTab('standard')" class="py-1.5 rounded-lg bg-white text-[#0f3d64] shadow-xs">
-              Tiến Độ (7 Đợt)
-            </button>
-            <button id="tabSchedule2" onclick="switchPaymentScheduleTab('early')" class="py-1.5 rounded-lg text-slate-600 hover:text-slate-900">
-              Sớm 95% (-7%)
-            </button>
-            <button id="tabSchedule3" onclick="switchPaymentScheduleTab('bank')" class="py-1.5 rounded-lg text-slate-600 hover:text-slate-900">
-              Vay LS 0% 24T
-            </button>
-          </div>
-
-          <!-- Schedule 1: Tiến độ chuẩn 7 đợt -->
-          <div id="scheduleViewStandard" class="flex flex-col gap-2 pt-1">
-            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 text-xs">
-              <div class="flex flex-col">
-                <span class="font-bold text-slate-900">Đợt 1: Đặt cọc giữ chỗ</span>
-                <span class="text-[10px] text-slate-500">Ký Thỏa thuận đặt cọc (TTĐC)</span>
-              </div>
-              <span class="font-bold font-mono text-[#0f3d64]">50 Tr</span>
-            </div>
-            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 text-xs">
-              <div class="flex flex-col">
-                <span class="font-bold text-slate-900">Đợt 2: Ký HĐMB (15 ngày)</span>
-                <span class="text-[10px] text-slate-500">Thanh toán 15% (đã gồm cọc)</span>
-              </div>
-              <span class="font-bold font-mono text-slate-800">572,5 Tr</span>
-            </div>
-            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 text-xs">
-              <div class="flex flex-col">
-                <span class="font-bold text-slate-900">Đợt 3: Xong sàn tầng 5</span>
-                <span class="text-[10px] text-slate-500">Thanh toán 10%</span>
-              </div>
-              <span class="font-bold font-mono text-slate-800">415 Tr</span>
-            </div>
-            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 text-xs">
-              <div class="flex flex-col">
-                <span class="font-bold text-slate-900">Đợt 4: Cất nóc tòa nhà</span>
-                <span class="text-[10px] text-slate-500">Thanh toán 15%</span>
-              </div>
-              <span class="font-bold font-mono text-slate-800">622,5 Tr</span>
-            </div>
-            <div class="flex items-center justify-between p-2 rounded-lg bg-sky-50 text-xs border border-sky-200">
-              <div class="flex flex-col">
-                <span class="font-bold text-[#0f3d64]">Đợt 5: Nhận bàn giao căn hộ</span>
-                <span class="text-[10px] text-[#0f3d64]">45% GTCH + 2% Phí bảo trì</span>
-              </div>
-              <span class="font-bold font-mono text-[#0f3d64]">1,94 Tỷ</span>
-            </div>
-            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 text-xs">
-              <div class="flex flex-col">
-                <span class="font-bold text-slate-900">Đợt 6: Nhận Sổ Hồng</span>
-                <span class="text-[10px] text-slate-500">5% GTCH còn lại</span>
-              </div>
-              <span class="font-bold font-mono text-slate-800">207,5 Tr</span>
-            </div>
-          </div>
-
-          <!-- Schedule 2: Thanh toán sớm 95% -->
-          <div id="scheduleViewEarly" class="hidden flex-col gap-2 pt-1 text-xs">
-            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0f3d64]">
-              <span class="font-bold">Ưu đãi Thanh Toán Sớm 95%:</span>
-              <p class="text-[11px] mt-0.5">Khách hàng thanh toán 95% trong 15 ngày kể từ ngày ký TTĐC nhận ngay chiết khấu trực tiếp <strong class="text-[#0f3d64]">7.0%</strong> vào hợp đồng.</p>
-            </div>
-            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
-              <span>Đợt 1: Đặt cọc</span>
-              <span class="font-bold font-mono">50 Tr</span>
-            </div>
-            <div class="flex items-center justify-between p-2 rounded-lg bg-sky-50 border border-sky-200 font-bold">
-              <span>Đợt 2: Vào đủ 95% (Sau trừ CK 7%):</span>
-              <span class="font-mono text-[#0f3d64]">3,65 Tỷ</span>
-            </div>
-            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
-              <span>Đợt 3: Nhận sổ hồng (5%):</span>
-              <span class="font-bold font-mono">207,5 Tr</span>
-            </div>
-          </div>
-
-          <!-- Schedule 3: Vay ngân hàng LS 0% -->
-          <div id="scheduleViewBank" class="hidden flex-col gap-2 pt-1 text-xs">
-            <div class="p-2.5 rounded-xl bg-sky-50 border border-sky-200 text-sky-900">
-              <span class="font-bold">Gói Vay Ưu Đãi MB Bank &amp; Vietcombank:</span>
-              <p class="text-[11px] mt-0.5">Vốn tự có 30% (~1.2 Tỷ). Ngân hàng giải ngân 70%. Ân hạn nợ gốc &amp; <strong>Lãi suất 0% trong 24 tháng</strong>.</p>
-            </div>
-            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
-              <span>Vốn tự có chuẩn bị (30%):</span>
-              <span class="font-bold font-mono text-[#0f3d64]">1,18 Tỷ</span>
-            </div>
-            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
-              <span>Ngân hàng giải ngân (70%):</span>
-              <span class="font-bold font-mono text-slate-800">2,76 Tỷ</span>
-            </div>
-            <button onclick="openMortgageModal('S501-12A08', 4004750000)" class="w-full py-2 rounded-xl bg-sky-100 hover:bg-sky-200 text-[#0f3d64] font-bold text-xs flex items-center justify-center gap-1 mt-1 transition-all">
-              <span class="material-symbols-outlined text-[16px]">calculate</span>
-              <span>Mở Bảng Tính Vay &amp; Lãi Suất Hàng Tháng</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 7. GHI CHÚ NỘI BỘ (CHỈ SALE / TEAM LEADER XEM ĐƯỢC - CONFIDENTIAL) -->
-        <div class="p-3.5 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-300 shadow-xs flex flex-col gap-2.5">
-          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
-            <div class="flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[18px] text-[#0f3d64]">lock_person</span>
-              <span class="text-xs font-extrabold text-[#0f3d64] uppercase tracking-wider">Ghi Chú Nội Bộ (Sale &amp; Team Leader)</span>
-            </div>
-            <span class="px-1.5 py-0.2 rounded bg-sky-200 text-[#0f3d64] text-[9px] font-extrabold uppercase">Confidential</span>
-          </div>
-
-          <div class="flex flex-col gap-2 text-xs text-slate-900">
-            <!-- Hoa hồng F1 -->
-            <div class="flex items-start justify-between p-2 rounded-xl bg-white/80 border border-slate-200">
-              <div>
-                <span class="font-bold text-slate-900 block">Hoa hồng F1 sàn Tân Long Land:</span>
-                <span class="text-[11px] text-slate-500">Chi trả 50% khi ký HĐMB, 50% khi giải ngân</span>
-              </div>
-              <div class="text-right">
-                <span class="font-mono font-extrabold text-[#0f3d64] text-sm">2.8% GTCH</span>
-                <span class="text-[10px] text-slate-500 block">~116,2 Tr</span>
-              </div>
-            </div>
-
-            <!-- Thưởng nóng giao dịch -->
-            <div class="flex items-center justify-between p-2 rounded-xl bg-white/80 border border-slate-200">
-              <span class="font-bold text-[#0f3d64] flex items-center gap-1">
-                <span class="material-symbols-outlined text-[15px]">local_fire_department</span>
-                Thưởng nóng chốt cọc trong 48h:
-              </span>
-              <span class="font-mono font-extrabold text-[#0f3d64]">+20 Tr</span>
-            </div>
-
-            <!-- Quyền hạn đàm phán -->
-            <div class="p-2 rounded-xl bg-white/80 border border-slate-200 flex flex-col gap-0.5">
-              <span class="font-bold text-slate-900">Quyền hạn đàm phán của Team Leader:</span>
-              <p class="text-[11px] text-slate-600 leading-relaxed">
-                Được phép cam kết tặng thêm gói Smarthome trị giá <strong>20 Tr</strong> (lấy từ quỹ sàn) nếu khách hàng ký cọc ngay trong ngày xem nhà mẫu.
-              </p>
-            </div>
-
-            <!-- Tình trạng hồ sơ ngân hàng -->
-            <div class="p-2 rounded-xl bg-white/80 border border-slate-200 flex flex-col gap-0.5">
-              <span class="font-bold text-slate-900">Đầu mối thẩm định tín dụng MB Bank:</span>
-              <p class="text-[11px] text-slate-600">
-                Mr. Trung (Trưởng phòng tín dụng Sala): <a href="tel:0908112233" class="text-[#0f3d64] font-bold underline font-mono">0908.112.233</a>. Hạn mức duyệt sẵn 70% giá trị căn hộ.
-              </p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- 8. FLOATING BOTTOM BAR CHO CHI TIẾT CĂN -->
-      <div class="fixed bottom-0 inset-x-0 sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 w-full sm:max-w-[430px] bg-white/95 sm:rounded-b-[38px] backdrop-blur-xl border-t border-slate-200 p-3 pb-safe z-40 flex items-center gap-2">
-        <button onclick="shareViaZalo()" class="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition-all">
-          <span class="material-symbols-outlined text-[18px] text-[#0f3d64]">send_to_mobile</span>
-          <span>Báo Giá Zalo</span>
-        </button>
-        <button onclick="showToast('Đang tạo và tải file Báo Giá PDF chính thức...', 'picture_as_pdf')" class="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center shrink-0 active:scale-95 transition-all" title="Tải PDF Báo Giá">
-          <span class="material-symbols-outlined text-[20px] text-[#0f3d64]">picture_as_pdf</span>
-        </button>
-        <button onclick="triggerQuickLockModal('S501-12A08', '4,00 Tỷ')" class="flex-[1.4] py-3 rounded-xl bg-[#0f3d64] hover:bg-[#1e588a] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all">
-          <span class="material-symbols-outlined text-[18px]">lock</span>
-          <span>Khóa Căn • Cọc: 50 Tr</span>
-        </button>
-      </div>
-
+    <div id="view-detail" class="mobile-tab-view flex flex-col w-full px-4 pt-4 pb-16">
+      <div id="dtContent" class="flex flex-col gap-3.5"></div>
     </div>
 
     <!-- ---------------------------------------------------- -->
@@ -1122,9 +770,9 @@
     <!-- ---------------------------------------------------- -->
     <div id="view-my-units" class="mobile-tab-view flex flex-col w-full px-4 py-3 gap-3.5 pb-28">
       
-      <!-- 1. HEADER PROFILE & TỔNG QUAN DOANH SỐ CÁ NHÂN -->
+      <!-- 1. HEADER PROFILE CÁ NHÂN -->
       <div class="p-4 rounded-3xl bg-gradient-to-br from-[#0f3d64] via-[#154674] to-[#1e588a] text-white shadow-md flex flex-col gap-3">
-        <div class="flex items-center justify-between border-b border-white/15 pb-2.5">
+        <div class="flex items-center justify-between">
           <div class="flex items-center gap-2.5 min-w-0 flex-1">
             <div class="relative w-11 h-11 rounded-full overflow-hidden ring-2 ring-[#0f3d64] shrink-0">
               <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WS2PAoRHpXP3F0-LXtIPaWh7UKP3VM-MLVYlsw2EwbW-roG6_IDJIWnrJyZTJJRYgQy9CUUzt6uk1Dwf4dma4G1sMbDgoLv_GiEUxVb9pF5ssblbx9hwiuC1Rx78icgbTzv-_JrCJF4R3aMbPk3cuhqgsd9pOsw3w9srM-xb2w539Yh9fIAlV-j5_Ungl2fi-NHMOxpCbnnpYoDJweqWe8miPsM89PyzQkyWAj0XFqsIttoDXZdMJJhiw" alt="Quang Huy"/>
@@ -1140,29 +788,13 @@
           </div>
           <span class="px-2.5 py-1 rounded-xl bg-white/15 text-sky-200 font-mono text-xs font-bold border border-white/20 shrink-0 whitespace-nowrap">4 căn</span>
         </div>
-
-        <!-- 3 KPI Bento Mini Cards -->
-        <div class="grid grid-cols-3 gap-2 text-center">
-          <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-xs border border-white/10 flex flex-col">
-            <span class="text-[10px] text-slate-300 font-medium">Doanh số cá nhân</span>
-            <span class="text-xs font-black font-mono text-white mt-0.5">13,85 Tỷ</span>
-          </div>
-          <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-xs border border-white/10 flex flex-col">
-            <span class="text-[10px] text-slate-300 font-medium">Đã cọc &amp; giữ chỗ</span>
-            <span class="text-xs font-black font-mono text-sky-200 mt-0.5">2 Căn (150 Tr)</span>
-          </div>
-          <div class="p-2 rounded-2xl bg-white/10 backdrop-blur-xs border border-white/10 flex flex-col">
-            <span class="text-[10px] text-slate-300 font-medium">Hoa hồng tạm tính</span>
-            <span class="text-xs font-black font-mono text-sky-300 mt-0.5">+308,2 Tr</span>
-          </div>
-        </div>
       </div>
 
       <!-- 2. BREADCRUMB ĐIỀU HƯỚNG PHÂN CẤP TỰ ĐỘNG -->
       <div id="myNavBreadcrumb" class="hidden items-center px-3.5 py-2 rounded-2xl bg-white border border-slate-200">
         <div class="flex items-center gap-1.5 text-xs text-slate-600 font-semibold min-w-0" id="myBreadcrumbCurrentPath">
           <span class="material-symbols-outlined text-[15px] text-[#0f3d64] shrink-0">apartment</span>
-          <span id="myBreadcrumbPathText" class="truncate">Vinhomes Grand Park</span>
+          <span id="myBreadcrumbPathText" class="min-w-0 leading-snug break-words">Vinhomes Grand Park</span>
         </div>
         <span id="myBreadcrumbBackLabel" class="hidden"></span>
       </div>
@@ -1178,40 +810,6 @@
         <!-- Danh sách dự án (render từ MY_PROJECTS_SUMMARY qua renderMyProjectsList) -->
         <div class="flex flex-col gap-3" id="myProjectsList">
           <!-- Rendered dynamically via renderMyProjectsList() -->
-        </div>
-
-        <!-- ======================================================== -->
-        <!-- PHỄU KHÁCH HÀNG CÁ NHÂN (CRM LEADS)                     -->
-        <!-- ======================================================== -->
-        <div class="flex flex-col gap-2.5 pt-1">
-          <div class="flex items-center justify-between px-1">
-            <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Phễu Khách Hàng Của Bạn</span>
-            <button onclick="openNewLeadModal()" class="px-2.5 py-1 rounded-xl bg-[#0f3d64] text-white text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-all">
-              <span class="material-symbols-outlined text-[14px]">person_add</span>
-              <span>Thêm khách</span>
-            </button>
-          </div>
-
-          <!-- Ô tìm kiếm khách theo tên / số điện thoại -->
-          <div class="relative w-full">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
-            <input id="crmSearchInput" oninput="searchCustomers(this.value)" type="text" placeholder="Tìm khách theo tên hoặc số điện thoại..." class="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20 focus:bg-white transition-all"/>
-          </div>
-
-          <!-- Bộ lọc phễu 5 bước -->
-          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-            <button onclick="filterCrmStage('all', this)" class="pipeline-btn active px-3 py-1.5 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shadow-xs shrink-0 transition-all">Tất cả</button>
-            <button onclick="filterCrmStage('new', this)" class="pipeline-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">Khách mới</button>
-            <button onclick="filterCrmStage('caring', this)" class="pipeline-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">Chăm sóc</button>
-            <button onclick="filterCrmStage('tour', this)" class="pipeline-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">Hẹn xem</button>
-            <button onclick="filterCrmStage('booking', this)" class="pipeline-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">Chốt cọc</button>
-            <button onclick="filterCrmStage('won', this)" class="pipeline-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all">Thành công</button>
-          </div>
-
-          <!-- Danh sách khách hàng (render từ CUSTOMERS_DATABASE) -->
-          <div class="flex flex-col gap-2.5" id="crmCustomerList">
-            <!-- Rendered dynamically via renderCustomerList() -->
-          </div>
         </div>
 
       </div>
@@ -1770,21 +1368,6 @@
     <!-- ---------------------------------------------------- -->
     <div id="view-events" class="mobile-tab-view flex flex-col w-full px-4 py-3 gap-3.5 pb-28" style="display: none;">
       
-      <!-- Filter Tabs: Tất cả | 🏢 Dự án | 📅 Sự kiện -->
-      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
-        <button data-filter="all" onclick="filterEventOrProject('all', this)" class="ep-filter-btn active px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shadow-xs shrink-0 transition-all">
-          Tất cả (7)
-        </button>
-        <button data-filter="project" onclick="filterEventOrProject('project', this)" class="ep-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 flex items-center gap-1.5 transition-all">
-          <span class="material-symbols-outlined text-[16px] text-[#0f3d64]">apartment</span>
-          <span>🏢 Dự án (3)</span>
-        </button>
-        <button data-filter="event" onclick="filterEventOrProject('event', this)" class="ep-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 flex items-center gap-1.5 transition-all">
-          <span class="material-symbols-outlined text-[16px] text-[#0f3d64]">event</span>
-          <span>📅 Sự kiện (4)</span>
-        </button>
-      </div>
-
       <!-- Quick QR Button -->
       <div class="p-3.5 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-between">
         <div class="flex items-center gap-2.5">
@@ -1858,9 +1441,9 @@
             <!-- Hành động đặc trưng của Sự kiện: Tham gia -->
             <div class="flex items-center justify-between pt-1.5 border-t border-slate-100 mt-1">
               <span class="text-[10px] text-slate-500">Đã đăng ký 850+</span>
-              <button onclick="event.stopPropagation(); showToast('Đã ghi nhận đăng ký tham gia sự kiện!')" class="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-[#0f3d64] text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-all">
+              <button data-join-event="ciputra-event" onclick="event.stopPropagation(); toggleEventJoin('ciputra-event')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-all bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-600">
                 <span class="material-symbols-outlined text-[13px]">how_to_reg</span>
-                <span>Tham Gia</span>
+                <span data-join-text>Tham Gia</span>
               </button>
             </div>
           </div>
@@ -1984,9 +1567,9 @@
             <!-- Hành động đặc trưng của Sự kiện: Tham gia -->
             <div class="flex items-center justify-between pt-1.5 border-t border-slate-100 mt-1">
               <span class="text-[10px] text-slate-500">Còn 45 chỗ</span>
-              <button onclick="event.stopPropagation(); showToast('Đã đăng ký tham gia Workshop thành công!')" class="px-2.5 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-[#0f3d64] text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-all">
+              <button data-join-event="grand-marina-event" onclick="event.stopPropagation(); toggleEventJoin('grand-marina-event')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-all bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-600">
                 <span class="material-symbols-outlined text-[13px]">how_to_reg</span>
-                <span>Tham Gia</span>
+                <span data-join-text>Tham Gia</span>
               </button>
             </div>
           </div>
@@ -2601,6 +2184,9 @@
 
   </main>
 
+  <!-- THANH HÀNH ĐỘNG MÀN CHI TIẾT CĂN: con trực tiếp của khung app, neo ngay trên bottom nav (nội dung render trong openUnitDetail) -->
+  <div id="dtActionBar" class="hidden px-4 py-2.5 bg-white/95 backdrop-blur-xl border-t border-slate-200 shadow-[0_-4px_16px_rgba(15,23,42,0.06)]"></div>
+
   <!-- ======================================================== -->
   <!-- 4. BOTTOM NAVIGATION BAR & NÚT CHẤM CÔNG TRÒN Ở GIỮA     -->
   <!-- [Dự án]  [Sự kiện]   ( [O] Chấm công )   [Cá nhân]  [Cài đặt] -->
@@ -2768,29 +2354,82 @@
     <span id="toastMessage">Thông báo trạng thái</span>
   </div>
 
-  <div id="eventInvitationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[60] hidden items-end sm:items-center justify-center p-3" onclick="closeInvitationModal()">
-    <div class="bg-white w-full max-w-md rounded-3xl p-4 flex flex-col gap-3 shadow-2xl" onclick="event.stopPropagation()">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-        <div>
-          <h3 class="text-sm font-extrabold text-slate-900">Tạo thiệp mời gửi khách</h3>
-          <p class="text-[10px] text-slate-500">Soạn nội dung gửi riêng cho khách mời</p>
+  <!-- MODAL THIỆP MỜI: CHỈ NHẬP TÊN KHÁCH, THÔNG TIN SỰ KIỆN TỰ ĐIỀN SẴN -->
+  <!-- z-[200]: header & bottom nav bị CSS ép z-index 100, modal phải nằm trên -->
+  <div id="eventInvitationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[200] hidden items-end sm:items-center justify-center p-3" onclick="closeInvitationModal()">
+    <div class="bg-white w-full max-w-md max-h-[92vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden" onclick="event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="flex items-center gap-3 px-4 pt-4 pb-3">
+        <div class="w-10 h-10 rounded-2xl bg-sky-50 text-[#0284c7] flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[22px]">mail</span>
         </div>
-        <div class="p-2.5 rounded-xl bg-sky-50 border border-sky-200">
-          <span id="invitationEventTitle" class="text-xs font-extrabold text-[#0f3d64] block">Tên sự kiện</span>
-          <span id="invitationEventMeta" class="text-[10px] text-slate-600 block mt-0.5">Thời gian • Địa điểm</span>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-sm font-extrabold text-slate-900">Thiệp mời khách</h3>
+          <p class="text-[11px] text-slate-500 truncate">Nhập tên khách, thông tin sự kiện đã điền sẵn</p>
         </div>
-        <button onclick="closeInvitationModal()" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center" aria-label="Đóng">
-          <span class="material-symbols-outlined text-[18px]">close</span>
+        <button onclick="closeInvitationModal()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center shrink-0 active:scale-95 transition-all" aria-label="Đóng">
+          <span class="material-symbols-outlined text-[20px]">close</span>
         </button>
       </div>
-      <input id="invitationGuestName" class="h-10 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20" placeholder="Tên khách mời" type="text"/>
-      <textarea id="invitationMessage" rows="7" class="p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20 resize-none"></textarea>
-      <div class="flex gap-2">
-        <button onclick="copyInvitationText()" class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95">
-          <span class="material-symbols-outlined text-[17px]">content_copy</span> Sao chép thiệp
+
+      <div class="flex flex-col gap-3.5 px-4 pb-4 overflow-y-auto">
+        <!-- Ô nhập duy nhất: tên khách -->
+        <label class="flex flex-col gap-1.5">
+          <span class="text-[11px] font-bold text-slate-700">Tên khách mời</span>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">person</span>
+            <input id="invitationGuestName" oninput="renderInvitationGuest()" type="text" autocomplete="off" placeholder="VD: Nguyễn Văn An" class="w-full h-11 pl-10 pr-3 rounded-xl border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-[#0284c7]/25 focus:border-[#0284c7] focus:bg-white transition-all"/>
+          </div>
+        </label>
+
+        <!-- Thiệp xem trước -->
+        <div class="rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+          <div class="relative h-28 bg-[#0f3d64]">
+            <img id="invitationEventImage" alt="" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0f3d64] via-[#0f3d64]/70 to-[#0f3d64]/10"></div>
+            <div class="absolute inset-x-3.5 bottom-3 flex flex-col gap-0.5">
+              <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-sky-200">Thư mời tham dự</span>
+              <h4 id="invitationEventTitle" class="text-sm font-extrabold text-white leading-snug line-clamp-2">Tên sự kiện</h4>
+            </div>
+          </div>
+
+          <div class="p-3.5 flex flex-col gap-3 bg-white">
+            <p class="text-xs text-slate-700 leading-relaxed">
+              Kính mời anh/chị <span id="invitationGuestPreview" class="font-semibold italic text-slate-400">[Tên khách]</span> đến tham dự sự kiện.
+            </p>
+
+            <div class="flex flex-col gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div class="flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-[18px] text-[#0284c7] shrink-0">schedule</span>
+                <div class="min-w-0">
+                  <span class="text-[10px] font-bold uppercase tracking-wide text-slate-400 block">Thời gian</span>
+                  <span id="invitationEventTime" class="text-xs font-semibold text-slate-800 leading-snug block">—</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-[18px] text-[#0284c7] shrink-0">location_on</span>
+                <div class="min-w-0">
+                  <span class="text-[10px] font-bold uppercase tracking-wide text-slate-400 block">Địa điểm</span>
+                  <span id="invitationEventLocation" class="text-xs font-semibold text-slate-800 leading-snug block">—</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-[11px] text-slate-500 leading-relaxed text-center">Tân Long Land trân trọng đón tiếp anh/chị. Vui lòng xác nhận tham dự để chúng tôi chuẩn bị đón tiếp chu đáo.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hành động -->
+      <div class="grid grid-cols-2 gap-2 px-4 py-3 border-t border-slate-100 bg-white">
+        <button onclick="copyInvitationText()" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-[18px]">content_copy</span>
+          <span>Sao chép thiệp</span>
         </button>
-        <button onclick="shareInvitationText()" class="flex-1 py-2.5 rounded-xl bg-[#0f3d64] text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95">
-          <span class="material-symbols-outlined text-[17px]">share</span> Gửi khách
+        <button onclick="shareInvitationText()" class="h-11 rounded-xl bg-[#0f3d64] hover:bg-[#0c3252] text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">send</span>
+          <span>Gửi khách</span>
         </button>
       </div>
     </div>
@@ -2876,11 +2515,9 @@
       if (screenName === 'my-units') resetMyHierarchy();
 
       if (screenName === 'home' || screenName === 'inventory') {
-        const projectChip = document.querySelector('.inv-filter-chip[data-cat="project"]');
-        if (projectChip) filterInventoryCategory('project', projectChip);
+        filterInventoryCategory('project');
       } else if (screenName === 'events') {
-        const eventFilter = document.querySelector('.ep-filter-btn[data-filter="event"]');
-        if (eventFilter) filterEventOrProject('event', eventFilter);
+        filterEventOrProject('event');
       }
 
       // Header management
@@ -2889,10 +2526,27 @@
       const detailHeader = document.getElementById('detailHeader');
       if (detailHeader) detailHeader.classList.add('hidden');
 
+      // Thanh hành động Chi Tiết Căn nằm ngoài view nên tự ẩn/hiện theo màn và bám sát trên bottom nav
+      const detailActionBar = document.getElementById('dtActionBar');
+      if (detailActionBar) {
+        detailActionBar.classList.toggle('hidden', screenName !== 'detail');
+        const bottomNav = document.getElementById('bottomNav');
+        if (bottomNav && screenName === 'detail') {
+          detailActionBar.style.bottom = `${bottomNav.offsetHeight}px`;
+          // Nút Chấm công tròn nhô lên khỏi nav → chừa thêm khoảng dưới để các nút của thanh không bị đè
+          const navTop = bottomNav.getBoundingClientRect().top;
+          const protrusion = Math.max(0, ...[...bottomNav.querySelectorAll('*')].map(el => navTop - el.getBoundingClientRect().top));
+          detailActionBar.style.paddingBottom = `${10 + Math.ceil(protrusion)}px`;
+        }
+      }
+
       const backBtn = document.getElementById('subHeaderBackBtn');
       const tabIcon = document.getElementById('subHeaderTabIcon');
       const iconSym = document.getElementById('subHeaderTabIconSymbol');
       const homeBtn = document.getElementById('subHeaderHomeBtn');
+
+      // Cây giỏ hàng / cá nhân có thể đã gán đè onclick -> luôn trả về điều hướng màn hình chuẩn
+      if (backBtn) backBtn.onclick = goBackScreen;
 
       if (screenName === 'home') {
         if (appHeader) appHeader.classList.remove('hidden');
@@ -2957,174 +2611,351 @@
     }
 
     // Detail Subview Router
+    // ========================================================
+    // COMPONENT MÀN CHI TIẾT CĂN HỘ
+    // Hero (trạng thái, mã, vị trí) → Giá → Thông tin căn → Chi phí → Lịch thanh toán → Ghi chú nội bộ
+    // Thanh hành động (#dtActionBar) neo trong khung app, ngay trên bottom nav
+    // Số liệu tính từ giá niêm yết của chính căn: giá chưa VAT = niêm yết / 1,1 • VAT 10% • KPBT 2% • trước bạ 0,5%
+    // ========================================================
+    const SCHEDULE_TAB_ACTIVE = 'h-8 rounded-lg bg-white text-[#0f3d64] text-xs font-bold shadow-xs transition-all';
+    const SCHEDULE_TAB_IDLE = 'h-8 rounded-lg text-slate-500 hover:text-slate-900 text-xs font-bold transition-all';
+
+    // "4,15 Tỷ" / "572,5 Tr" → triệu đồng
+    function parseMoneyToTr(text) {
+      const match = String(text || '').match(/([\d.,]+)\s*(Tỷ|Tr)/i);
+      if (!match) return null;
+      const value = parseFloat(match[1].replace(/\./g, '').replace(',', '.'));
+      return /tỷ/i.test(match[2]) ? value * 1000 : value;
+    }
+
+    // Triệu đồng → "3,77 Tỷ" (làm tròn 2 số lẻ) hoặc "145,2 Tr" (cắt 1 số lẻ, bỏ ",0")
+    function formatMoneyTr(tr, sign = '') {
+      const abs = Math.abs(tr);
+      if (abs >= 1000) return `${sign}${(abs / 1000).toFixed(2).replace('.', ',')} Tỷ`;
+      const truncated = Math.floor(abs * 10 + 1e-6) / 10;
+      return `${sign}${String(truncated).replace('.', ',')} Tr`;
+    }
+
+    function formatPercent(rate) {
+      return `${String(+(rate * 100).toFixed(1)).replace('.', ',')}%`;
+    }
+
+    const OPPOSITE_DIRECTION = { 'Đông': 'Tây', 'Tây': 'Đông', 'Nam': 'Bắc', 'Bắc': 'Nam' };
+
+    // Cửa chính thường ngược hướng ban công: "Đông Nam" → "Tây Bắc"
+    function oppositeDirection(direction) {
+      const words = String(direction || '').split(/\s+/);
+      return words.length && words.every(w => OPPOSITE_DIRECTION[w]) ? words.map(w => OPPOSITE_DIRECTION[w]).join(' ') : '';
+    }
+
+    function computeUnitPricing(unit, ctx) {
+      const listed = parseMoneyToTr(unit.price) || 0;
+      const isMetropolis = /Metropolis/i.test(ctx.projectName || '') || /^A[12]-/.test(unit.code);
+      const discountRate = isMetropolis ? 0.07 : 0.035;
+      const discount = listed * discountRate;
+      const base = listed / 1.1;
+      const vat = base * 0.1;
+      const maintenance = base * 0.02;
+      const other = listed * 0.005;
+      const voucher = /studio/i.test(unit.bed || unit.type || '') ? 50 : isMetropolis ? 100 : 150;
+      const discounted = listed - discount;
+      const netArea = parseFloat(String(unit.area || '').replace(',', '.')) || 0;
+      return {
+        listed, discountRate, discount, base, vat, maintenance, other, voucher, discounted, netArea,
+        total: base + vat + maintenance + other - discount - voucher,
+        deposit: parseMoneyToTr(unit.deposit || unit.depositPaid) || 50,
+        pricePerM2: netArea ? discounted / netArea : 0
+      };
+    }
+
+    function renderDetailSection(title, icon, aside = '') {
+      return `
+        <div class="flex items-center justify-between gap-2">
+          <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2 min-w-0">
+            <span class="w-7 h-7 rounded-lg bg-sky-50 text-[#0f3d64] flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[17px]">${icon}</span>
+            </span>
+            <span class="truncate">${title}</span>
+          </h3>
+          ${aside}
+        </div>
+      `;
+    }
+
+    function renderDetailCard(inner) {
+      return `<section class="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-3">${inner}</section>`;
+    }
+
+    function renderDetailHero(unit, ctx) {
+      const meta = UNIT_STATUS_META[unit.status] || UNIT_STATUS_META.sold;
+      const statusDetail = unit.status === 'holding' && unit.timer ? ` • còn ${unit.timer}`
+        : unit.status === 'deposited' && unit.contractCode ? ` • ${unit.contractCode}` : '';
+      const location = [ctx.floorName, ctx.towerName].filter(Boolean).join(' • ');
+      return `
+        <section class="flex flex-col gap-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <span id="dtStatusBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${meta.pill}">
+              <span class="w-1.5 h-1.5 rounded-full ${meta.dot}"></span>
+              <span id="dtStatusText">${meta.label}${statusDetail}</span>
+            </span>
+            <span id="dtUnitCodePill" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-[11px] font-mono font-bold shrink-0">${unit.code}</span>
+          </div>
+          <div>
+            <h2 id="dtUnitTitle" class="text-xl font-extrabold text-slate-900 tracking-tight">Căn hộ ${unit.code}</h2>
+            <div id="dtUnitSubtitle" class="flex flex-col gap-1 mt-1.5 text-xs text-slate-600">
+              <span class="flex items-center gap-1.5 min-w-0">
+                <span class="material-symbols-outlined text-[16px] text-[#0284c7] shrink-0">layers</span>
+                <span class="truncate">${location || 'Đang cập nhật vị trí'}</span>
+              </span>
+              ${ctx.projectName ? `
+              <span class="flex items-center gap-1.5 min-w-0">
+                <span class="material-symbols-outlined text-[16px] text-[#0284c7] shrink-0">location_city</span>
+                <span class="truncate">${ctx.projectName}</span>
+              </span>` : ''}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderDetailPrice(p) {
+      return `
+        <section class="p-4 rounded-2xl bg-gradient-to-br from-[#0f3d64] to-[#1e588a] text-white shadow-sm flex flex-col gap-3">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <span class="text-[11px] text-sky-200 font-medium block">Giá sau chiết khấu thanh toán sớm</span>
+              <span id="dtPriceDiscounted" class="text-3xl font-black leading-tight block">${formatMoneyTr(p.discounted)}</span>
+            </div>
+            ${p.pricePerM2 ? `
+            <div class="text-right shrink-0">
+              <span id="dtUnitPricePerM2" class="inline-block px-2 py-0.5 rounded-md bg-white/15 text-xs font-bold whitespace-nowrap">~${p.pricePerM2.toFixed(1).replace('.', ',')} Tr/m²</span>
+              <span class="text-[10px] text-sky-200 block mt-1">Theo thông thủy</span>
+            </div>` : ''}
+          </div>
+          <div class="flex items-center justify-between gap-2 pt-3 border-t border-white/15 text-xs">
+            <span class="text-sky-100 whitespace-nowrap">Niêm yết <span id="dtPriceOriginal" class="line-through font-semibold">${formatMoneyTr(p.listed)}</span></span>
+            <span id="dtDiscountAmount" class="px-2 py-0.5 rounded-md bg-emerald-400/20 text-emerald-100 font-bold truncate">${formatMoneyTr(p.discount, '-')} (CK ${formatPercent(p.discountRate)})</span>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderDetailSpecs(unit) {
+      const area = splitUnitArea(unit.area);
+      const { orient, view } = splitUnitOrientation(unit);
+      const mainDoor = oppositeDirection(orient);
+      return renderDetailCard(`
+        ${renderDetailSection('Thông tin căn hộ', 'info')}
+        <div class="grid grid-cols-2 gap-2">
+          ${renderUnitSpecTile({ id: 'dtNetArea', icon: 'square_foot', label: 'Diện tích thông thủy', value: area.net, sub: area.gross })}
+          ${renderUnitSpecTile({ id: 'dtBedBath', icon: 'bed', label: 'Loại căn', value: unit.bed || unit.type || 'Đang cập nhật' })}
+          ${renderUnitSpecTile({ id: 'dtOrientation', icon: 'explore', label: 'Hướng ban công', value: orient, sub: mainDoor ? `Cửa chính: ${mainDoor}` : '' })}
+          ${renderUnitSpecTile({ id: 'dtView', icon: 'landscape', label: 'View', value: view })}
+          ${renderUnitSpecTile({ id: 'dtCeiling', icon: 'height', label: 'Chiều cao trần', value: '3.4 m' })}
+          ${renderUnitSpecTile({ id: 'dtHandover', icon: 'home_repair_service', label: 'Tiêu chuẩn bàn giao', value: 'Liền tường cao cấp' })}
+        </div>
+      `);
+    }
+
+    function renderCostRow({ id, label, note, value, tone = 'default' }) {
+      const valueTone = tone === 'discount' ? 'text-emerald-700' : 'text-slate-900';
+      return `
+        <div class="flex items-start justify-between gap-3 py-2.5">
+          <div class="min-w-0">
+            <span class="text-xs text-slate-700 block">${label}</span>
+            ${note ? `<span class="text-[10px] text-slate-400 block mt-0.5">${note}</span>` : ''}
+          </div>
+          <span id="${id}" class="text-xs font-bold font-mono whitespace-nowrap ${valueTone}">${value}</span>
+        </div>
+      `;
+    }
+
+    function renderDetailCosts(p) {
+      return renderDetailCard(`
+        ${renderDetailSection('Chi phí & tổng thanh toán', 'receipt_long', '<span class="px-2 py-0.5 rounded-md bg-sky-50 text-[#0284c7] text-[10px] font-bold whitespace-nowrap">CSBH F1 mới nhất</span>')}
+        <div class="flex flex-col divide-y divide-slate-100">
+          ${renderCostRow({ id: 'dtCostBase', label: 'Giá bán CĐT (chưa VAT)', value: formatMoneyTr(p.base) })}
+          ${renderCostRow({ id: 'dtCostVat', label: 'Thuế VAT 10%', note: 'Theo quy định nhà nước', value: formatMoneyTr(p.vat, '+') })}
+          ${renderCostRow({ id: 'dtCostMaintenance', label: 'Phí bảo trì 2%', note: 'Nộp khi nhận nhà', value: formatMoneyTr(p.maintenance, '+') })}
+          ${renderCostRow({ id: 'dtCostOther', label: 'Lệ phí trước bạ (ước tính)', note: '0,5% giá trị căn, dùng làm sổ hồng', value: formatMoneyTr(p.other, '+') })}
+        </div>
+        <div class="flex flex-col divide-y divide-emerald-100 px-3 rounded-xl bg-emerald-50 border border-emerald-100">
+          ${renderCostRow({ id: 'dtCostDiscount', label: `Chiết khấu thanh toán sớm ${formatPercent(p.discountRate)}`, value: formatMoneyTr(p.discount, '-'), tone: 'discount' })}
+          ${renderCostRow({ id: 'dtCostVoucher', label: 'Voucher VinFast quà tặng', value: formatMoneyTr(p.voucher, '-'), tone: 'discount' })}
+        </div>
+        <div class="flex items-center justify-between gap-3 p-3 rounded-xl bg-[#0f3d64] text-white">
+          <div class="min-w-0">
+            <span class="text-xs font-bold block">Tổng thanh toán ước tính</span>
+            <span class="text-[10px] text-sky-200 block mt-0.5">Đã gồm VAT, phí bảo trì và trừ ưu đãi</span>
+          </div>
+          <span id="dtTotalCost" class="text-lg font-black whitespace-nowrap">${formatMoneyTr(p.total)}</span>
+        </div>
+      `);
+    }
+
+    function renderScheduleStep({ index, title, note, amount, highlight, last }) {
+      return `
+        <div class="flex gap-3">
+          <div class="flex flex-col items-center shrink-0">
+            <span class="w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center ${highlight ? 'bg-[#0f3d64] text-white' : 'bg-sky-50 text-[#0f3d64] border border-sky-200'}">${index}</span>
+            ${last ? '' : '<span class="w-px flex-1 bg-slate-200 my-1"></span>'}
+          </div>
+          <div class="flex-1 min-w-0 flex items-start justify-between gap-3 ${last ? '' : 'pb-3'}">
+            <div class="min-w-0">
+              <span class="text-xs font-bold ${highlight ? 'text-[#0f3d64]' : 'text-slate-900'} block">${title}</span>
+              <span class="text-[10px] text-slate-500 block mt-0.5">${note}</span>
+            </div>
+            <span class="text-xs font-bold font-mono whitespace-nowrap ${highlight ? 'text-[#0f3d64]' : 'text-slate-800'}">${amount}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderScheduleSteps(steps) {
+      return steps.map((step, i) => renderScheduleStep({ ...step, index: i + 1, last: i === steps.length - 1 })).join('');
+    }
+
+    function renderInfoNote(tone, title, text) {
+      const tones = { sky: 'bg-sky-50 border-sky-200 text-sky-900', emerald: 'bg-emerald-50 border-emerald-200 text-emerald-900' };
+      return `
+        <div class="p-3 rounded-xl border ${tones[tone]} text-xs">
+          <span class="font-bold block">${title}</span>
+          <p class="text-[11px] mt-0.5 leading-relaxed">${text}</p>
+        </div>
+      `;
+    }
+
+    function renderDetailSchedule(unit, p) {
+      const listed = p.listed;
+      const standard = [
+        { title: 'Đặt cọc giữ chỗ', note: 'Ký thỏa thuận đặt cọc (TTĐC)', amount: formatMoneyTr(p.deposit) },
+        { title: 'Ký HĐMB trong 15 ngày', note: 'Thanh toán 15%, đã gồm tiền cọc', amount: formatMoneyTr(listed * 0.15 - p.deposit) },
+        { title: 'Xong sàn tầng 5', note: 'Thanh toán 10%', amount: formatMoneyTr(listed * 0.10) },
+        { title: 'Cất nóc tòa nhà', note: 'Thanh toán 15%', amount: formatMoneyTr(listed * 0.15) },
+        { title: 'Nhận bàn giao căn hộ', note: '45% giá trị căn + 2% phí bảo trì', amount: formatMoneyTr(listed * 0.45 + p.maintenance), highlight: true },
+        { title: 'Nhận sổ hồng', note: '5% giá trị căn còn lại', amount: formatMoneyTr(listed * 0.05) }
+      ];
+      const early = [
+        { title: 'Đặt cọc', note: 'Ký thỏa thuận đặt cọc (TTĐC)', amount: formatMoneyTr(p.deposit) },
+        { title: 'Thanh toán đủ 95%', note: 'Sau khi trừ chiết khấu 7%', amount: formatMoneyTr(listed * 0.95 * 0.93 - p.deposit), highlight: true },
+        { title: 'Nhận sổ hồng', note: '5% giá trị căn còn lại', amount: formatMoneyTr(listed * 0.05) }
+      ];
+      const tab = (id, mode, label, active) =>
+        `<button id="${id}" onclick="switchPaymentScheduleTab('${mode}')" class="${active ? SCHEDULE_TAB_ACTIVE : SCHEDULE_TAB_IDLE}">${label}</button>`;
+
+      return renderDetailCard(`
+        ${renderDetailSection('Lịch thanh toán', 'calendar_clock', '<span class="text-[10px] text-slate-400 font-semibold whitespace-nowrap">3 phương án</span>')}
+        <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-slate-100">
+          ${tab('tabSchedule1', 'standard', 'Tiến độ', true)}
+          ${tab('tabSchedule2', 'early', 'Sớm 95%', false)}
+          ${tab('tabSchedule3', 'bank', 'Vay 0% 24T', false)}
+        </div>
+        <div id="scheduleViewStandard" class="flex flex-col pt-1">${renderScheduleSteps(standard)}</div>
+        <div id="scheduleViewEarly" class="hidden flex-col gap-3 pt-1">
+          ${renderInfoNote('emerald', 'Ưu đãi thanh toán sớm 95%', 'Thanh toán 95% trong 15 ngày kể từ ngày ký TTĐC, nhận ngay chiết khấu 7% vào hợp đồng.')}
+          <div class="flex flex-col">${renderScheduleSteps(early)}</div>
+        </div>
+        <div id="scheduleViewBank" class="hidden flex-col gap-3 pt-1">
+          ${renderInfoNote('sky', 'Gói vay ưu đãi MB Bank & Vietcombank', 'Ngân hàng giải ngân 70%, ân hạn nợ gốc và lãi suất 0% trong 24 tháng.')}
+          <div class="grid grid-cols-2 gap-2">
+            ${renderUnitSpecTile({ id: 'dtLoanOwn', icon: 'savings', label: 'Vốn tự có (30%)', value: formatMoneyTr(p.total * 0.3) })}
+            ${renderUnitSpecTile({ id: 'dtLoanBank', icon: 'account_balance', label: 'Ngân hàng giải ngân (70%)', value: formatMoneyTr(p.total * 0.7) })}
+          </div>
+          <button onclick="openMortgageModal('${unit.code}', ${Math.round(p.discounted * 1e6)})" class="h-10 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-[#0f3d64] text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[17px]">calculate</span>
+            <span>Mở bảng tính vay hàng tháng</span>
+          </button>
+        </div>
+      `);
+    }
+
+    function renderInternalRow({ icon, title, text, value, sub, action }) {
+      return `
+        <div class="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-slate-200">
+          <span class="material-symbols-outlined text-[18px] text-[#0f3d64] shrink-0">${icon}</span>
+          <div class="flex-1 min-w-0">
+            <span class="text-xs font-bold text-slate-900 block">${title}</span>
+            ${text ? `<p class="text-[11px] text-slate-500 leading-relaxed mt-0.5">${text}</p>` : ''}
+            ${action ? `<div class="mt-1.5">${action}</div>` : ''}
+          </div>
+          ${value ? `
+          <div class="text-right shrink-0">
+            <span class="text-sm font-black text-[#0f3d64] block whitespace-nowrap">${value}</span>
+            ${sub ? `<span class="text-[10px] text-slate-500 block whitespace-nowrap">${sub}</span>` : ''}
+          </div>` : ''}
+        </div>
+      `;
+    }
+
+    function renderDetailInternal(p) {
+      return `
+        <section class="p-4 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-300 flex flex-col gap-3">
+          ${renderDetailSection('Ghi chú nội bộ', 'lock_person', '<span class="px-2 py-0.5 rounded-md bg-[#0f3d64] text-white text-[9px] font-black uppercase">Confidential</span>')}
+          <div class="flex flex-col gap-2">
+            ${renderInternalRow({ icon: 'payments', title: 'Hoa hồng F1 Tân Long Land', text: 'Chi 50% khi ký HĐMB, 50% khi giải ngân', value: '2,8% GTCH', sub: `~${formatMoneyTr(p.listed * 0.028)}` })}
+            ${renderInternalRow({ icon: 'local_fire_department', title: 'Thưởng nóng chốt cọc trong 48h', value: '+20 Tr' })}
+            ${renderInternalRow({ icon: 'handshake', title: 'Quyền đàm phán của Team Leader', text: 'Được tặng thêm gói Smarthome <strong class="text-slate-700">20 Tr</strong> (quỹ sàn) nếu khách ký cọc ngay trong ngày xem nhà mẫu.' })}
+            ${renderInternalRow({ icon: 'account_balance', title: 'Đầu mối thẩm định MB Bank', text: 'Mr. Trung, Trưởng phòng tín dụng Sala • Hạn mức duyệt sẵn 70% giá trị căn', action: '<a href="tel:0908112233" class="inline-flex items-center gap-1 text-xs font-bold font-mono text-[#0f3d64] hover:underline"><span class="material-symbols-outlined text-[15px]">call</span>0908.112.233</a>' })}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderDetailActions(unit, p) {
+      const deposit = formatMoneyTr(p.deposit);
+      const secondary = 'bg-slate-700 hover:bg-slate-800';
+      // Nút chính 2 dòng (tiêu đề ngắn + dòng phụ) để không bị cắt chữ trên màn 360px
+      const primary = {
+        available: { icon: 'lock', label: 'Khóa Căn', sub: `Cọc ${deposit}`, tone: 'bg-[#0f3d64] hover:bg-[#1e588a]', onclick: `triggerQuickLockModal('${unit.code}', '${formatMoneyTr(p.discounted)}')` },
+        holding: { icon: 'queue', label: 'Hàng Chờ 2', sub: 'Đăng ký giữ lượt', tone: secondary, onclick: `openQueueModal('${unit.code}')` },
+        deposited: { icon: 'receipt', label: 'Xem HĐ Cọc', sub: deposit, tone: secondary, onclick: `showToast('Đang mở hợp đồng cọc ${unit.contractCode || ''} của căn ${unit.code}...', 'receipt')` },
+        sold: { icon: 'verified', label: 'Hồ Sơ Bàn Giao', sub: 'Căn đã bán', tone: secondary, onclick: `showToast('Căn ${unit.code} đã bán thành công. Đang mở hồ sơ bàn giao...', 'verified')` }
+      }[unit.status] || null;
+      const action = primary || { icon: 'verified', label: 'Hồ Sơ Căn', sub: 'Xem chi tiết', tone: secondary, onclick: `showToast('Đang mở hồ sơ căn ${unit.code}...', 'verified')` };
+
+      return `
+        <div class="flex items-center gap-2">
+          <button onclick="shareViaZalo()" class="flex-1 min-w-0 h-11 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[18px] text-[#0f3d64] shrink-0">send_to_mobile</span>
+            <span class="truncate">Báo Giá Zalo</span>
+          </button>
+          <button onclick="showToast('Đang tạo và tải file Báo Giá PDF chính thức...', 'picture_as_pdf')" class="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center shrink-0 active:scale-95 transition-all" title="Tải PDF báo giá" aria-label="Tải PDF báo giá">
+            <span class="material-symbols-outlined text-[20px] text-[#0f3d64]">picture_as_pdf</span>
+          </button>
+          <button id="dtPrimaryAction" onclick="${action.onclick}" class="flex-[1.4] min-w-0 h-11 px-2 rounded-xl ${action.tone} text-white flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[18px] shrink-0">${action.icon}</span>
+            <span class="min-w-0 flex flex-col items-start leading-tight">
+              <span class="truncate max-w-full text-xs font-bold">${action.label}</span>
+              <span class="truncate max-w-full text-[10px] font-semibold text-white/75">${action.sub}</span>
+            </span>
+          </button>
+        </div>
+      `;
+    }
+
     function openUnitDetail(code) {
-      const c = code || 'S501-12A08';
-      const isAqua = c.includes('A1') || c.includes('Aqua');
-      
-      const title = `Chi Tiết Căn ${c}`;
-      let subtitle = 'Tòa S5.01 • The Origami • Vinhomes Grand Park Q9';
-      if (c.startsWith('A1') || c.includes('Aqua')) subtitle = 'Tháp Aqua 1 • Vinhomes Metropolis Liễu Giai';
-      else if (c.startsWith('BEV')) subtitle = 'Phân Khu The Beverly • Vinhomes Grand Park Q9';
-      else if (c.startsWith('CIP')) subtitle = 'Khu The Grand Park • Ciputra Hanoi International City';
-      else if (c.startsWith('COVE')) subtitle = 'Tháp Cove Luxury • Grand Marina Saigon Bason Q.1';
-      else if (c.startsWith('S502')) subtitle = 'Tòa S5.02 • The Origami • Vinhomes Grand Park Q9';
+      const { unit, ctx } = findQuickUnit(code || 'S501-12A08');
+      const pricing = computeUnitPricing(unit, ctx);
 
-      openScreen('detail', { title: title, subtitle: subtitle });
+      openScreen('detail', {
+        title: `Chi Tiết Căn ${unit.code}`,
+        subtitle: [ctx.towerName, ctx.projectName].filter(Boolean).join(' • ') || 'Tân Long Land'
+      });
 
-      // Elements
-      const statusBadge = document.getElementById('dtStatusBadge');
-      const statusText = document.getElementById('dtStatusText');
-      const codePill = document.getElementById('dtUnitCodePill');
-      const unitTitle = document.getElementById('dtUnitTitle');
-      const unitSubtitle = document.getElementById('dtUnitSubtitle');
-      const priceDisc = document.getElementById('dtPriceDiscounted');
-      const priceOrig = document.getElementById('dtPriceOriginal');
-      const discountAmount = document.getElementById('dtDiscountAmount');
-      const priceM2 = document.getElementById('dtUnitPricePerM2');
-      const netArea = document.getElementById('dtNetArea');
-      const grossArea = document.getElementById('dtGrossArea');
-      const bedBath = document.getElementById('dtBedBath');
-      const orientation = document.getElementById('dtOrientation');
-      const view = document.getElementById('dtView');
-      const costBase = document.getElementById('dtCostBase');
-      const costVat = document.getElementById('dtCostVat');
-      const costMaint = document.getElementById('dtCostMaintenance');
-      const costOther = document.getElementById('dtCostOther');
-      const costDisc = document.getElementById('dtCostDiscount');
-      const costVoucher = document.getElementById('dtCostVoucher');
-      const totalCost = document.getElementById('dtTotalCost');
-
-      if (codePill) codePill.textContent = c;
-      if (unitSubtitle) unitSubtitle.textContent = subtitle;
-
-      // Detect Status
-      const isSold = c.includes('0806') || c.includes('2806') || c.includes('2402') || c.includes('2403');
-      const isDeposited = c.includes('1812') || c.includes('2801') || c.includes('2405') || c.includes('2805');
-      const isHolding = c.includes('2404') || c.includes('2803');
-
-      let floorNum = '12A';
-      if (c.includes('24')) floorNum = '24';
-      else if (c.includes('28')) floorNum = '28';
-      else if (c.includes('18')) floorNum = '18';
-      else if (c.includes('08')) floorNum = '08';
-      else if (c.includes('15')) floorNum = '15';
-
-      if (unitTitle) unitTitle.textContent = `Căn Hộ ${c} • Tầng ${floorNum}`;
-
-      // Set Status Appearance
-      if (isSold) {
-        if (statusBadge) statusBadge.className = "px-2.5 py-0.5 rounded-full bg-sky-100 text-[#0f3d64] text-xs font-bold uppercase tracking-wider flex items-center gap-1";
-        if (statusText) statusText.textContent = "ĐÃ BÁN (XONG)";
-      } else if (isDeposited) {
-        if (statusBadge) statusBadge.className = "px-2.5 py-0.5 rounded-full bg-slate-100 text-[#475569] text-xs font-bold uppercase tracking-wider flex items-center gap-1";
-        if (statusText) statusText.textContent = "ĐÃ CỌC (HĐ #5120)";
-      } else if (isHolding) {
-        if (statusBadge) statusBadge.className = "px-2.5 py-0.5 rounded-full bg-sky-100 text-[#0284c7] text-xs font-bold uppercase tracking-wider flex items-center gap-1";
-        if (statusText) statusText.textContent = "GIỮ CHỖ (07:45)";
-      } else {
-        if (statusBadge) statusBadge.className = "px-2.5 py-0.5 rounded-full bg-sky-100 text-[#0284c7] text-xs font-bold uppercase tracking-wider flex items-center gap-1";
-        if (statusText) statusText.textContent = "ĐANG MỞ BÁN (F1)";
+      const content = document.getElementById('dtContent');
+      if (content) {
+        content.innerHTML = [
+          renderDetailHero(unit, ctx),
+          renderDetailPrice(pricing),
+          renderDetailSpecs(unit),
+          renderDetailCosts(pricing),
+          renderDetailSchedule(unit, pricing),
+          renderDetailInternal(pricing)
+        ].join('');
       }
 
-      // Mức cọc niêm yết theo dự án (dùng cho nút Khóa Căn phía dưới)
-      let depositLabel = 'Cọc: 50 Tr';
-      if (isAqua || c.startsWith('CIP')) depositLabel = 'Cọc: 100 Tr';
-      else if (c.startsWith('COVE')) depositLabel = 'Cọc: 200 Tr';
-
-      if (isAqua) {
-        if (priceDisc) priceDisc.innerHTML = '5,04 Tỷ ';
-        if (priceOrig) priceOrig.textContent = '5,42 Tỷ';
-        if (discountAmount) discountAmount.textContent = '-379,4 Tr (CK 7.0%)';
-        if (priceM2) priceM2.textContent = '~66.8 Tr/m²';
-        if (netArea) netArea.textContent = '76.8 m²';
-        if (grossArea) grossArea.textContent = 'Tim tường: 82.4 m²';
-        if (bedBath) bedBath.textContent = '2 PN + 1 • 2 WC';
-        if (orientation) orientation.textContent = 'Ban công: Đông Nam';
-        if (view) view.textContent = 'View Sông & Hồ Tây';
-        if (costBase) costBase.textContent = '4,93 Tỷ';
-        if (costVat) costVat.textContent = '+492,7 Tr';
-        if (costMaint) costMaint.textContent = '+98,5 Tr';
-        if (costOther) costOther.textContent = '+25 Tr';
-        if (costDisc) costDisc.textContent = '-379,4 Tr';
-        if (costVoucher) costVoucher.textContent = '-100 Tr';
-        if (totalCost) totalCost.textContent = '5,06 Tỷ';
-      } else if (c.includes('1812')) {
-        // Căn 3PN Đã cọc
-        if (priceDisc) priceDisc.innerHTML = '5,48 Tỷ ';
-        if (priceOrig) priceOrig.textContent = '5,68 Tỷ';
-        if (discountAmount) discountAmount.textContent = '-198,8 Tr (CK 3.5%)';
-        if (priceM2) priceM2.textContent = '~61.5 Tr/m²';
-        if (netArea) netArea.textContent = '85.8 m²';
-        if (grossArea) grossArea.textContent = 'Tim tường: 92.4 m²';
-        if (bedBath) bedBath.textContent = '3 PN VIP Corner • 2 WC';
-        if (orientation) orientation.textContent = 'Ban công: Đông Nam - Đông Bắc';
-        if (view) view.textContent = 'View Đại Công Viên 36ha';
-        if (costBase) costBase.textContent = '5,16 Tỷ';
-        if (costVat) costVat.textContent = '+516,3 Tr';
-        if (costMaint) costMaint.textContent = '+103,2 Tr';
-        if (costOther) costOther.textContent = '+20 Tr';
-        if (costDisc) costDisc.textContent = '-198,8 Tr';
-        if (costVoucher) costVoucher.textContent = '-150 Tr';
-        if (totalCost) totalCost.textContent = '5,45 Tỷ';
-      } else if (c.includes('0806')) {
-        // Căn Studio Đã bán
-        if (priceDisc) priceDisc.innerHTML = '2,07 Tỷ ';
-        if (priceOrig) priceOrig.textContent = '2,15 Tỷ';
-        if (discountAmount) discountAmount.textContent = '-75,2 Tr (CK 3.5%)';
-        if (priceM2) priceM2.textContent = '~64.2 Tr/m²';
-        if (netArea) netArea.textContent = '30.2 m²';
-        if (grossArea) grossArea.textContent = 'Tim tường: 33.5 m²';
-        if (bedBath) bedBath.textContent = 'Studio • 1 WC';
-        if (orientation) orientation.textContent = 'Ban công: Bắc';
-        if (view) view.textContent = 'View Hồ Bơi Origami';
-        if (costBase) costBase.textContent = '1,95 Tỷ';
-        if (costVat) costVat.textContent = '+195,4 Tr';
-        if (costMaint) costMaint.textContent = '+39,1 Tr';
-        if (costOther) costOther.textContent = '+15 Tr';
-        if (costDisc) costDisc.textContent = '-75,2 Tr';
-        if (costVoucher) costVoucher.textContent = '-50 Tr';
-        if (totalCost) totalCost.textContent = '2,08 Tỷ';
-      } else {
-        // Căn S501-12A08 mặc định
-        if (priceDisc) priceDisc.innerHTML = '4,00 Tỷ ';
-        if (priceOrig) priceOrig.textContent = '4,15 Tỷ';
-        if (discountAmount) discountAmount.textContent = '-145,2 Tr (CK 3.5%)';
-        if (priceM2) priceM2.textContent = '~62.1 Tr/m²';
-        if (netArea) netArea.textContent = '64.5 m²';
-        if (grossArea) grossArea.textContent = 'Tim tường: 69.2 m²';
-        if (bedBath) bedBath.textContent = '2 PN + 1 • 2 WC';
-        if (orientation) orientation.textContent = 'Ban công: Đông Nam';
-        if (view) view.textContent = 'Vườn Nhật & Hồ Cá Koi';
-        if (costBase) costBase.textContent = '3,77 Tỷ';
-        if (costVat) costVat.textContent = '+377,2 Tr';
-        if (costMaint) costMaint.textContent = '+75,4 Tr';
-        if (costOther) costOther.textContent = '+20 Tr';
-        if (costDisc) costDisc.textContent = '-145,2 Tr';
-        if (costVoucher) costVoucher.textContent = '-150 Tr';
-        if (totalCost) totalCost.textContent = '3,95 Tỷ';
-      }
-
-      // Action button text adaptation
-      const lockBtn = document.querySelector('#view-detail .fixed.bottom-0 button:last-child');
-      if (lockBtn) {
-        if (isSold) {
-          lockBtn.className = "flex-[1.4] py-3 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all";
-          lockBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">verified</span><span>Xem Hồ Sơ Bàn Giao</span>';
-          lockBtn.onclick = () => showToast(`Căn ${c} đã bán thành công. Đang mở hồ sơ bàn giao...`, 'verified');
-        } else if (isDeposited) {
-          lockBtn.className = "flex-[1.4] py-3 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all";
-          lockBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">receipt</span><span>Xem HĐ Cọc (${depositLabel.replace('Cọc: ', '')})</span>`;
-          lockBtn.onclick = () => showToast(`Đang mở hợp đồng cọc #5120 của căn ${c}...`, 'receipt');
-        } else if (isHolding) {
-          lockBtn.className = "flex-[1.4] py-3 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all";
-          lockBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">queue</span><span>Đăng Ký Hàng Chờ 2</span>';
-          lockBtn.onclick = () => openQueueModal(c);
-        } else {
-          lockBtn.className = "flex-[1.4] py-3 rounded-xl bg-[#0f3d64] hover:bg-[#1e588a] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all";
-          lockBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">lock</span><span>Khóa Căn • ${depositLabel}</span>`;
-          lockBtn.onclick = () => triggerQuickLockModal(c, priceDisc ? priceDisc.textContent : '4 Tỷ');
-        }
-      }
+      const actionBar = document.getElementById('dtActionBar');
+      if (actionBar) actionBar.innerHTML = renderDetailActions(unit, pricing);
     }
 
     function goBackFromDetail() {
@@ -3164,6 +2995,8 @@
     let currentDetailProjectKey = 'Ciputra';
     let currentDetailIsProject = true;
     let currentDetailEvent = null;
+    let currentDetailEventKey = null;
+    const joinedEvents = new Set(); // key EVENTS_DATA của các sự kiện đã bấm Tham Gia
 
     // =============================================================
     // DỮ LIỆU & CONTROLLER DỰ ÁN & SỰ KIỆN (BĐS PRO)
@@ -3563,6 +3396,7 @@
       currentDetailProjectKey = ev.projectKey || 'Ciputra';
       currentDetailIsProject = ev.isProject;
       currentDetailEvent = ev;
+      currentDetailEventKey = EVENTS_DATA[eventKey] ? eventKey : 'ciputra-project';
 
       const imgEl = document.getElementById('evDetailImg');
       const typeEl = document.getElementById('evDetailTypeBadge');
@@ -3577,8 +3411,6 @@
       const scEl = document.getElementById('evDetailScale');
       const unEl = document.getElementById('evDetailUnits');
       const mpEl = document.getElementById('evDetailMapNote');
-      const footerSecTxt = document.querySelectorAll('.event-detail-secondary-text');
-      const footerSecIco = document.querySelectorAll('.event-detail-secondary [data-action-icon], #evDetailFooterSecondaryIcon');
 
       if (imgEl) imgEl.src = ev.image;
       if (typeEl) {
@@ -3599,8 +3431,7 @@
       if (scEl) scEl.textContent = ev.scale;
       if (unEl) unEl.textContent = ev.units;
       if (mpEl) mpEl.textContent = ev.mapNote;
-      footerSecTxt.forEach(element => { element.textContent = ev.footerSecondaryText || 'Tham Gia'; });
-      footerSecIco.forEach(element => { element.textContent = ev.footerSecondaryIcon || 'how_to_reg'; });
+      syncJoinButtons();
       document.querySelectorAll('.event-detail-invite').forEach(button => button.classList.toggle('hidden', ev.isProject));
 
       // Render Perks
@@ -3646,8 +3477,8 @@
         early: document.getElementById('tabSchedule2'),
         bank: document.getElementById('tabSchedule3')
       };
-      const activeCls = 'py-1.5 rounded-lg bg-white text-[#0f3d64] shadow-xs';
-      const idleCls = 'py-1.5 rounded-lg text-slate-600 hover:text-slate-900';
+      const activeCls = SCHEDULE_TAB_ACTIVE;
+      const idleCls = SCHEDULE_TAB_IDLE;
 
       Object.keys(views).forEach(key => {
         const view = views[key];
@@ -3663,8 +3494,7 @@
     // Chọn nhóm hiển thị trong Giỏ Hàng thống nhất ('projects' | 'events' | 'all')
     function switchInventoryMainTab(mode) {
       const cat = { projects: 'project', events: 'event', all: 'all' }[mode] || 'all';
-      const chip = document.querySelector(`.inv-filter-chip[data-cat="${cat}"]`);
-      filterInventoryCategory(cat, chip);
+      filterInventoryCategory(cat);
     }
 
     // Inventory Bridge
@@ -3689,28 +3519,94 @@
       goToInventoryForProject(currentDetailProjectKey || 'Aqua');
     }
 
+    // ========================================================
+    // THAM GIA SỰ KIỆN: BẤM ĐỂ THAM GIA, BẤM LẦN NỮA ĐỂ HỦY
+    // Chưa tham gia = xanh lá | Đã tham gia = trắng. Mọi nút của cùng sự kiện đồng bộ.
+    // ========================================================
+    const JOIN_BUTTON_VARIANTS = {
+      join: 'bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-600',
+      joined: 'bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300',
+      neutral: 'bg-white text-slate-700 border border-gray-400'
+    };
+    const JOIN_LIST_BUTTON_BASE = 'px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-all';
+    const JOIN_DETAIL_BUTTON_BASE = 'event-detail-secondary min-h-11 flex-1 max-w-[150px] py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm';
+
+    function isJoinableEvent(ev) {
+      return !!ev && !ev.isProject && ev.secondaryAction !== 'rules';
+    }
+
+    function paintJoinButton(button, base, variant, icon, text) {
+      button.className = `${base} ${JOIN_BUTTON_VARIANTS[variant]}`;
+      const iconEl = button.querySelector('.material-symbols-outlined');
+      const textEl = button.querySelector('[data-join-text], .event-detail-secondary-text');
+      if (iconEl) iconEl.textContent = icon;
+      if (textEl) textEl.textContent = text;
+    }
+
+    function syncJoinButtons() {
+      document.querySelectorAll('[data-join-event]').forEach(button => {
+        const joined = joinedEvents.has(button.dataset.joinEvent);
+        paintJoinButton(button, JOIN_LIST_BUTTON_BASE, joined ? 'joined' : 'join', joined ? 'check_circle' : 'how_to_reg', joined ? 'Đã tham gia' : 'Tham Gia');
+      });
+
+      const ev = currentDetailEvent;
+      if (!ev) return;
+      const joinable = isJoinableEvent(ev);
+      const joined = joinable && joinedEvents.has(currentDetailEventKey);
+      document.querySelectorAll('.event-detail-secondary').forEach(button => {
+        paintJoinButton(
+          button,
+          JOIN_DETAIL_BUTTON_BASE,
+          !joinable ? 'neutral' : joined ? 'joined' : 'join',
+          joined ? 'check_circle' : (ev.footerSecondaryIcon || 'how_to_reg'),
+          joined ? 'Đã tham gia' : (ev.footerSecondaryText || 'Tham Gia')
+        );
+      });
+    }
+
+    function toggleEventJoin(eventKey) {
+      if (!eventKey) return;
+      if (joinedEvents.has(eventKey)) {
+        joinedEvents.delete(eventKey);
+        showToast('Đã hủy tham gia sự kiện.', 'event_busy');
+      } else {
+        joinedEvents.add(eventKey);
+        showToast('Đã đăng ký tham gia sự kiện thành công! Vé mời QR đã được lưu.', 'check_circle');
+      }
+      syncJoinButtons();
+    }
+
     function handleEventSecondaryAction() {
       if (currentDetailEvent?.secondaryAction === 'rules') {
         showToast('Đang mở thể lệ và tiêu chí xét giải của sự kiện.', 'menu_book');
       } else if (currentDetailIsProject) {
         showToast('Đang tải file Bảng Giá & CSBH chi tiết...', 'download');
       } else {
-        showToast('Đã đăng ký tham gia sự kiện thành công! Vé mời QR đã được lưu.', 'check_circle');
+        toggleEventJoin(currentDetailEventKey);
       }
     }
 
     function openInvitationModal() {
       if (!currentDetailEvent || currentDetailIsProject) return;
-      const guestName = document.getElementById('invitationGuestName');
-      const message = document.getElementById('invitationMessage');
-      if (guestName) guestName.value = '';
-      const title = document.getElementById('invitationEventTitle');
-      const meta = document.getElementById('invitationEventMeta');
-      if (title) title.textContent = currentDetailEvent.title;
-      if (meta) meta.textContent = `${currentDetailEvent.time} • ${currentDetailEvent.location}`;
-      if (message) {
-        message.value = `Kính mời anh/chị [Tên khách] tham dự ${currentDetailEvent.title}.\n\nThời gian: ${currentDetailEvent.time}\nĐịa điểm: ${currentDetailEvent.location}\n\nTân Long Land trân trọng đón tiếp anh/chị. Vui lòng xác nhận tham dự để chúng tôi chuẩn bị đón tiếp chu đáo.`;
+      const ev = currentDetailEvent;
+      const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value || '—';
+      };
+      setText('invitationEventTitle', ev.title);
+      setText('invitationEventTime', ev.time);
+      setText('invitationEventLocation', ev.location);
+
+      const image = document.getElementById('invitationEventImage');
+      if (image) {
+        image.style.display = '';
+        image.src = ev.image || '';
       }
+
+      const guestName = document.getElementById('invitationGuestName');
+      if (guestName) guestName.value = '';
+      renderInvitationGuest();
+
       const modal = document.getElementById('eventInvitationModal');
       if (modal) {
         modal.classList.remove('hidden');
@@ -3726,10 +3622,20 @@
       }
     }
 
+    // Tên khách hiện ngay trên thiệp; để trống thì hiện chỗ cần điền
+    function renderInvitationGuest() {
+      const name = document.getElementById('invitationGuestName')?.value.trim();
+      const preview = document.getElementById('invitationGuestPreview');
+      if (!preview) return;
+      preview.textContent = name || '[Tên khách]';
+      preview.className = name ? 'font-extrabold text-[#0f3d64]' : 'font-semibold italic text-slate-400';
+    }
+
+    // Nội dung gửi đi dựng từ tên khách + dữ liệu sự kiện, không cho sửa tay
     function getInvitationText() {
-      const message = document.getElementById('invitationMessage');
-      const guestName = document.getElementById('invitationGuestName');
-      return (message?.value || '').replace('[Tên khách]', guestName?.value.trim() || 'anh/chị');
+      const ev = currentDetailEvent || {};
+      const name = document.getElementById('invitationGuestName')?.value.trim();
+      return `Kính mời anh/chị${name ? ` ${name}` : ''} tham dự ${ev.title}.\n\nThời gian: ${ev.time}\nĐịa điểm: ${ev.location}\n\nTân Long Land trân trọng đón tiếp anh/chị. Vui lòng xác nhận tham dự để chúng tôi chuẩn bị đón tiếp chu đáo.`;
     }
 
     function copyInvitationText() {
@@ -3752,14 +3658,8 @@
       }
     }
 
-    // Filter Dự án vs Sự kiện
-    function filterEventOrProject(cat, btn) {
-      document.querySelectorAll('.ep-filter-btn').forEach(b => {
-        b.classList.remove('bg-[#0f3d64]', 'text-white', 'shadow-xs');
-        b.classList.add('bg-white', 'text-slate-700');
-      });
-      btn.classList.remove('bg-white', 'text-slate-700');
-      btn.classList.add('bg-[#0f3d64]', 'text-white', 'shadow-xs');
+    // Tab Sự kiện không còn chip lọc: danh sách cố định là sự kiện
+    function filterEventOrProject(cat) {
 
       document.querySelectorAll('.ep-item-card').forEach(card => {
         const itemCat = card.getAttribute('data-category');
@@ -4630,10 +4530,32 @@
       `;
     }
 
+    // Cá nhân chỉ hiện tòa có căn bạn đăng ký; phân khu không còn tòa nào cũng ẩn theo
+    function myTowerHasUnits(tower) {
+      return (tower.floors || []).some(floor => floor.hasMyUnit || (floor.units || []).some(unit => unit.isMyUnit));
+    }
+
+    function myVisibleTowerKeys(zone) {
+      return Object.keys(zone.towers || {}).filter(tk => myTowerHasUnits(zone.towers[tk]));
+    }
+
+    function myVisibleZoneKeys(project) {
+      return Object.keys(project.zones || {}).filter(zk => myVisibleTowerKeys(project.zones[zk]).length > 0);
+    }
+
+    function myEmptyStateHtml(message) {
+      return `
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 text-center flex flex-col items-center gap-2 text-slate-400">
+          <span class="material-symbols-outlined text-4xl text-slate-300">visibility_off</span>
+          <p class="text-xs font-semibold">${message}</p>
+        </div>
+      `;
+    }
+
     // Số phân khu đọc từ nguồn dữ liệu thật, tránh nhãn ghi một đằng nội dung một nẻo
     function myProjectZoneCount(key) {
       const cfg = MY_PROJECTS_DATABASE[key];
-      return cfg && cfg.zones ? Object.keys(cfg.zones).length : 0;
+      return cfg ? myVisibleZoneKeys(cfg).length : 0;
     }
 
     function myProjectCard(p) {
@@ -4682,98 +4604,6 @@
       container.innerHTML = MY_PROJECTS_SUMMARY.map(myProjectCard).join('');
     }
 
-    // 0. Render danh sách khách hàng trong tab Cá Nhân (từ CUSTOMERS_DATABASE)
-    const CRM_STAGE_CLASSES = {
-      new: 'bg-sky-100 text-[#0f3d64]',
-      caring: 'bg-sky-100 text-sky-700',
-      tour: 'bg-sky-100 text-[#0284c7]',
-      booking: 'bg-sky-100 text-[#0f3d64]',
-      won: 'bg-sky-200 text-slate-900'
-    };
-
-    function renderCustomerList() {
-      const container = document.getElementById('crmCustomerList');
-      if (!container) return;
-
-      container.innerHTML = Object.values(CUSTOMERS_DATABASE).map(c => `
-        <div class="customer-card p-3 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col gap-2 cursor-pointer hover:border-[#0f3d64]/40 hover:shadow-md active:scale-[0.99] transition-all"
-             data-customer-id="${c.id}" data-stage="${c.stage}"
-             data-search="${(c.name + ' ' + c.phone + ' ' + c.phoneClean + ' ' + c.demand).toLowerCase()}"
-             onclick="openCustomerDetail('${c.id}')">
-          <div class="flex items-start gap-2.5">
-            <div class="w-11 h-11 rounded-xl overflow-hidden bg-slate-200 shrink-0">
-              <img class="w-full h-full object-cover" src="${c.avatar}" alt="${c.name}"/>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between gap-2">
-                <h4 class="text-xs font-extrabold text-slate-900 truncate">${c.name}</h4>
-                <span class="customer-stage-badge px-2 py-0.5 rounded-md text-[10px] font-bold ${CRM_STAGE_CLASSES[c.stage] || 'bg-slate-100 text-slate-700'}">${c.stageLabel}</span>
-              </div>
-              <div class="flex items-center gap-1.5 mt-0.5">
-                <span class="px-1.5 py-0.2 rounded bg-[#0f3d64] text-white text-[9px] font-extrabold">${c.tier}</span>
-                <span class="text-[11px] text-slate-500 font-mono truncate">${c.phone}</span>
-              </div>
-              <div class="text-[10px] text-[#0f3d64] font-bold truncate mt-0.5">${c.demand} • ${c.budget}</div>
-            </div>
-          </div>
-
-          <p class="customer-note-quote text-[11px] text-slate-600 italic line-clamp-2 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100">📝 "${c.note}"</p>
-
-          <div class="grid grid-cols-4 gap-1.5 pt-1.5 border-t border-slate-100">
-            <a href="tel:${c.phoneClean}" onclick="event.stopPropagation()" class="py-1.5 rounded-lg bg-[#0f3d64] text-white text-[10px] font-bold flex items-center justify-center gap-0.5 active:scale-95 transition-all">
-              <span class="material-symbols-outlined text-[13px]">call</span>
-              <span>Gọi</span>
-            </a>
-            <button onclick="copyCustomerPhone('${c.phone}', event)" class="py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-bold flex items-center justify-center gap-0.5 active:scale-95 transition-all">
-              <span class="material-symbols-outlined text-[13px]">content_copy</span>
-              <span>SĐT</span>
-            </button>
-            <button onclick="openQuickNoteModal('${c.id}', event)" class="py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#0f3d64] text-[10px] font-bold flex items-center justify-center gap-0.5 active:scale-95 transition-all">
-              <span class="material-symbols-outlined text-[13px]">edit_note</span>
-              <span>Ghi chú</span>
-            </button>
-            <button onclick="openChangeStatusModal('${c.id}', event)" class="py-1.5 rounded-lg bg-sky-50 border border-sky-200 text-[#0f3d64] text-[10px] font-bold flex items-center justify-center gap-0.5 active:scale-95 transition-all">
-              <span class="material-symbols-outlined text-[13px]">sync_alt</span>
-              <span>Đổi TT</span>
-            </button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // 10. Tìm kiếm khách hàng theo tên hoặc số điện thoại realtime
-    function searchCustomers(query) {
-      const q = (query || '').toLowerCase().trim();
-      document.querySelectorAll('.customer-card').forEach(card => {
-        const searchData = card.getAttribute('data-search') || '';
-        if (!q || searchData.includes(q)) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
-
-    // 11. Lọc phễu khách hàng (Sales Pipeline)
-    function filterCrmStage(stage, btn) {
-      document.querySelectorAll('.pipeline-btn').forEach(b => {
-        b.className = "pipeline-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all";
-      });
-      if (btn) {
-        btn.className = "pipeline-btn active px-3 py-1.5 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shadow-xs shrink-0 transition-all";
-      }
-
-      document.querySelectorAll('.customer-card').forEach(card => {
-        const cardStage = card.getAttribute('data-stage');
-        if (stage === 'all' || cardStage === stage) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      showToast(`Đã lọc phễu: ${btn ? btn.textContent.trim() : stage}`, 'filter_alt');
-    }
 
 
     // =============================================================
@@ -4873,16 +4703,11 @@
     let currentSelectedProject = 'vin-q9';
     let currentSelectedEvent = 'ev-aqua1';
 
-        let currentInventoryFilter = 'all';
+    // Trang Dự án không còn chip lọc: danh sách cố định là dự án, chỉ còn ô tìm kiếm
+    let currentInventoryFilter = 'project';
 
-    function filterInventoryCategory(cat, btn) {
+    function filterInventoryCategory(cat) {
       currentInventoryFilter = cat;
-      document.querySelectorAll('.inv-filter-chip').forEach(b => {
-        b.className = "inv-filter-chip px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 flex items-center gap-1 hover:bg-slate-50 transition-all";
-      });
-      if (btn) {
-        btn.className = "inv-filter-chip active px-3 py-1.5 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shadow-xs shrink-0 transition-all flex items-center gap-1";
-      }
 
       const input = document.getElementById('unifiedSearchInput');
       const q = input ? input.value.trim().toLowerCase() : '';
@@ -5228,6 +5053,8 @@
     let invCurrentProject = null;
     let invCurrentZone = null;
     let invCurrentTower = null;
+    let invCurrentTowerData = null; // tòa đang xem, đã bổ sung tầng/căn mock
+    let invUnitStatusFilter = 'all';
     let invRoomViewMode = 'grid'; // 'grid' or 'list'
     let myRoomViewMode = 'grid'; // 'grid' or 'list'
     let currentModalUnit = null;
@@ -5246,10 +5073,7 @@
           bGrid.className = "px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1";
         }
       }
-      if (invCurrentTower) {
-        const towerData = INVENTORY_TOWERS_DATABASE[invCurrentTower] || INVENTORY_TOWERS_DATABASE['S501'];
-        renderInventoryFloorsAccordion(completeTowerFloors(towerData, getInventoryTowerFloorCount(invCurrentTower), `inv-${invCurrentTower}`));
-      }
+      renderCurrentInventoryTower();
     }
 
     function setMyRoomViewMode(mode) {
@@ -5274,19 +5098,64 @@
       }
     }
 
-    function getInventoryTowerFloorCount(towerKey) {
-      for (const project of Object.values(INVENTORY_PROJECTS_CONFIGS)) {
-        for (const zone of project.zones || []) {
-          const tower = (zone.towers || []).find(item => item.key === towerKey);
-          if (tower) return extractFloorCount(tower.details);
-        }
-      }
-      return 0;
-    }
-
     // ========================================================
     // CÁC HÀM ĐIỀU HƯỚNG CẤP TAB GIỎ HÀNG (INVENTORY)
     // ========================================================
+    // ========================================================
+    // COMPONENT BANNER SỰ KIỆN (CẤP PHÂN KHU)
+    // Số dòng cố định: nhãn 1 dòng • tiêu đề tối đa 2 dòng • mô tả 1 dòng • ô thông tin 1 dòng • nút 1 dòng
+    // ========================================================
+
+    // "🔥 Lễ Mở Bán..." → { icon: '🔥', text: 'Lễ Mở Bán...' }
+    function splitLeadingEmoji(text) {
+      const value = String(text || '');
+      const match = value.match(/^(\p{Extended_Pictographic}️?)\s*/u);
+      return match ? { icon: match[1], text: value.slice(match[0].length) } : { icon: '', text: value };
+    }
+
+    // "Cọc sự kiện: 30 Tr • F1 Độc Quyền" → [{ label: 'Cọc sự kiện', value: '30 Tr' }, { label: 'Quyền lợi', value: 'F1 Độc Quyền' }]
+    function splitBannerMeta(meta) {
+      return String(meta || '').split('•').map(part => part.trim()).filter(Boolean).map(part => {
+        const [label, ...rest] = part.split(':');
+        return rest.length ? { label: label.trim(), value: rest.join(':').trim() } : { label: 'Quyền lợi', value: part };
+      });
+    }
+
+    function renderBannerInfoChip({ label, value }) {
+      return `
+        <div class="min-w-0 px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/10">
+          <span class="text-[10px] text-sky-200 font-medium block truncate">${label}</span>
+          <span class="text-xs font-bold text-white block truncate">${value}</span>
+        </div>
+      `;
+    }
+
+    function renderZoneEventBanner(banner) {
+      const { icon, text } = splitLeadingEmoji(banner.title);
+      const chips = splitBannerMeta(banner.meta).slice(0, 2);
+      return `
+        <span class="self-start inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-sky-500 text-white text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
+          <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+          <span>Sự kiện mở bán đang diễn ra</span>
+        </span>
+
+        <div class="flex items-start gap-3">
+          ${icon ? `<span class="w-10 h-10 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center text-xl shrink-0">${icon}</span>` : ''}
+          <div class="min-w-0 flex-1">
+            <h4 id="invZoneEventBannerTitle" class="text-sm font-extrabold leading-snug line-clamp-2">${text}</h4>
+            <p id="invZoneEventBannerSub" class="text-[11px] text-slate-200 mt-0.5 truncate">${banner.sub || ''}</p>
+          </div>
+        </div>
+
+        ${chips.length ? `<div id="invZoneEventBannerMeta" class="grid ${chips.length > 1 ? 'grid-cols-2' : 'grid-cols-1'} gap-2">${chips.map(renderBannerInfoChip).join('')}</div>` : ''}
+
+        <button onclick="openDetailOfCurrentProject()" class="h-9 w-full rounded-xl bg-white text-[#0f3d64] text-xs font-extrabold flex items-center justify-center gap-1.5 whitespace-nowrap active:scale-95 transition-transform">
+          <span>Xem thể lệ &amp; bài viết</span>
+          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </button>
+      `;
+    }
+
     function selectInventoryProject(projectId, initialZoneKey) {
       const proj = INVENTORY_PROJECTS_CONFIGS[projectId] || INVENTORY_PROJECTS_CONFIGS['vin-q9'];
       invCurrentProject = projectId;
@@ -5329,17 +5198,11 @@
       const titleEl = document.getElementById('invZonesHeaderTitle');
       if (titleEl) titleEl.textContent = `Phân khu • ${proj.name}`;
 
-      // Update Event Banner
+      // Banner sự kiện (component có số dòng cố định)
       const banner = document.getElementById('invZoneEventBanner');
-      const bannerTitle = document.getElementById('invZoneEventBannerTitle');
-      const bannerSub = document.getElementById('invZoneEventBannerSub');
-      const bannerMeta = document.getElementById('invZoneEventBannerMeta');
-
       if (banner && proj.banner) {
+        banner.innerHTML = renderZoneEventBanner(proj.banner);
         banner.style.display = 'flex';
-        if (bannerTitle) bannerTitle.textContent = proj.banner.title;
-        if (bannerSub) bannerSub.textContent = proj.banner.sub;
-        if (bannerMeta) bannerMeta.textContent = proj.banner.meta;
       } else if (banner) {
         banner.style.display = 'none';
       }
@@ -5418,7 +5281,7 @@
             <div class="flex-1 min-w-0">
               <h4 class="text-sm font-extrabold text-slate-900 truncate">${t.name}</h4>
               <p class="text-[11px] text-slate-500 truncate mt-0.5">${t.details}</p>
-              <span class="text-[11px] font-bold text-emerald-700 block mt-1">Còn ${t.availCount} căn trống</span>
+              <span class="text-[11px] font-bold text-emerald-700 block mt-1">Còn ${countAvailableUnits(buildInventoryTowerData(t.key, t))} căn trống</span>
             </div>
             <span class="material-symbols-outlined text-slate-300 text-[22px] shrink-0">chevron_right</span>
           </div>
@@ -5445,7 +5308,7 @@
       const backLabel = document.getElementById('invBreadcrumbBackLabel');
       const pathText = document.getElementById('invBreadcrumbPathText');
       if (backLabel) backLabel.textContent = 'Quay lại Tòa Nhà';
-      if (pathText) pathText.textContent = `${zone.name} > ${towerInfo ? towerInfo.name : towerKey}`;
+      if (pathText) pathText.textContent = `${proj.name} > ${zone.name} > ${towerInfo ? towerInfo.name : towerKey}`;
       setSubHeaderContext('Dự Án', towerInfo ? towerInfo.name : towerKey);
 
       // Show level 4
@@ -5458,12 +5321,12 @@
         fLevel.classList.add('flex');
       }
 
-      const availBadge = document.getElementById('invFloorsAvailableBadge');
-      if (availBadge) availBadge.textContent = `${towerInfo ? towerInfo.availCount : 12} Căn trống F1`;
+      invCurrentTowerData = buildInventoryTowerData(towerKey, towerInfo);
 
-      const towerData = INVENTORY_TOWERS_DATABASE[towerKey] || INVENTORY_TOWERS_DATABASE['S501'];
-      const floorCount = extractFloorCount(towerInfo?.details || towerData.details || '');
-      renderInventoryFloorsAccordion(completeTowerFloors(towerData, floorCount, `inv-${towerKey}`));
+      const availBadge = document.getElementById('invFloorsAvailableBadge');
+      if (availBadge) availBadge.textContent = `${countAvailableUnits(invCurrentTowerData)} Căn trống F1`;
+      // Vào tòa mới luôn bắt đầu từ "Tất cả"
+      filterInventoryUnitStatus('all', document.querySelector('.inv-unit-status-chip'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -5471,6 +5334,36 @@
     function extractFloorCount(text) {
       const match = String(text).match(/(\d+)\s*Tầng/i);
       return match ? Number(match[1]) : 0;
+    }
+
+    // Căn mock cho tầng chưa có bảng hàng thật: trộn đủ 4 trạng thái, cố định theo tầng + vị trí căn
+    const MOCK_UNIT_STATUSES = ['available', 'holding', 'available', 'deposited', 'sold', 'available', 'holding', 'sold', 'deposited', 'available'];
+    const MOCK_UNIT_LAYOUTS = [
+      { bed: '1PN + 1', area: '47.0 m² (TT) • 51.5 m²', basePrice: 3.1, orient: 'Đông Nam' },
+      { bed: '2PN • 2WC', area: '62.0 m² (TT) • 67.2 m²', basePrice: 3.9, orient: 'Tây Bắc' },
+      { bed: '2PN + 1 (2WC)', area: '64.5 m² (TT) • 69.2 m²', basePrice: 4.2, orient: 'Đông Bắc' },
+      { bed: '3PN • 2WC', area: '76.0 m² (TT) • 82.4 m²', basePrice: 5.4, orient: 'Tây Nam' }
+    ];
+    const MOCK_STATUS_TITLES = { available: 'Còn trống', holding: 'Đang giữ chỗ', deposited: 'Đã đặt cọc', sold: 'Đã bán' };
+
+    function mockInventoryUnit(idPrefix, floorName, floorNumber, index) {
+      const floorNo = Number(floorNumber) || 0;
+      const status = MOCK_UNIT_STATUSES[(floorNo * 3 + index * 7) % MOCK_UNIT_STATUSES.length];
+      const layout = MOCK_UNIT_LAYOUTS[index % MOCK_UNIT_LAYOUTS.length];
+      const roomNumber = String(index + 1).padStart(2, '0');
+      const timer = `${String(2 + (floorNo + index) % 22).padStart(2, '0')}:${String((floorNo * 7 + index * 13) % 60).padStart(2, '0')}`;
+      return {
+        code: `${idPrefix.replace('inv-', '')}-${floorNumber}${roomNumber}`,
+        status,
+        title: `${floorName} • ${layout.bed} • ${MOCK_STATUS_TITLES[status]}`,
+        price: `${(layout.basePrice + floorNo * 0.02).toFixed(2).replace('.', ',')} Tỷ`,
+        bed: layout.bed,
+        area: layout.area,
+        orient: layout.orient,
+        view: 'Nội khu',
+        deposit: '50 Tr',
+        timer: status === 'holding' ? timer : ''
+      };
     }
 
     function completeTowerFloors(tower, floorCount, idPrefix) {
@@ -5501,21 +5394,7 @@
         const floorNumber = String(floor.floorName).match(/Tầng\s*(\d+)/i)?.[1] || '00';
         return {
           ...floor,
-          units: Array.from({ length: 4 }, (_, index) => {
-            const roomNumber = String(index + 1).padStart(2, '0');
-            return {
-              code: `${idPrefix.replace('inv-', '')}-${floorNumber}${roomNumber}`,
-              status: 'sold',
-              title: `${floor.floorName} • Căn hộ đã bán`,
-              price: 'Liên hệ',
-              bed: 'Căn hộ tiêu chuẩn',
-              area: 'Đang cập nhật',
-              orient: 'Đang cập nhật',
-              view: 'Đang cập nhật',
-              deposit: '',
-              timer: ''
-            };
-          })
+          units: Array.from({ length: 4 }, (_, index) => mockInventoryUnit(idPrefix, floor.floorName, floorNumber, index))
         };
       });
 
@@ -5529,7 +5408,58 @@
       };
     }
 
-    function renderInventoryFloorsAccordion(towerData) {
+    // Dữ liệu tòa đúng như đang hiển thị (bảng hàng thật + tầng/căn mock) — mọi con số đếm từ đây
+    function buildInventoryTowerData(towerKey, towerInfo) {
+      const towerData = INVENTORY_TOWERS_DATABASE[towerKey] || INVENTORY_TOWERS_DATABASE['S501'];
+      const floorCount = extractFloorCount(towerInfo?.details || towerData.details || '');
+      return completeTowerFloors(towerData, floorCount, `inv-${towerKey}`);
+    }
+
+    function countAvailableUnits(towerData) {
+      return (towerData.floors || []).reduce((n, fl) => n + (fl.units || []).filter(u => u.status === 'available').length, 0);
+    }
+
+    // ========================================================
+    // COMPONENT TIÊU ĐỀ TẦNG (DÙNG CHUNG DỰ ÁN & CÁ NHÂN)
+    // Hàng 1: tên tầng + số căn | Hàng 2: dãy nhãn | Mũi tên tách riêng bên phải
+    // ========================================================
+
+    // Nhãn trạng thái trên tiêu đề tầng, cùng màu với block căn
+    const INV_STATUS_FLOOR_BADGES = [
+      { key: 'available', label: 'Trống', badge: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
+      { key: 'holding', label: 'Giữ chỗ', badge: 'bg-amber-50 text-amber-800 border border-amber-200' },
+      { key: 'deposited', label: 'Đã cọc', badge: 'bg-orange-50 text-orange-800 border border-orange-200' },
+      { key: 'sold', label: 'Đã bán', badge: 'bg-rose-50 text-rose-600 border border-rose-200' }
+    ];
+
+    function renderStatusBadge(text, classes) {
+      return `<span class="inline-block max-w-full truncate px-2 py-0.5 rounded-md text-[10px] font-bold leading-4 ${classes}">${text}</span>`;
+    }
+
+    function inventoryFloorStatusBadges(units) {
+      return INV_STATUS_FLOOR_BADGES
+        .map(s => ({ ...s, count: units.filter(u => u.status === s.key).length }))
+        .filter(s => s.count > 0)
+        .map(s => renderStatusBadge(`${s.count} ${s.label}`, s.badge))
+        .join('');
+    }
+
+    function renderFloorHeader({ floorId, toggleFn, title, meta, badgesHtml, isOpen }) {
+      return `
+        <button onclick="${toggleFn}('${floorId}')" class="w-full px-3.5 py-3 flex items-center gap-3 bg-white hover:bg-slate-50 active:bg-slate-100 transition-colors text-left">
+          <div class="flex-1 min-w-0 flex flex-col gap-1.5">
+            <div class="flex items-baseline gap-2 min-w-0">
+              <span class="text-xs font-extrabold text-slate-900 truncate">${title}</span>
+              <span class="text-[10px] text-slate-400 font-mono shrink-0">${meta}</span>
+            </div>
+            ${badgesHtml ? `<div class="flex flex-wrap gap-1 min-w-0">${badgesHtml}</div>` : ''}
+          </div>
+          <span class="material-symbols-outlined text-[20px] text-slate-400 shrink-0" id="icon-${floorId}">${isOpen ? 'expand_less' : 'expand_more'}</span>
+        </button>
+      `;
+    }
+
+    function renderInventoryFloorsAccordion(towerData, statusKey = 'all') {
       const container = document.getElementById('invFloorsAccordionContainer');
       if (!container) return;
 
@@ -5538,7 +5468,7 @@
         container.innerHTML = `
           <div class="p-6 rounded-2xl bg-white border border-slate-200 text-center flex flex-col items-center gap-2 text-slate-400">
             <span class="material-symbols-outlined text-4xl text-slate-300">layers_clear</span>
-            <p class="text-xs font-semibold">Chưa có thông tin tầng cho tòa nhà này.</p>
+            <p class="text-xs font-semibold">${statusKey === 'all' ? 'Chưa có thông tin tầng cho tòa nhà này.' : 'Không có căn nào ở trạng thái này.'}</p>
           </div>
         `;
         return;
@@ -5547,8 +5477,8 @@
       let html = '';
       floors.forEach((fl, idx) => {
         const units = fl.units || [];
-        const availCount = units.filter(u => u.status === 'available').length;
-        const isDefaultOpen = (availCount > 0 && idx === 0) || idx === 0;
+        // Đang lọc trạng thái: bung sẵn mọi tầng khớp để thấy ngay căn cần tìm
+        const isDefaultOpen = statusKey !== 'all' || idx === 0;
 
         let contentHtml = '';
 
@@ -5644,21 +5574,14 @@
 
         html += `
           <div class="inv-floor-item rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-2xs transition-all">
-            <button onclick="toggleInventoryFloorAccordion('${fl.floorId}')" class="w-full px-3.5 py-3 flex items-center justify-between bg-white hover:bg-slate-50 active:bg-slate-100 transition-colors text-left">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full ${availCount > 0 ? 'bg-emerald-500' : 'bg-rose-400'}"></span>
-                <span class="text-xs font-extrabold text-slate-900">${fl.floorName}</span>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${availCount > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-600 border border-rose-200'}">
-                  ${availCount > 0 ? `🟢 ${availCount} Trống` : 'Đã kín'}
-                </span>
-                <span class="text-[10px] text-slate-400 font-mono">(${units.length} Căn)</span>
-              </div>
-              <div class="flex items-center gap-1 text-slate-400">
-                <span class="material-symbols-outlined text-[20px] transition-transform duration-200" id="icon-${fl.floorId}">
-                  ${isDefaultOpen ? 'expand_less' : 'expand_more'}
-                </span>
-              </div>
-            </button>
+            ${renderFloorHeader({
+              floorId: fl.floorId,
+              toggleFn: 'toggleInventoryFloorAccordion',
+              title: fl.floorName,
+              meta: `${units.length} Căn`,
+              badgesHtml: inventoryFloorStatusBadges(units),
+              isOpen: isDefaultOpen
+            })}
 
             <div id="body-${fl.floorId}" class="${isDefaultOpen ? 'flex' : 'hidden'} flex-col gap-2.5 p-3 pt-0 border-t border-slate-100 bg-slate-50/50">
               ${contentHtml}
@@ -5708,21 +5631,25 @@
 
     function filterInventoryUnitStatus(statusKey, btn) {
       document.querySelectorAll('.inv-unit-status-chip').forEach(c => {
-        c.className = "inv-unit-status-chip px-2.5 py-1 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 hover:bg-slate-50 transition-all";
+        c.className = "inv-unit-status-chip px-2.5 py-1 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 flex items-center gap-1 hover:bg-slate-50 transition-all";
       });
       if (btn) {
-        btn.className = "inv-unit-status-chip active px-2.5 py-1 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shrink-0 shadow-2xs transition-all";
+        btn.className = "inv-unit-status-chip active px-2.5 py-1 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shrink-0 shadow-2xs flex items-center gap-1 transition-all";
       }
 
-      if (invCurrentTower) {
-        const towerData = JSON.parse(JSON.stringify(INVENTORY_TOWERS_DATABASE[invCurrentTower] || INVENTORY_TOWERS_DATABASE['S501']));
-        if (statusKey !== 'all') {
-          towerData.floors.forEach(f => {
-            f.units = f.units.filter(u => u.status === statusKey);
-          });
-        }
-        renderInventoryFloorsAccordion(completeTowerFloors(towerData, getInventoryTowerFloorCount(invCurrentTower), `inv-${invCurrentTower}`));
-      }
+      invUnitStatusFilter = statusKey;
+      renderCurrentInventoryTower();
+    }
+
+    // Lọc trên dữ liệu đã bổ sung mock (lọc trước rồi mới bổ sung sẽ sinh lại căn mock sai trạng thái)
+    function renderCurrentInventoryTower() {
+      if (!invCurrentTowerData) return;
+      const floors = invUnitStatusFilter === 'all'
+        ? invCurrentTowerData.floors
+        : invCurrentTowerData.floors
+            .map(floor => ({ ...floor, units: (floor.units || []).filter(unit => unit.status === invUnitStatusFilter) }))
+            .filter(floor => floor.units.length > 0);
+      renderInventoryFloorsAccordion({ ...invCurrentTowerData, floors }, invUnitStatusFilter);
     }
 
     function goBackInventoryHierarchy() {
@@ -6346,10 +6273,15 @@
       const zContainer = document.getElementById('myZonesContainer');
       if (!zContainer) return;
 
-      const zoneKeys = Object.keys(project.zones || {});
+      const zoneKeys = myVisibleZoneKeys(project);
+      if (zoneKeys.length === 0) {
+        zContainer.innerHTML = myEmptyStateHtml('Dự án này chưa có căn bạn đăng ký hoặc đang quản lý.');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
       zContainer.innerHTML = zoneKeys.map(zk => {
         const zone = project.zones[zk];
-        const towerKeys = Object.keys(zone.towers || {});
+        const towerKeys = myVisibleTowerKeys(zone);
         return `
           <div onclick="selectMyZone('${zk}')" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-[#0f3d64] shadow-xs flex flex-col gap-2.5 cursor-pointer transition-all hover:shadow-md active:scale-[0.99]">
             <div class="flex items-start justify-between">
@@ -6434,7 +6366,7 @@
       const tContainer = document.getElementById('myTowersContainer');
       if (!tContainer) return;
 
-      const towerKeys = Object.keys(zone.towers || {});
+      const towerKeys = myVisibleTowerKeys(zone);
       tContainer.innerHTML = towerKeys.map(tk => {
         const tower = zone.towers[tk];
         return `
@@ -6483,7 +6415,7 @@
       const backLabel = document.getElementById('myBreadcrumbBackLabel');
       const pathText = document.getElementById('myBreadcrumbPathText');
       if (backLabel) backLabel.textContent = 'Quay lại Tòa Nhà';
-      if (pathText) pathText.textContent = `${zone.name} > ${tower.name}`;
+      if (pathText) pathText.textContent = `${project.name} > ${zone.name} > ${tower.name}`;
 
       const tLevel = document.getElementById('myLevelTowers');
       const fLevel = document.getElementById('myLevelFloors');
@@ -6614,18 +6546,14 @@
 
         html += `
           <div class="my-floor-item rounded-2xl bg-white border ${isMyFloor ? 'border-sky-300 shadow-xs' : 'border-slate-200'} overflow-hidden transition-all" data-has-my-unit="${isMyFloor}">
-            <button onclick="toggleMyFloorAccordion('${fl.floorId}')" class="w-full px-3.5 py-3 flex items-center justify-between bg-white hover:bg-slate-50 active:bg-slate-100 transition-colors text-left">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full ${isMyFloor ? 'bg-[#0f3d64]' : 'bg-slate-300'}"></span>
-                <span class="text-xs font-extrabold text-slate-900">${fl.floorName}</span>
-                ${isMyFloor ? `<span class="px-2 py-0.5 rounded-md bg-sky-100 text-[#0f3d64] text-[10px] font-bold">${fl.myBadgeText}</span>` : `<span class="text-[10px] text-slate-400 font-mono">${fl.unitsCount} Căn</span>`}
-              </div>
-              <div class="flex items-center gap-1 text-slate-400">
-                <span class="material-symbols-outlined text-[20px] transition-transform duration-200" id="icon-${fl.floorId}">
-                  ${isDefaultOpen ? 'expand_less' : 'expand_more'}
-                </span>
-              </div>
-            </button>
+            ${renderFloorHeader({
+              floorId: fl.floorId,
+              toggleFn: 'toggleMyFloorAccordion',
+              title: fl.floorName,
+              meta: `${fl.unitsCount ?? (fl.units || []).length} Căn`,
+              badgesHtml: isMyFloor ? renderStatusBadge(fl.myBadgeText, 'bg-sky-100 text-[#0f3d64] border border-sky-200') : '',
+              isOpen: isDefaultOpen
+            })}
 
             <div id="body-${fl.floorId}" class="${isDefaultOpen ? 'flex' : 'hidden'} flex-col gap-2.5 p-3 pt-0 border-t border-slate-100 bg-slate-50/50">
               ${contentHtml}
@@ -6781,39 +6709,66 @@
           backBtn.onclick = goBackInventoryHierarchy;
         }
       } else {
+        backBtn.onclick = goBackScreen;
+        const current = screenHistory[screenHistory.length - 1];
+        const config = SCREEN_REGISTRY[current];
+        // Chỉ tab chính mới thay nút quay lại bằng icon tab; màn hình con giữ nguyên header của nó
+        if (!config || !config.isMainTab) return;
+
         backBtn.classList.add('hidden');
         if (tabIcon) tabIcon.classList.remove('hidden');
+        if (current === 'home') {
+          if (appHeader) appHeader.classList.remove('hidden');
+          if (subHeader) subHeader.classList.add('hidden');
+        } else {
+          setSubHeaderContext(config.title, config.subtitle || '');
+        }
       }
     }
 
     // ========================================================
     // MODAL BOTTOM SHEET CHI TIẾT CĂN HỘ NHANH
     // ========================================================
-    function openQuickUnitModal(unitCode, isMySection) {
-      currentModalUnit = unitCode;
+    // ========================================================
+    // COMPONENT BOTTOM SHEET CHI TIẾT CĂN
+    // Header (mã căn, trạng thái, vị trí) → Giữ chỗ → Giá & cọc → Thông tin căn → Khách hàng (căn của bạn) → Hành động
+    // ========================================================
+    const UNIT_STATUS_META = {
+      available: { label: 'Còn trống', dot: 'bg-emerald-500', pill: 'bg-emerald-50 text-emerald-700 border border-emerald-200', action: 'Khóa Căn / Đặt Cọc', actionIcon: 'lock' },
+      holding: { label: 'Đang giữ chỗ', dot: 'bg-amber-400', pill: 'bg-amber-50 text-amber-800 border border-amber-200', action: 'Vào Hàng Chờ 2', actionIcon: 'hourglass_top' },
+      deposited: { label: 'Đã đặt cọc', dot: 'bg-orange-500', pill: 'bg-orange-50 text-orange-800 border border-orange-200', action: 'Xem Phiếu Cọc', actionIcon: 'receipt_long' },
+      sold: { label: 'Đã bán', dot: 'bg-rose-500', pill: 'bg-rose-50 text-rose-600 border border-rose-200', action: 'Tìm Căn Tương Đương', actionIcon: 'search' }
+    };
 
-      // Search unit data
-      let unit = null;
-      // Search in inventory database
+    function inventoryTowerNames(towerKey) {
+      for (const project of Object.values(INVENTORY_PROJECTS_CONFIGS)) {
+        for (const zone of project.zones || []) {
+          const tower = (zone.towers || []).find(t => t.key === towerKey);
+          if (tower) return { towerName: tower.name, zoneName: zone.name, projectName: project.name };
+        }
+      }
+      return {};
+    }
+
+    // Tìm căn kèm vị trí thật (tầng, tòa, phân khu), giữ thứ tự tra cứu: bảng hàng → Cá nhân → căn mock của tòa đang xem
+    function findQuickUnit(unitCode, isMySection) {
+      let found = null;
+
       Object.keys(INVENTORY_TOWERS_DATABASE).forEach(tk => {
         INVENTORY_TOWERS_DATABASE[tk].floors.forEach(fl => {
           fl.units.forEach(u => {
-            if (u.code === unitCode) unit = u;
+            if (u.code === unitCode) found = { unit: u, ctx: { floorName: fl.floorName, ...inventoryTowerNames(tk) } };
           });
         });
       });
 
-      // If not found or in my-units, search in MY_PROJECTS_DATABASE
-      if (!unit || isMySection) {
-        Object.keys(MY_PROJECTS_DATABASE).forEach(pk => {
-          const p = MY_PROJECTS_DATABASE[pk];
-          Object.keys(p.zones || {}).forEach(zk => {
-            const z = p.zones[zk];
-            Object.keys(z.towers || {}).forEach(tk => {
-              const t = z.towers[tk];
+      if (!found || isMySection) {
+        Object.values(MY_PROJECTS_DATABASE).forEach(p => {
+          Object.values(p.zones || {}).forEach(z => {
+            Object.values(z.towers || {}).forEach(t => {
               (t.floors || []).forEach(fl => {
                 (fl.units || []).forEach(u => {
-                  if (u.code === unitCode) unit = u;
+                  if (u.code === unitCode) found = { unit: u, ctx: { floorName: fl.floorName, towerName: t.name, zoneName: z.name, projectName: p.name } };
                 });
               });
             });
@@ -6821,83 +6776,204 @@
         });
       }
 
-      if (!unit) {
-        unit = {
-          code: unitCode,
-          status: 'available',
-          title: `Căn Hộ ${unitCode}`,
-          price: '4,15 Tỷ',
-          deposit: '50 Tr',
-          bed: '2PN • 2WC',
-          area: '64.5 m² (TT) • 69.2 m²',
-          orient: 'Đông Nam',
-          view: 'Vườn Nhật',
-          statusLabel: '🟢 Còn trống'
-        };
+      if (!found && invCurrentTowerData) {
+        invCurrentTowerData.floors.forEach(fl => {
+          (fl.units || []).forEach(u => {
+            if (u.code === unitCode) found = { unit: u, ctx: { floorName: fl.floorName, ...inventoryTowerNames(invCurrentTower) } };
+          });
+        });
       }
 
-      // Bind data to modal elements
-      const mCode = document.getElementById('qumCode');
-      const mBadge = document.getElementById('qumStatusBadge');
-      const mPrice = document.getElementById('qumPrice');
-      const mDeposit = document.getElementById('qumDeposit');
-      const mBed = document.getElementById('qumBed');
-      const mArea = document.getElementById('qumArea');
-      const mOrient = document.getElementById('qumOrient');
-      const mView = document.getElementById('qumView');
-      const ownerSection = document.getElementById('qumOwnerSection');
-      const bookBtnText = document.getElementById('qumBookBtnText');
+      if (found) return found;
 
-      if (mCode) mCode.textContent = unit.code;
-      if (mPrice) mPrice.textContent = unit.price;
-      if (mDeposit) mDeposit.textContent = unit.depositAmount || unit.deposit || 'Cọc: 50 Tr';
-      if (mBed) mBed.textContent = unit.bed || unit.type || '2PN • 2WC';
-      if (mArea) mArea.textContent = unit.area || '64.5 m²';
-      if (mOrient) mOrient.textContent = unit.orient || unit.direction || 'Đông Nam';
-      if (mView) mView.textContent = unit.view || 'Công viên & Hồ bơi';
+      // Mã căn ngoài bảng hàng (VD: A2-0101): suy ra tòa từ tiền tố mã, tầng từ 2 số đầu của số phòng
+      const [towerKey, roomNo = ''] = String(unitCode).split('-');
+      const floorDigits = roomNo.match(/^(\d{2})/);
+      return {
+        unit: { code: unitCode, status: 'available', price: '4,15 Tỷ', deposit: '50 Tr', bed: '2PN • 2WC', area: '64.5 m² (TT) • 69.2 m²', orient: 'Đông Nam', view: 'Vườn Nhật' },
+        ctx: { floorName: floorDigits ? `Tầng ${floorDigits[1]}` : '', ...inventoryTowerNames(towerKey) }
+      };
+    }
 
-      // Status badge style
-      if (mBadge) {
-        if (unit.status === 'available') {
-          mBadge.className = "px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-sky-100 text-[#0f3d64]";
-          mBadge.textContent = "🟢 Còn trống (Mở bán)";
-          if (bookBtnText) bookBtnText.textContent = "Khóa Căn / Đặt Cọc";
-        } else if (unit.status === 'holding') {
-          mBadge.className = "px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-200 text-slate-800";
-          mBadge.textContent = "🟡 Đang giữ chỗ 30p";
-          if (bookBtnText) bookBtnText.textContent = "Vào Hàng Chờ 2";
-        } else if (unit.status === 'deposited') {
-          mBadge.className = "px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-sky-100 text-[#0f3d64]";
-          mBadge.textContent = "🟠 Đã nộp tiền cọc";
-          if (bookBtnText) bookBtnText.textContent = "Xem Phiếu Cọc";
-        } else {
-          mBadge.className = "px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-800 text-white";
-          mBadge.textContent = "🔴 Đã bán (HĐMB)";
-          if (bookBtnText) bookBtnText.textContent = "Tìm Căn Tương Đương";
-        }
+    function renderUnitSection(title, icon) {
+      return `
+        <h4 class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider flex items-center gap-1.5 pt-1">
+          <span class="material-symbols-outlined text-[15px]">${icon}</span>
+          <span>${title}</span>
+        </h4>
+      `;
+    }
+
+    function renderUnitSheetHeader(unit, ctx) {
+      const meta = UNIT_STATUS_META[unit.status] || UNIT_STATUS_META.sold;
+      // Tên tòa đã kèm phân khu trong ngoặc, thêm phân khu nữa chỉ làm dòng bị cắt
+      const location = [ctx.floorName, ctx.towerName].filter(Boolean).join(' • ');
+      return `
+        <div class="flex items-start gap-3 px-4 pt-3 pb-3 border-b border-slate-100">
+          <div class="w-11 h-11 rounded-2xl bg-sky-50 text-[#0f3d64] border border-sky-100 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">apartment</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 id="qumCode" class="text-base font-black text-slate-900 font-mono tracking-tight">${unit.code}</h3>
+              <span id="qumStatusBadge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold ${meta.pill}">
+                <span class="w-1.5 h-1.5 rounded-full ${meta.dot}"></span>
+                <span>${meta.label}</span>
+              </span>
+            </div>
+            <p id="qumSubtitle" class="text-xs text-slate-500 mt-0.5 truncate">${location || 'Đang cập nhật vị trí'}</p>
+          </div>
+          <button onclick="closeQuickUnitModal()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center shrink-0 active:scale-95 transition-all" aria-label="Đóng">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderUnitHoldNotice(unit) {
+      if (unit.status !== 'holding' || !unit.timer) return '';
+      return `
+        <div id="qumHoldNotice" class="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
+          <span class="material-symbols-outlined text-[18px] text-amber-600 shrink-0">timer</span>
+          <span>Căn đang được giữ chỗ, còn <b class="font-mono font-extrabold">${unit.timer}</b></span>
+        </div>
+      `;
+    }
+
+    function renderUnitPriceCard(unit) {
+      return `
+        <div class="flex items-end justify-between gap-3 p-3.5 rounded-2xl bg-gradient-to-br from-[#0f3d64] to-[#1e588a] text-white shadow-xs">
+          <div class="min-w-0">
+            <span class="text-[11px] text-sky-200 font-medium block">Giá bán</span>
+            <span id="qumPrice" class="text-2xl font-black leading-tight block truncate">${unit.price || 'Liên hệ'}</span>
+          </div>
+          <div class="text-right pl-3 border-l border-white/20 shrink-0">
+            <span class="text-[11px] text-sky-200 font-medium block">Tiền cọc</span>
+            <span id="qumDeposit" class="text-sm font-bold block">${unit.deposit || unit.depositPaid || '50 Tr'}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderUnitSpecTile({ id, icon, label, value, sub }) {
+      return `
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-2.5 min-w-0">
+          <span class="material-symbols-outlined text-[18px] text-[#0284c7] shrink-0">${icon}</span>
+          <div class="min-w-0">
+            <span class="text-[10px] text-slate-400 font-semibold block">${label}</span>
+            <span id="${id}" class="text-xs font-bold text-slate-800 leading-snug block line-clamp-2">${value}</span>
+            ${sub ? `<span class="text-[10px] text-slate-500 block mt-0.5 leading-snug">${sub}</span>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // "64.5 m² (TT) • 69.2 m²" → thông thủy làm giá trị chính, tim tường làm dòng phụ
+    function splitUnitArea(area) {
+      const [net, gross] = String(area || '').split('•').map(part => part.trim());
+      return { net: (net || 'Đang cập nhật').replace(/\s*\(TT\)/i, ''), gross: gross ? `Tim tường ${gross}` : '' };
+    }
+
+    // Dữ liệu Cá nhân gộp "Đông Nam (View công viên Cầu Vồng)" vào một trường → tách hướng và view
+    function splitUnitOrientation(unit) {
+      const raw = unit.orient || unit.direction || '';
+      const match = raw.match(/^(.*?)\s*\(\s*View\s+(.+?)\s*\)\s*$/i);
+      const view = unit.view || (match ? match[2].charAt(0).toUpperCase() + match[2].slice(1) : '');
+      return { orient: (match ? match[1] : raw) || 'Đang cập nhật', view: view || 'Đang cập nhật' };
+    }
+
+    function renderUnitSpecs(unit) {
+      const area = splitUnitArea(unit.area);
+      const { orient, view } = splitUnitOrientation(unit);
+      return `
+        ${renderUnitSection('Thông tin căn', 'info')}
+        <div class="grid grid-cols-2 gap-2">
+          ${renderUnitSpecTile({ id: 'qumBed', icon: 'bed', label: 'Loại căn', value: unit.bed || unit.type || 'Đang cập nhật' })}
+          ${renderUnitSpecTile({ id: 'qumArea', icon: 'square_foot', label: 'Diện tích thông thủy', value: area.net, sub: area.gross })}
+          ${renderUnitSpecTile({ id: 'qumOrient', icon: 'explore', label: 'Hướng', value: orient })}
+          ${renderUnitSpecTile({ id: 'qumView', icon: 'landscape', label: 'View', value: view })}
+        </div>
+      `;
+    }
+
+    // Chỉ hiện với căn do chính tài khoản quản lý (tab Cá nhân)
+    function renderUnitOwnerCard(unit) {
+      if (!unit.isMyUnit || !unit.buyerName) return '';
+      const tel = (unit.buyerPhone || '').replace(/\s/g, '');
+      const initial = unit.buyerName.trim().split(/\s+/).pop().charAt(0).toUpperCase();
+      return `
+        ${renderUnitSection('Khách hàng của bạn', 'verified')}
+        <div id="qumOwnerSection" class="rounded-2xl border border-sky-200 bg-sky-50 overflow-hidden">
+          <div class="flex items-center gap-3 p-3">
+            <div class="w-10 h-10 rounded-full bg-[#0f3d64] text-white text-sm font-bold flex items-center justify-center shrink-0">${initial}</div>
+            <div class="flex-1 min-w-0">
+              <span id="qumOwnerClient" class="text-sm font-extrabold text-slate-900 block truncate">${unit.buyerName}</span>
+              <a id="qumOwnerPhoneLink" href="tel:${tel}" class="text-xs font-mono font-semibold text-[#0f3d64] hover:underline">
+                <span id="qumOwnerPhone">${unit.buyerPhone || ''}</span>
+              </a>
+            </div>
+            <span class="px-2 py-0.5 rounded-md bg-[#0f3d64] text-white text-[9px] font-black shrink-0">CHÍNH CHỦ F1</span>
+          </div>
+
+          <dl class="grid grid-cols-2 bg-white border-t border-sky-100">
+            <div class="p-3 border-r border-sky-100 min-w-0">
+              <dt class="text-[10px] text-slate-400 font-semibold">Mã hợp đồng</dt>
+              <dd id="qumOwnerContract" class="text-xs font-bold font-mono text-slate-800 truncate mt-0.5">${unit.contractCode || 'HĐ-COC'}</dd>
+            </div>
+            <div class="p-3 min-w-0">
+              <dt class="text-[10px] text-slate-400 font-semibold">Hoa hồng tạm tính</dt>
+              <dd id="qumOwnerCommission" class="text-xs font-black text-emerald-700 truncate mt-0.5">${unit.commission || '+114.000.000 đ'}</dd>
+            </div>
+          </dl>
+
+          <div class="grid grid-cols-2 gap-2 p-3 pt-0 bg-white">
+            <a id="qumOwnerCallBtn" href="tel:${tel}" class="h-10 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-[#0f3d64] text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+              <span class="material-symbols-outlined text-[17px]">call</span>
+              <span>Gọi Điện</span>
+            </a>
+            <button onclick="openZaloModal(document.getElementById('qumOwnerClient').textContent)" class="h-10 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-[#0f3d64] text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+              <span class="material-symbols-outlined text-[17px]">chat</span>
+              <span>Nhắn Zalo</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderUnitActions(unit) {
+      const meta = UNIT_STATUS_META[unit.status] || UNIT_STATUS_META.sold;
+      return `
+        <div class="grid grid-cols-2 gap-2">
+          <button id="qumViewDetailBtn" onclick="onQuickUnitViewDetailClick()" class="h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[18px] text-[#0f3d64]">description</span>
+            <span>Xem Chi Tiết Căn</span>
+          </button>
+          <button id="qumBookBtn" onclick="onQuickUnitBookClick()" class="h-11 rounded-xl bg-[#0f3d64] hover:bg-[#1e588a] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[18px]">${meta.actionIcon}</span>
+            <span id="qumBookBtnText">${meta.action}</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function openQuickUnitModal(unitCode, isMySection) {
+      currentModalUnit = unitCode;
+      const { unit, ctx } = findQuickUnit(unitCode, isMySection);
+
+      const header = document.getElementById('qumHeader');
+      const body = document.getElementById('qumBody');
+      const actions = document.getElementById('qumActions');
+      if (header) header.innerHTML = renderUnitSheetHeader(unit, ctx);
+      if (body) {
+        body.innerHTML = [
+          renderUnitHoldNotice(unit),
+          renderUnitPriceCard(unit),
+          renderUnitSpecs(unit),
+          renderUnitOwnerCard(unit)
+        ].join('');
+        body.scrollTop = 0;
       }
-
-      // Check if user is the owner of this unit
-      if (ownerSection) {
-        if (unit.isMyUnit && unit.buyerName) {
-          ownerSection.classList.remove('hidden');
-          const cName = document.getElementById('qumOwnerClient');
-          const cPhone = document.getElementById('qumOwnerPhone');
-          const cLink = document.getElementById('qumOwnerPhoneLink');
-          const cCall = document.getElementById('qumOwnerCallBtn');
-          const cContract = document.getElementById('qumOwnerContract');
-          const cCommission = document.getElementById('qumOwnerCommission');
-
-          if (cName) cName.textContent = unit.buyerName;
-          if (cPhone) cPhone.textContent = unit.buyerPhone;
-          if (cLink) cLink.href = `tel:${(unit.buyerPhone || '').replace(/\s/g, '')}`;
-          if (cCall) cCall.href = `tel:${(unit.buyerPhone || '').replace(/\s/g, '')}`;
-          if (cContract) cContract.textContent = unit.contractCode || 'HĐ-COC';
-          if (cCommission) cCommission.textContent = unit.commission || '+114.000.000 đ';
-        } else {
-          ownerSection.classList.add('hidden');
-        }
-      }
+      if (actions) actions.innerHTML = renderUnitActions(unit);
 
       const modal = document.getElementById('quickUnitDetailModal');
       if (modal) {
@@ -6934,7 +7010,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       applyUserProfile();
       renderMyProjectsList();
-      renderCustomerList();
       updateCarouselDots();
       calculateMortgage();
       openScreen('home');
@@ -6943,113 +7018,16 @@
   </script>
 
   <!-- MODAL CHI TIẾT CĂN HỘ NHANH (BOTTOM SHEET - BẤM VÀO BLOCK PHÒNG ĐỂ XEM) -->
-  <div id="quickUnitDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden animate-in fade-in duration-200" onclick="closeQuickUnitModal()">
-    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-4 flex flex-col gap-3 shadow-2xl border border-slate-200 max-h-[85vh] overflow-y-auto" onclick="event.stopPropagation()">
-      
-      <!-- Top Drag Bar & Close -->
-      <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-        <div class="flex items-center gap-2">
-          <div class="w-9 h-9 rounded-xl bg-sky-50 text-[#0f3d64] border border-sky-100 flex items-center justify-center font-bold">
-            <span class="material-symbols-outlined text-[20px]">apartment</span>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h3 class="text-sm font-black text-slate-900 font-mono" id="qumCode">S501-12A08</h3>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold" id="qumStatusBadge">🟢 Còn trống</span>
-            </div>
-            <span class="text-[11px] text-slate-500 block" id="qumSubtitle">Tòa S5.01 • The Origami • Tầng 12A</span>
-          </div>
-        </div>
-        <button onclick="closeQuickUnitModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center active:scale-90 transition-all">
-          <span class="material-symbols-outlined text-[18px]">close</span>
-        </button>
+  <!-- Khung cố định: header + thân cuộn + thanh hành động; nội dung render bằng component trong openQuickUnitModal -->
+  <!-- z-[200]: header & bottom nav bị CSS ép z-index 100, sheet phải nằm trên -->
+  <div id="quickUnitDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[200] hidden items-end sm:items-center justify-center p-0 sm:p-4" onclick="closeQuickUnitModal()">
+    <div class="bg-white w-full max-w-md max-h-[88vh] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden" onclick="event.stopPropagation()">
+      <div class="flex justify-center pt-2.5 sm:hidden">
+        <span class="w-10 h-1 rounded-full bg-slate-200"></span>
       </div>
-
-      <!-- Giá Bán & Tiền Cọc To Rõ (3 Màu: Xanh nước, Trắng, Xám) -->
-      <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-        <div>
-          <span class="text-[10px] text-slate-500 block font-semibold uppercase">Giá Bán Căn Hộ:</span>
-          <span class="text-base font-black text-[#0f3d64] font-mono" id="qumPrice">4,15 Tỷ</span>
-        </div>
-        <div class="text-right border-l border-slate-200 pl-3">
-          <span class="text-[10px] text-slate-500 block font-semibold uppercase">Tiền Cọc Niêm Yết:</span>
-          <span class="text-sm font-black text-[#0f3d64] font-mono" id="qumDeposit">Cọc: 50 Tr</span>
-        </div>
-      </div>
-
-      <!-- Thông Số Chi Tiết Căn (Phòng, Diện Tích, Hướng, View) -->
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex flex-col gap-0.5">
-          <span class="text-[10px] text-slate-400 font-bold uppercase">Loại Căn &amp; Phòng</span>
-          <span class="font-extrabold text-slate-800" id="qumBed">2PN + 1 (2WC)</span>
-        </div>
-        <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex flex-col gap-0.5">
-          <span class="text-[10px] text-slate-400 font-bold uppercase">Diện Tích Thông Thủy</span>
-          <span class="font-extrabold text-[#0f3d64] font-mono" id="qumArea">64.5 m² (TT) • 69.2 m²</span>
-        </div>
-        <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex flex-col gap-0.5">
-          <span class="text-[10px] text-slate-400 font-bold uppercase">Hướng Ban Công</span>
-          <span class="font-extrabold text-slate-800" id="qumOrient">Đông Nam</span>
-        </div>
-        <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex flex-col gap-0.5">
-          <span class="text-[10px] text-slate-400 font-bold uppercase">Tầm View Trực Diện</span>
-          <span class="font-extrabold text-slate-800 truncate" id="qumView">Vườn Nhật &amp; Hồ Cá Koi</span>
-        </div>
-      </div>
-
-      <!-- Khối Thông Tin Khách Hàng (CHỈ HIỆN KHI LÀ CĂN DO CHỦ ACCOUNT BÁN TRONG TAB CÁ NHÂN) -->
-      <div id="qumOwnerSection" class="p-3 rounded-2xl bg-sky-50 border border-sky-200 flex flex-col gap-2 text-xs hidden">
-        <div class="flex items-center justify-between pb-1.5 border-b border-sky-100">
-          <span class="font-bold text-[#0f3d64] flex items-center gap-1">
-            <span class="material-symbols-outlined text-[16px]">verified</span>
-            <span>Căn do chính bạn quản lý:</span>
-          </span>
-          <span class="px-2 py-0.5 rounded-md bg-[#0f3d64] text-white text-[9px] font-black">CHÍNH CHỦ F1</span>
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="text-slate-600">Khách mua:</span>
-          <span class="font-black text-slate-900" id="qumOwnerClient">Nguyễn Hoàng Nam</span>
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="text-slate-600">Số điện thoại:</span>
-          <a id="qumOwnerPhoneLink" href="tel:0912345678" class="font-mono font-bold text-[#0f3d64] hover:underline flex items-center gap-0.5">
-            <span id="qumOwnerPhone">0912 345 678</span>
-            <span class="material-symbols-outlined text-[14px]">open_in_new</span>
-          </a>
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="text-slate-600">Mã giao dịch / HĐ:</span>
-          <span class="font-mono font-bold text-slate-800" id="qumOwnerContract">HĐ-COC-5120</span>
-        </div>
-        <div class="flex items-center justify-between pt-1 border-t border-sky-100">
-          <span class="text-slate-700 font-bold">Hoa hồng tạm tính:</span>
-          <span class="font-mono font-black text-[#0f3d64]" id="qumOwnerCommission">+114.000.000 đ</span>
-        </div>
-        <!-- Cụm nút gọi / Zalo -->
-        <div class="grid grid-cols-2 gap-2 pt-1">
-          <a id="qumOwnerCallBtn" href="tel:0912345678" class="py-2 rounded-xl bg-[#0f3d64] hover:bg-[#1e588a] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 text-center">
-            <span class="material-symbols-outlined text-[16px]">call</span>
-            <span>Gọi Điện Ngay</span>
-          </a>
-          <button onclick="openZaloModal(document.getElementById('qumOwnerClient').textContent)" class="py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95">
-            <span class="material-symbols-outlined text-[16px]">chat</span>
-            <span>Nhắn Zalo</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Action Buttons Trực Tiếp -->
-      <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
-        <button id="qumViewDetailBtn" onclick="onQuickUnitViewDetailClick()" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-1 transition-all active:scale-95">
-          <span class="material-symbols-outlined text-[16px] text-[#0f3d64]">description</span>
-          <span>Xem Chi Tiết Căn</span>
-        </button>
-        <button id="qumBookBtn" onclick="onQuickUnitBookClick()" class="py-2.5 rounded-xl bg-[#0f3d64] hover:bg-[#1e588a] text-white text-xs font-bold flex items-center justify-center gap-1 shadow-xs transition-all active:scale-95">
-          <span class="material-symbols-outlined text-[16px]">lock</span>
-          <span id="qumBookBtnText">Khóa Căn / Đặt Cọc</span>
-        </button>
-      </div>
-
+      <div id="qumHeader" class="shrink-0"></div>
+      <div id="qumBody" class="flex-1 min-h-0 overflow-y-auto px-4 py-3 flex flex-col gap-3"></div>
+      <div id="qumActions" class="shrink-0 px-4 pt-3 border-t border-slate-100 bg-white" style="padding-bottom: max(12px, env(safe-area-inset-bottom));"></div>
     </div>
   </div>
 
