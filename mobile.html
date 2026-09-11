@@ -21,6 +21,17 @@
     ::-webkit-scrollbar { display: none; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Keep fixed chrome opaque and reserve its full footprint for scrolling content. */
+    #appHeader, #subHeader, #detailHeader, #bottomNav {
+      background-color: #ffffff;
+      isolation: isolate;
+      z-index: 100;
+    }
+    #mobileAppFrame > main {
+      padding-top: 5rem;
+      padding-bottom: 7rem;
+    }
     
     /* !important để thắng class .flex của Tailwind CDN (nạp sau <style> này),
        nếu không thì lúc mới mở app 4 màn hình sẽ hiển thị chồng lên nhau. */
@@ -177,7 +188,7 @@
   <!-- ======================================================== -->
   <!-- MAIN ROUTER (4 TAB NGHIỆP VỤ + SUBVIEW CHI TIẾT CĂN) -->
   <!-- ======================================================== -->
-  <main class="flex flex-col relative w-full pt-16 pb-24 bg-[#f8fafc] min-h-screen sm:min-h-[calc(100vh-56px)]">
+  <main class="flex flex-col relative w-full bg-[#f8fafc] min-h-screen sm:min-h-[calc(100vh-56px)]">
     <!-- ---------------------------------------------------- -->
     <!-- TAB 1: TRANG CHỦ (DASHBOARD) - THEO ĐẶC TẢ THIẾT KẾ ĐÃ CHỐT -->
     <!-- ---------------------------------------------------- -->
