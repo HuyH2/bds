@@ -1290,16 +1290,13 @@
             <span class="px-2.5 py-1 rounded-xl bg-sky-50 text-[#0f3d64] text-[10px] font-extrabold border border-sky-200" id="myTowerMyUnitsCountBadge">★ 2 Căn của bạn</span>
           </div>
 
-          <!-- Quick Filters: Tất cả | Chỉ xem căn của bạn -->
+          <!-- Chỉ hiển thị các căn đã đăng ký hoặc đang quản lý -->
           <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-100">
-            <button id="btnFilterAllFloors" onclick="filterMyFloorsMode('all')" class="px-3 py-1.5 rounded-xl bg-[#0f3d64] text-white text-xs font-bold shadow-2xs active:scale-95 transition-all">
-              Tất cả các tầng
-            </button>
-            <button id="btnFilterMyFloorsOnly" onclick="filterMyFloorsMode('my-only')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold active:scale-95 transition-all">
-              ★ Chỉ tầng có căn của bạn
-            </button>
+            <span class="px-3 py-1.5 rounded-xl bg-sky-50 border border-sky-200 text-[#0f3d64] text-xs font-bold">
+              ★ Chỉ căn của bạn
+            </span>
             <button onclick="toggleAllMyFloors()" class="ml-auto text-[11px] text-[#0f3d64] font-bold underline">
-              Bung tất cả
+              Bung tất cả tầng của bạn
             </button>
           </div>
         </div>
@@ -1311,8 +1308,8 @@
             <span>Căn của bạn: Hiện tên khách, cọc &amp; gọi điện</span>
           </div>
           <div class="flex items-center gap-1.5 p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 font-medium">
-            <span class="material-symbols-outlined text-[16px] text-slate-400">shield</span>
-            <span>Sàn khác: Chỉ hiện trạng thái bán</span>
+            <span class="material-symbols-outlined text-[16px] text-slate-400">visibility_off</span>
+            <span>Ẩn căn của sàn khác</span>
           </div>
         </div>
 
@@ -6527,12 +6524,17 @@
       const container = document.getElementById('myFloorsAccordionContainer');
       if (!container) return;
 
-      const floors = tower.floors || [];
+      const floors = (tower.floors || [])
+        .map(floor => ({
+          ...floor,
+          units: (floor.units || []).filter(unit => unit.isMyUnit)
+        }))
+        .filter(floor => floor.hasMyUnit || floor.units.length > 0);
       if (floors.length === 0) {
         container.innerHTML = `
           <div class="p-6 rounded-2xl bg-white border border-slate-200 text-center flex flex-col items-center gap-2 text-slate-400">
-            <span class="material-symbols-outlined text-4xl text-slate-300">layers_clear</span>
-            <p class="text-xs font-semibold">Chưa có thông tin tầng cho tòa nhà này.</p>
+            <span class="material-symbols-outlined text-4xl text-slate-300">visibility_off</span>
+            <p class="text-xs font-semibold">Tòa nhà này chưa có căn bạn đăng ký hoặc đang quản lý.</p>
           </div>
         `;
         return;
