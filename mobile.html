@@ -181,7 +181,7 @@
     <!-- ---------------------------------------------------- -->
     <!-- TAB 1: TRANG CHỦ (DASHBOARD) - THEO ĐẶC TẢ THIẾT KẾ ĐÃ CHỐT -->
     <!-- ---------------------------------------------------- -->
-    <div id="view-home" class="mobile-tab-view active flex flex-col w-full px-4 gap-3.5 py-3">
+    <div id="view-home" class="mobile-tab-view flex flex-col w-full px-4 gap-3.5 py-3" style="display: none;">
 
       <!-- 2. KHỐI BANNER & SỰ KIỆN NỔI BẬT (CHUẨN 1 BÀI VIẾT / KHUNG - THẲNG HÀNG VỚI PHẦN DƯỚI) -->
       <section class="flex flex-col gap-2">
@@ -350,7 +350,7 @@
     </div>
 
     <!-- ---------------------------------------------------- -->
-    <!-- TAB 2: SỰ KIỆN & DỰ ÁN -->
+    <!-- TAB: DỰ ÁN -->
     <!-- ---------------------------------------------------- -->
     <div id="view-inventory" class="mobile-tab-view flex flex-col w-full">
       
@@ -1753,14 +1753,14 @@
       
       <!-- Filter Tabs: Tất cả | 🏢 Dự án | 📅 Sự kiện -->
       <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
-        <button onclick="filterEventOrProject('all', this)" class="ep-filter-btn active px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shadow-xs shrink-0 transition-all">
+        <button data-filter="all" onclick="filterEventOrProject('all', this)" class="ep-filter-btn active px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#0f3d64] text-white shadow-xs shrink-0 transition-all">
           Tất cả (7)
         </button>
-        <button onclick="filterEventOrProject('project', this)" class="ep-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 flex items-center gap-1.5 transition-all">
+        <button data-filter="project" onclick="filterEventOrProject('project', this)" class="ep-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 flex items-center gap-1.5 transition-all">
           <span class="material-symbols-outlined text-[16px] text-[#0f3d64]">apartment</span>
           <span>🏢 Dự án (3)</span>
         </button>
-        <button onclick="filterEventOrProject('event', this)" class="ep-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 flex items-center gap-1.5 transition-all">
+        <button data-filter="event" onclick="filterEventOrProject('event', this)" class="ep-filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 shrink-0 flex items-center gap-1.5 transition-all">
           <span class="material-symbols-outlined text-[16px] text-[#0f3d64]">event</span>
           <span>📅 Sự kiện (4)</span>
         </button>
@@ -2448,7 +2448,7 @@
       </div>
 
       <!-- 7. Sticky Actions Footer -->
-      <div class="fixed bottom-0 inset-x-0 sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 w-full sm:max-w-[430px] z-40 bg-white/95 sm:rounded-b-[38px] backdrop-blur-xl border-t border-slate-200 px-4 py-3 pb-safe shadow-lg flex items-center gap-2">
+      <div class="fixed bottom-16 inset-x-0 sm:bottom-24 sm:left-1/2 sm:-translate-x-1/2 w-full sm:max-w-[430px] z-40 bg-white/95 sm:rounded-b-[38px] backdrop-blur-xl border-t border-slate-200 px-4 py-3 pb-safe shadow-lg flex items-center gap-2">
         <button onclick="goToInventoryForCurrentDetail()" class="py-3 px-4 rounded-2xl bg-[#0f3d64] hover:bg-[#1e588a] text-white font-bold text-xs flex-1 flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all">
           <span class="material-symbols-outlined text-[18px]">domain</span>
           <span id="evDetailFooterMainBtn">Xem Giỏ Hàng &amp; Khóa Căn</span>
@@ -2457,9 +2457,9 @@
           <span class="material-symbols-outlined text-[18px]" id="evDetailFooterSecondaryIcon">how_to_reg</span>
           <span id="evDetailFooterSecondaryText">Tham Gia</span>
         </button>
-        <button onclick="showToast('Đang tạo thiệp Zalo gửi khách...')" class="py-3 px-3 rounded-2xl bg-[#0284c7] text-white font-bold text-xs flex items-center justify-center gap-1 active:scale-95 transition-all shrink-0" title="Gửi thiệp Zalo">
-          <span class="material-symbols-outlined text-[18px]">share</span>
-          <span>Zalo</span>
+        <button id="evDetailInviteBtn" onclick="openInvitationModal()" class="py-3 px-3 rounded-2xl bg-[#0284c7] text-white font-bold text-xs flex items-center justify-center gap-1 active:scale-95 transition-all shrink-0" title="Tạo thiệp mời gửi khách">
+          <span class="material-symbols-outlined text-[18px]">mail</span>
+          <span>Thiệp mời</span>
         </button>
       </div>
 
@@ -2593,20 +2593,20 @@
 
   <!-- ======================================================== -->
   <!-- 4. BOTTOM NAVIGATION BAR & NÚT CHẤM CÔNG TRÒN Ở GIỮA     -->
-  <!-- [Trang chủ]  [Sự kiện]   ( [O] Chấm công )   [Cá nhân]  [Cài đặt] -->
+  <!-- [Dự án]  [Sự kiện]   ( [O] Chấm công )   [Cá nhân]  [Cài đặt] -->
   <!-- ======================================================== -->
   <nav class="fixed bottom-0 inset-x-0 sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 w-full sm:max-w-[430px] z-50 pb-safe bg-white/95 sm:rounded-b-[38px] backdrop-blur-xl shadow-[0_-2px_16px_rgba(0,0,0,0.08)] border-t border-slate-200" id="bottomNav">
     <div class="flex items-center justify-around h-16 px-1 relative">
       
-      <!-- Tab 1: Trang chủ -->
-      <button onclick="openScreen('home')" class="mob-nav-btn active flex flex-col items-center justify-center gap-1 flex-1 h-full text-[#0f3d64] font-semibold transition-colors" data-tab="trang-chu">
-        <span class="material-symbols-outlined text-[22px]">dashboard</span>
-        <span class="text-[10px]">Trang chủ</span>
+      <!-- Tab 1: Dự án -->
+      <button onclick="openScreen('home')" class="mob-nav-btn active flex flex-col items-center justify-center gap-1 flex-1 h-full text-[#0f3d64] font-semibold transition-colors" data-tab="du-an">
+        <span class="material-symbols-outlined text-[22px]">apartment</span>
+        <span class="text-[10px]">Dự án</span>
       </button>
 
       <!-- Tab 2: Sự kiện -->
-      <button onclick="openScreen('inventory')" class="mob-nav-btn flex flex-col items-center justify-center gap-1 flex-1 h-full text-slate-500 hover:text-[#0f3d64] transition-colors relative" data-tab="gio-hang">
-        <span class="material-symbols-outlined text-[22px]">domain</span>
+      <button onclick="openScreen('events')" class="mob-nav-btn flex flex-col items-center justify-center gap-1 flex-1 h-full text-slate-500 hover:text-[#0f3d64] transition-colors relative" data-tab="su-kien">
+        <span class="material-symbols-outlined text-[22px]">event</span>
         <span class="text-[10px]">Sự kiện</span>
       </button>
 
@@ -2758,6 +2758,30 @@
     <span id="toastMessage">Thông báo trạng thái</span>
   </div>
 
+  <div id="eventInvitationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[60] hidden items-end sm:items-center justify-center p-3" onclick="closeInvitationModal()">
+    <div class="bg-white w-full max-w-md rounded-3xl p-4 flex flex-col gap-3 shadow-2xl" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+        <div>
+          <h3 class="text-sm font-extrabold text-slate-900">Tạo thiệp mời gửi khách</h3>
+          <p class="text-[10px] text-slate-500">Nội dung lấy theo sự kiện đang chọn</p>
+        </div>
+        <button onclick="closeInvitationModal()" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center" aria-label="Đóng">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+      <input id="invitationGuestName" class="h-10 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20" placeholder="Tên khách mời" type="text"/>
+      <textarea id="invitationMessage" rows="7" class="p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#0f3d64]/20 resize-none"></textarea>
+      <div class="flex gap-2">
+        <button onclick="copyInvitationText()" class="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95">
+          <span class="material-symbols-outlined text-[17px]">content_copy</span> Sao chép
+        </button>
+        <button onclick="shareInvitationText()" class="flex-1 py-2.5 rounded-xl bg-[#0f3d64] text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95">
+          <span class="material-symbols-outlined text-[17px]">share</span> Chia sẻ
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ======================================================== -->
   <!-- JAVASCRIPT LOGIC CONTROLLER                               -->
   <!-- ======================================================== -->
@@ -2787,8 +2811,8 @@
     let screenHistory = ['home'];
 
     const SCREEN_REGISTRY = {
-      'home': { viewId: 'view-home', title: '', tab: 'trang-chu', isMainTab: true },
-      'inventory': { viewId: 'view-inventory', title: 'Sự Kiện Toàn Sàn', tab: 'gio-hang', isMainTab: true },
+      'home': { viewId: 'view-inventory', title: 'Dự Án', subtitle: 'Bảng hàng và dự án đang phân phối', tab: 'du-an', isMainTab: true },
+      'inventory': { viewId: 'view-inventory', title: 'Dự Án', subtitle: 'Bảng hàng và dự án đang phân phối', tab: 'du-an', isMainTab: true },
       'my-units': { viewId: 'view-my-units', title: 'Cá Nhân', tab: 'ca-nhan', isMainTab: true },
       'profile': { viewId: 'view-my-units', title: 'Cá Nhân', tab: 'ca-nhan', isMainTab: true },
       'settings': { viewId: 'view-settings', title: 'Cài Đặt', tab: 'cai-dat', isMainTab: true },
@@ -2796,7 +2820,7 @@
       'checkin': { viewId: 'view-checkin', title: 'Chấm Công GPS Real-Time', subtitle: 'Xác thực khuôn mặt AI & Vị trí' },
       'attendance-history': { viewId: 'view-attendance-history', title: 'Lịch Sử Chấm Công', subtitle: 'Tháng 10/2024 • 22 Ngày công' },
       'notifications': { viewId: 'view-notifications', title: 'Thông Báo Hệ Thống', subtitle: 'Biến động giỏ hàng & duyệt cọc' },
-      'events': { viewId: 'view-events', title: 'Sự Kiện & Mở Bán', subtitle: 'Danh sách sự kiện Tân Long Land' },
+      'events': { viewId: 'view-events', title: 'Sự Kiện', subtitle: 'Lịch tổ chức và thiệp mời gửi khách', tab: 'su-kien', isMainTab: true },
       'mortgage': { viewId: 'view-mortgage', title: 'Bảng Tính Vay Mua Nhà', subtitle: 'Lãi suất ưu đãi MB Bank & VCB' },
       'saleskit': { viewId: 'view-saleskit', title: 'Kho Tài Liệu Sales Kit', subtitle: 'CSBH, Mặt bằng, Pháp lý gửi Zalo' },
       'explanation': { viewId: 'view-explanation', title: 'Đơn Giải Trình & Xin Phép', subtitle: 'Quên chấm công, đi muộn, nghỉ phép' },
@@ -2835,6 +2859,14 @@
         target.classList.add('active');
       }
 
+      if (screenName === 'home' || screenName === 'inventory') {
+        const projectChip = document.querySelector('.inv-filter-chip[data-cat="project"]');
+        if (projectChip) filterInventoryCategory('project', projectChip);
+      } else if (screenName === 'events') {
+        const eventFilter = document.querySelector('.ep-filter-btn[data-filter="event"]');
+        if (eventFilter) filterEventOrProject('event', eventFilter);
+      }
+
       // Header management
       const appHeader = document.getElementById('appHeader');
       const subHeader = document.getElementById('subHeader');
@@ -2864,7 +2896,9 @@
             if (tabIcon) {
               tabIcon.classList.remove('hidden');
               const icons = {
-                'inventory': 'domain',
+                'home': 'apartment',
+                'inventory': 'apartment',
+                'events': 'event',
                 'my-units': 'real_estate_agent',
                 'settings': 'settings'
               };
@@ -3113,6 +3147,7 @@
     // =============================================================
     let currentDetailProjectKey = 'Ciputra';
     let currentDetailIsProject = true;
+    let currentDetailEvent = null;
 
     // =============================================================
     // DỮ LIỆU & CONTROLLER DỰ ÁN & SỰ KIỆN (BĐS PRO)
@@ -3510,6 +3545,7 @@
 
       currentDetailProjectKey = ev.projectKey || 'Ciputra';
       currentDetailIsProject = ev.isProject;
+      currentDetailEvent = ev;
 
       const imgEl = document.getElementById('evDetailImg');
       const typeEl = document.getElementById('evDetailTypeBadge');
@@ -3554,6 +3590,8 @@
       if (footerMain) footerMain.textContent = ev.footerMainBtn || 'Xem Giỏ Hàng & Khóa Căn';
       if (footerSecTxt) footerSecTxt.textContent = ev.footerSecondaryText || 'Tham Gia';
       if (footerSecIco) footerSecIco.textContent = ev.footerSecondaryIcon || 'how_to_reg';
+      const inviteBtn = document.getElementById('evDetailInviteBtn');
+      if (inviteBtn) inviteBtn.classList.toggle('hidden', ev.isProject);
 
       // Render Perks
       const perksContainer = document.getElementById('evDetailPerks');
@@ -3646,6 +3684,55 @@
         showToast('Đang tải file Bảng Giá & CSBH chi tiết...', 'download');
       } else {
         showToast('Đã đăng ký tham gia sự kiện thành công! Vé mời QR đã được lưu.', 'check_circle');
+      }
+    }
+
+    function openInvitationModal() {
+      if (!currentDetailEvent || currentDetailIsProject) return;
+      const guestName = document.getElementById('invitationGuestName');
+      const message = document.getElementById('invitationMessage');
+      if (guestName) guestName.value = '';
+      if (message) {
+        message.value = `Kính mời anh/chị [Tên khách] tham dự ${currentDetailEvent.title}.\n\nThời gian: ${currentDetailEvent.time}\nĐịa điểm: ${currentDetailEvent.location}\n\nTân Long Land trân trọng đón tiếp anh/chị. Vui lòng xác nhận tham dự để chúng tôi chuẩn bị đón tiếp chu đáo.`;
+      }
+      const modal = document.getElementById('eventInvitationModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeInvitationModal() {
+      const modal = document.getElementById('eventInvitationModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function getInvitationText() {
+      const message = document.getElementById('invitationMessage');
+      const guestName = document.getElementById('invitationGuestName');
+      return (message?.value || '').replace('[Tên khách]', guestName?.value.trim() || 'anh/chị');
+    }
+
+    function copyInvitationText() {
+      const text = getInvitationText();
+      if (!navigator.clipboard) {
+        showToast('Trình duyệt không hỗ trợ sao chép tự động', 'error');
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Đã sao chép thiệp mời để gửi khách', 'content_copy');
+      });
+    }
+
+    function shareInvitationText() {
+      const text = getInvitationText();
+      if (navigator.share) {
+        navigator.share({ title: currentDetailEvent?.title || 'Thiệp mời sự kiện', text });
+      } else {
+        copyInvitationText();
       }
     }
 
@@ -4820,7 +4907,8 @@
 
       const countLabel = document.getElementById('invListCountLabel');
       if (countLabel) {
-        countLabel.textContent = `Sự kiện & Dự án (${visibleCount})`;
+        const label = cat === 'project' ? 'Dự án' : cat === 'event' ? 'Sự kiện' : 'Sự kiện & Dự án';
+        countLabel.textContent = `${label} (${visibleCount})`;
       }
     }
 
@@ -6711,6 +6799,7 @@
       renderCustomerList();
       updateCarouselDots();
       calculateMortgage();
+      openScreen('home');
     });
 
   </script>
