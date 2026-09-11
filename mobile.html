@@ -4674,12 +4674,6 @@
     }
 
     function myProjectCard(p) {
-      const unitsBlock = p.units.length ? `
-        <div class="rounded-xl bg-slate-50 border border-slate-100 px-2.5 divide-y divide-slate-200/70">
-          ${p.units.map(myProjectUnitRow).join('')}
-        </div>
-      ` : '';
-
       const metaBadge = p.units.length
         ? `<span class="px-2 py-0.5 rounded-md bg-sky-50 border border-sky-200 text-[#0f3d64] text-[10px] font-extrabold shrink-0">★ ${p.units.length} căn của bạn</span>`
         : `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold shrink-0">Chưa có căn</span>`;
@@ -4707,10 +4701,7 @@
             <span class="material-symbols-outlined text-slate-300 text-[22px] shrink-0">chevron_right</span>
           </div>
 
-          <!-- Phần 2: các căn của bạn trong dự án -->
-          ${unitsBlock ? `<div class="px-3.5 pb-3">${unitsBlock}</div>` : ''}
-
-          <!-- Phần 3: dẫn xuống phân khu -->
+          <!-- Dẫn xuống phân khu; căn hộ chỉ xuất hiện sau khi chọn tòa và tầng -->
           <div class="flex items-center justify-between px-3.5 py-2.5 border-t border-slate-100">
             <span class="text-[11px] text-slate-400">${myProjectZoneCount(p.key)} phân khu</span>
             <span class="text-[11px] font-bold text-[#0f3d64] flex items-center gap-0.5">
