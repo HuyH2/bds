@@ -131,6 +131,14 @@
     };
 
   </script>
+  <script>
+    // Chưa đăng nhập hoặc đang đăng nhập vai trò khác → về màn đăng nhập (index.html)
+    (function () {
+      var session = null;
+      try { session = JSON.parse(localStorage.getItem('bds.session.v1')); } catch (e) { return; }
+      if (!session || session.role !== 'sale') window.location.replace('index.html');
+    })();
+  </script>
 </head>
 <body class="bg-[#f8fafc] sm:bg-slate-200 sm:py-6 font-sans text-slate-800 flex justify-center min-h-screen antialiased select-none">
 
@@ -145,7 +153,7 @@
     <div class="h-16 px-4 flex items-center justify-between">
       
       <!-- Khu vực bên trái (Hồ sơ): Avatar + Tên Sale + Phòng ban -->
-      <div onclick="openEditProfile()" class="flex items-center gap-2.5 cursor-pointer active:scale-95 transition-transform" title="Xem hồ sơ cá nhân">
+      <div onclick="openRoleSheet()" class="flex items-center gap-2.5 cursor-pointer active:scale-95 transition-transform" title="Tài khoản & vai trò">
         <div class="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#0f3d64]/20 shrink-0">
           <img alt="Nguyễn Quang Huy" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WS2PAoRHpXP3F0-LXtIPaWh7UKP3VM-MLVYlsw2EwbW-roG6_IDJIWnrJyZTJJRYgQy9CUUzt6uk1Dwf4dma4G1sMbDgoLv_GiEUxVb9pF5ssblbx9hwiuC1Rx78icgbTzv-_JrCJF4R3aMbPk3cuhqgsd9pOsw3w9srM-xb2w539Yh9fIAlV-j5_Ungl2fi-NHMOxpCbnnpYoDJweqWe8miPsM89PyzQkyWAj0XFqsIttoDXZdMJJhiw"/>
           <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#0284c7] rounded-full ring-2 ring-white"></span>
@@ -778,7 +786,7 @@
         <div class="grid grid-cols-3 gap-2">
           <div class="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs text-center flex flex-col items-center">
             <span class="text-lg font-bold text-[#0f3d64] font-mono">22</span>
-            <span class="text-[10px] text-slate-500 mt-0.5 font-medium">Ngày đủ công</span>
+            <span class="text-[10px] text-slate-500 mt-0.5 font-medium">Ngày đã chấm công</span>
           </div>
           <div class="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs text-center flex flex-col items-center">
             <span class="text-lg font-bold text-[#0284c7] font-mono">100%</span>
@@ -963,6 +971,20 @@
         </button>
       </div>
 
+      <!-- Đổi vai trò -->
+      <button onclick="openRoleSheet()" class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center justify-between gap-3 active:scale-98 transition-all text-left">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-sky-100 text-[#0f3d64] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px]">swap_horiz</span>
+          </div>
+          <div class="min-w-0">
+            <span class="text-xs font-bold text-slate-900 block truncate">Đổi Vai Trò Đăng Nhập</span>
+            <span class="text-[10px] text-slate-500 block truncate">Đang dùng: Sale / Cộng tác viên</span>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
+      </button>
+
       <!-- Thông báo -->
       <div class="rounded-2xl bg-white border border-slate-200 shadow-xs overflow-hidden">
         <div class="px-4 py-2 border-b border-slate-100">
@@ -1000,7 +1022,7 @@
             <span class="font-bold text-slate-800">Đổi mật khẩu</span>
             <span class="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
           </button>
-          <button onclick="showToast('Đã đăng xuất tài khoản an toàn!', 'logout')" class="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left">
+          <button onclick="logout()" class="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors text-left">
             <span class="font-bold text-rose-600">Đăng xuất</span>
             <span class="material-symbols-outlined text-[18px] text-rose-300">chevron_right</span>
           </button>
@@ -1803,6 +1825,56 @@
             <span class="text-xs font-bold text-slate-900">5. Thành Công (Đã Ký HĐMB)</span>
           </div>
           <span class="text-[10px] text-[#0f3d64] font-bold">Giao dịch thành công</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TÀI KHOẢN & VAI TRÒ (BẤM AVATAR) -->
+  <div id="roleSheet" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[200] hidden items-end sm:items-center justify-center p-3" onclick="closeRoleSheet()">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-4 flex flex-col gap-3 shadow-2xl border border-slate-100" onclick="event.stopPropagation()">
+      <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+        <img data-profile-avatar class="w-11 h-11 rounded-full object-cover ring-2 ring-[#0f3d64]/15 shrink-0" src="" alt="Ảnh đại diện"/>
+        <div class="min-w-0 flex-1">
+          <h4 class="text-sm font-extrabold text-slate-900 truncate" id="roleSheetName">—</h4>
+          <span class="text-[11px] text-slate-500 font-mono block truncate" id="roleSheetMeta">—</span>
+        </div>
+        <button onclick="closeRoleSheet()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center active:scale-90 shrink-0" aria-label="Đóng">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <button onclick="closeRoleSheet(); openEditProfile();" class="w-full p-3 rounded-xl hover:bg-slate-50 flex items-center justify-between gap-2 text-left transition-colors">
+        <span class="flex items-center gap-2.5 min-w-0">
+          <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[18px]">person</span></span>
+          <span class="text-xs font-bold text-slate-800">Chỉnh sửa hồ sơ</span>
+        </span>
+        <span class="material-symbols-outlined text-[18px] text-slate-400">chevron_right</span>
+      </button>
+
+      <div class="flex flex-col gap-1.5 pt-1 border-t border-slate-100">
+        <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1 pt-1">Đang đăng nhập với vai trò</span>
+
+        <button onclick="closeRoleSheet()" class="w-full flex items-center justify-between p-3 rounded-xl border-2 border-[#0f3d64] bg-sky-50 text-left transition-colors">
+          <span class="flex items-center gap-2.5 min-w-0">
+            <span class="w-8 h-8 rounded-xl bg-[#0f3d64] text-white flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[18px]">real_estate_agent</span></span>
+            <span class="min-w-0">
+              <span class="text-xs font-bold text-[#0f3d64] block">Sale / CTV</span>
+              <span class="text-[10px] text-[#0f3d64]/70 block">Bảng hàng, giao dịch, khách hàng</span>
+            </span>
+          </span>
+          <span class="material-symbols-outlined text-[20px] text-[#0f3d64]">check_circle</span>
+        </button>
+
+        <button onclick="switchRole('hr')" class="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:bg-sky-50 text-left transition-colors">
+          <span class="flex items-center gap-2.5 min-w-0">
+            <span class="w-8 h-8 rounded-xl bg-sky-100 text-[#0f3d64] flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[18px]">groups</span></span>
+            <span class="min-w-0">
+              <span class="text-xs font-bold text-slate-900 block">Nhân sự (HR)</span>
+              <span class="text-[10px] text-slate-500 block">Hồ sơ, chấm công, duyệt phép</span>
+            </span>
+          </span>
+          <span class="material-symbols-outlined text-[18px] text-slate-300">chevron_right</span>
         </button>
       </div>
     </div>
@@ -3883,6 +3955,48 @@
       branch: 'Chi nhánh Sala',
       avatar: document.getElementById('profileAvatarSettings') ? document.getElementById('profileAvatarSettings').src : ''
     };
+
+    // =============================================================
+    // PHIÊN ĐĂNG NHẬP & ĐỔI VAI TRÒ (SALE ⇄ HR) — cùng khóa lưu trữ với hr.html & index.html
+    // =============================================================
+    const ROLE_STORAGE_KEY = 'bds.role.v1';
+    const SESSION_STORAGE_KEY = 'bds.session.v1';
+    // Tài khoản demo của từng vai trò — khớp danh sách ACCOUNTS ở index.html
+    const DEMO_ACCOUNT_BY_ROLE = {
+      sale: { username: 'huy.nguyen', name: 'Nguyễn Quang Huy' },
+      hr: { username: 'huong.tran', name: 'Trần Thị Thanh Hương' }
+    };
+
+    function openRoleSheet() {
+      const sheet = document.getElementById('roleSheet');
+      if (!sheet) return;
+      const name = document.getElementById('roleSheetName');
+      const meta = document.getElementById('roleSheetMeta');
+      if (name) name.textContent = USER_PROFILE.name;
+      if (meta) meta.textContent = USER_PROFILE.code + ' • ' + USER_PROFILE.branch;
+      sheet.classList.remove('hidden');
+      sheet.classList.add('flex');
+    }
+
+    function closeRoleSheet() {
+      const sheet = document.getElementById('roleSheet');
+      if (!sheet) return;
+      sheet.classList.add('hidden');
+      sheet.classList.remove('flex');
+    }
+
+    // Đổi vai trò = đăng nhập sang tài khoản demo của vai trò đó
+    function switchRole(role) {
+      const account = DEMO_ACCOUNT_BY_ROLE[role];
+      writeStorage(SESSION_STORAGE_KEY, { username: account.username, role, name: account.name, loggedInAt: new Date().toISOString() });
+      writeStorage(ROLE_STORAGE_KEY, role);
+      window.location.href = role === 'hr' ? 'hr.html' : 'mobile.html';
+    }
+
+    function logout() {
+      try { localStorage.removeItem(SESSION_STORAGE_KEY); } catch (e) { /* bỏ qua */ }
+      window.location.href = 'index.html';
+    }
 
     function applyUserProfile() {
       const p = USER_PROFILE;
@@ -6755,6 +6869,7 @@
     // KHỞI TẠO LÚC TẢI TRANG
     // =============================================================
     document.addEventListener('DOMContentLoaded', () => {
+      writeStorage(ROLE_STORAGE_KEY, 'sale');
       applyUserProfile();
       renderEventsList();
       refreshDealCounters();
